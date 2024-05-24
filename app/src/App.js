@@ -1,37 +1,28 @@
-import logo from './logo.svg';
-import './App.css';
-import React, {useLayoutEffect, useState} from "react";
-import rough from 'roughjs/bundled/rough.esm'
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const generator = rough.generator();
+const App = () => {
+  const navigate = useNavigate();
 
-function App() {
-  useLayoutEffect(() => {
-    const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d");
+  const handleGuestClick = () => {
+    navigate('/drawing');
+  };
 
-    // ctx.fillStyle = "green";
-    // ctx.fillRect(10, 10, 150, 100);
-    // ctx.strokeRect(200,200,100,100)
+  const handleLoginClick = () => {
+    navigate('/login');
+  };
 
-    const roughCanvas = rough.canvas(canvas);
-    const rect = generator.rectangle(10,10,100,100);
-    roughCanvas.draw(rect);
-
-  }
-  )
   return (
-    <canvas id='canvas' width={window.innerWidth} height={window.innerHeight}>
-      canvas
-    </canvas>
-    // <div className="App">
-    //   <header className="App-header">
-    //     <p>
-    //       Hello world
-    //     </p>
-    //   </header>
-    // </div>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+      <h1>Welcome to BC children Hospital Drawing App</h1>
+      <button onClick={handleGuestClick} style={{ margin: '10px', padding: '10px 20px' }}>
+        Continue as Guest
+      </button>
+      <button onClick={handleLoginClick} style={{ margin: '10px', padding: '10px 20px' }}>
+        Login to retrieve previous drawings
+      </button>
+    </div>
   );
-}
+};
 
 export default App;
