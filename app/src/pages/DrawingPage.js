@@ -38,34 +38,40 @@ function DrawingPage() {
     e.preventDefault();
     contextReference.current.beginPath();
     const offsetX =
-      e.nativeEvent.offsetX ||
-      e.touches[0].clientX -
-        canvasReference.current.getBoundingClientRect().left;
+      e.nativeEvent.offsetX !== undefined
+        ? e.nativeEvent.offsetX
+        : e.touches[0].clientX -
+          canvasReference.current.getBoundingClientRect().left;
     const offsetY =
-      e.nativeEvent.offsetY ||
-      e.touches[0].clientY -
-        canvasReference.current.getBoundingClientRect().top;
+      e.nativeEvent.offsetY !== undefined
+        ? e.nativeEvent.offsetY
+        : e.touches[0].clientY -
+          canvasReference.current.getBoundingClientRect().top;
     contextReference.current.moveTo(offsetX, offsetY);
-    //tell update Draw that the button is pressed
     setIsPressed(true);
   };
+
   const endDraw = (e) => {
     e.preventDefault();
     contextReference.current.closePath();
     //tell update draw that mouse click has ended
     setIsPressed(false);
   };
+
   const updateDraw = (e) => {
     e.preventDefault();
-    const offsetX =
-      e.nativeEvent.offsetX ||
-      e.touches[0].clientX -
-        canvasReference.current.getBoundingClientRect().left;
-    const offsetY =
-      e.nativeEvent.offsetY ||
-      e.touches[0].clientY -
-        canvasReference.current.getBoundingClientRect().top;
     if (!isPressed) return;
+
+    const offsetX =
+      e.nativeEvent.offsetX !== undefined
+        ? e.nativeEvent.offsetX
+        : (e.touches[0]?.clientX || 0) -
+          canvasReference.current.getBoundingClientRect().left;
+    const offsetY =
+      e.nativeEvent.offsetY !== undefined
+        ? e.nativeEvent.offsetY
+        : (e.touches[0]?.clientY || 0) -
+          canvasReference.current.getBoundingClientRect().top;
 
     contextReference.current.lineTo(offsetX, offsetY);
     contextReference.current.stroke();
