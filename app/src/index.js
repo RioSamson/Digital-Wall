@@ -3,41 +3,28 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import {createBrowserRouter, RouterProvider, Route,} from "react-router-dom";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import DrawingPage from './pages/DrawingPage';
 import ReviewPage from './pages/ReviewPage';
 import GalleryPage from './pages/GalleryPage';
-
-const router = createBrowserRouter([
-  {
-    path:"/",
-    element: <App/>,
-  },
-  {
-    path:"login",
-    element: <LoginPage/>,
-  },
-  {
-    path:"drawing",
-    element: <DrawingPage/>,
-  },
-  {
-    path:"review",
-    element: <ReviewPage/>,
-  },
-  {
-    path:"gallery",
-    element: <GalleryPage/>,
-  },
-  ]);
+import { AuthProvider } from './contexts/authContext'; // Ensure this path is correct
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-     <RouterProvider router={router}/>
-    // <React.StrictMode>
-    // <App />
-    // </React.StrictMode>
+  <React.StrictMode>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+          <Route path="login" element={<LoginPage />} />
+          <Route path="drawing" element={<DrawingPage />} />
+          <Route path="review" element={<ReviewPage />} />
+          <Route path="gallery" element={<GalleryPage />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function
