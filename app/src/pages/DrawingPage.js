@@ -14,7 +14,10 @@ function DrawingPage() {
   const navigate = useNavigate();
   const uploadClick = () => {
     // Ensure the /review route exists or update this to an existing route
-    navigate("/review");
+    // navigate("/review");
+    const canvas = canvasReference.current;
+    const base64Image = canvas.toDataURL("image/png");
+    navigate("/review", { state: { image: base64Image } });
   };
 
   const colors = useMemo(
