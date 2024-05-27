@@ -14,11 +14,14 @@ function DrawingPage() {
   const navigate = useNavigate();
   const uploadClick = () => {
     // Ensure the /review route exists or update this to an existing route
-    navigate("/review");
+    // navigate("/review");
+    const canvas = canvasReference.current;
+    const base64Image = canvas.toDataURL("image/png");
+    navigate("/review", { state: { image: base64Image } });
   };
 
   const colors = useMemo(
-    () => ["black", "red", "green", "orange", "blue", "yellow"],
+    () => ["black", "red", "green", "orange", "blue", "purple"],
     []
   );
 
@@ -35,37 +38,43 @@ function DrawingPage() {
   };
 
   const beginDraw = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
     contextReference.current.beginPath();
     const offsetX =
-      e.nativeEvent.offsetX ||
-      e.touches[0].clientX -
-        canvasReference.current.getBoundingClientRect().left;
+      e.nativeEvent.offsetX !== undefined
+        ? e.nativeEvent.offsetX
+        : e.touches[0].clientX -
+          canvasReference.current.getBoundingClientRect().left;
     const offsetY =
-      e.nativeEvent.offsetY ||
-      e.touches[0].clientY -
-        canvasReference.current.getBoundingClientRect().top;
+      e.nativeEvent.offsetY !== undefined
+        ? e.nativeEvent.offsetY
+        : e.touches[0].clientY -
+          canvasReference.current.getBoundingClientRect().top;
     contextReference.current.moveTo(offsetX, offsetY);
-    //tell update Draw that the button is pressed
     setIsPressed(true);
   };
+
   const endDraw = (e) => {
-    e.preventDefault();
+    // e.preventDefault(); //this was causeing a bug with the phone version
     contextReference.current.closePath();
     //tell update draw that mouse click has ended
     setIsPressed(false);
   };
+
   const updateDraw = (e) => {
-    e.preventDefault();
-    const offsetX =
-      e.nativeEvent.offsetX ||
-      e.touches[0].clientX -
-        canvasReference.current.getBoundingClientRect().left;
-    const offsetY =
-      e.nativeEvent.offsetY ||
-      e.touches[0].clientY -
-        canvasReference.current.getBoundingClientRect().top;
+    // e.preventDefault();
     if (!isPressed) return;
+
+    const offsetX =
+      e.nativeEvent.offsetX !== undefined
+        ? e.nativeEvent.offsetX
+        : (e.touches[0]?.clientX || 0) -
+          canvasReference.current.getBoundingClientRect().left;
+    const offsetY =
+      e.nativeEvent.offsetY !== undefined
+        ? e.nativeEvent.offsetY
+        : (e.touches[0]?.clientY || 0) -
+          canvasReference.current.getBoundingClientRect().top;
 
     contextReference.current.lineTo(offsetX, offsetY);
     contextReference.current.stroke();
