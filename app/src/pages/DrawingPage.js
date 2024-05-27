@@ -35,7 +35,7 @@ function DrawingPage() {
   };
 
   const beginDraw = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
     contextReference.current.beginPath();
     const offsetX =
       e.nativeEvent.offsetX !== undefined
@@ -52,14 +52,14 @@ function DrawingPage() {
   };
 
   const endDraw = (e) => {
-    e.preventDefault();
+    // e.preventDefault(); //this was causeing a bug with the phone version
     contextReference.current.closePath();
     //tell update draw that mouse click has ended
     setIsPressed(false);
   };
 
   const updateDraw = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
     if (!isPressed) return;
 
     const offsetX =
