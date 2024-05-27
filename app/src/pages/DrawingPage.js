@@ -21,7 +21,7 @@ function DrawingPage() {
   };
 
   const colors = useMemo(
-    () => ["black", "red", "green", "orange", "blue", "yellow"],
+    () => ["black", "red", "green", "orange", "blue", "purple"],
     []
   );
 
