@@ -7,6 +7,7 @@ import {createBrowserRouter, RouterProvider, Route,} from "react-router-dom";
 import LoginPage from './pages/LoginPage';
 import DrawingPage from './pages/DrawingPage';
 import ReviewPage from './pages/ReviewPage';
+import GalleryPage from './pages/GalleryPage';
 
 const router = createBrowserRouter([
   {
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
   {
     path:"review",
     element: <ReviewPage/>,
+  },
+  {
+    path:"gallery",
+    element: <GalleryPage/>,
   },
   ]);
 

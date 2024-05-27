@@ -2,7 +2,7 @@ import React from 'react'
 
 function ReviewPage() {
   return (
-    <div>ReviewPage</div>
+    <div>congratulations!</div>
   )
 }
 

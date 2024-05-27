@@ -7,7 +7,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    navigate('/drawing');
+    navigate('/gallery');
   };
 
   return (
