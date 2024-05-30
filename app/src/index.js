@@ -8,7 +8,9 @@ import LoginPage from './pages/LoginPage';
 import DrawingPage from './pages/DrawingPage';
 import ReviewPage from './pages/ReviewPage';
 import GalleryPage from './pages/GalleryPage';
-import { AuthProvider } from './contexts/authContext'; // Ensure this path is correct
+import RegisterPage from './pages/RegisterPage';
+import LandingPage from './pages/LandingPage';
+import { AuthProvider } from './contexts/authContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -21,6 +23,8 @@ root.render(
           <Route path="drawing" element={<DrawingPage />} />
           <Route path="review" element={<ReviewPage />} />
           <Route path="gallery" element={<GalleryPage />} />
+          <Route path="register" element={<RegisterPage />} />
+          <Route path="landing" element={<LandingPage />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

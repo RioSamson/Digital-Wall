@@ -41,9 +41,9 @@ function GalleryPage() {
           Log Out
         </button>
       </div>
-      <h1>This is a gallery of all your previous art works</h1>
-      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', marginTop: '20px' }}>
-        {[...Array(10)].map((_, index) => (
+      <h1>My drawings</h1>
+      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', marginTop: '10px' }}>
+        {[...Array(6)].map((_, index) => (
           <div key={index} style={{ width: '150px', height: '150px', backgroundColor: '#f0f0f0', margin: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #ccc' }}>
             <p>Artwork {index + 1}</p>
           </div>

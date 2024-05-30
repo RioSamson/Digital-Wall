@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { doSignInWithEmailAndPassword, doCreateUserWithEmailAndPassword } from '../firebase/auth';
 import { useAuth } from '../contexts/authContext';
 
@@ -25,23 +25,10 @@ export default function LoginPage() {
     }
   };
 
-  const handleSignup = async () => {
-    if (!isSigningIn) {
-      setIsSigningIn(true);
-      try {
-        await doCreateUserWithEmailAndPassword(email, password);
-        navigate('/gallery');
-      } catch (error) {
-        setErrorMessage(error.message);
-      } finally {
-        setIsSigningIn(false);
-      }
-    }
-  };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-      <h1>Login Page</h1>
+      <h1>Login</h1>
       <input
         type="email"
         placeholder="Enter your email"
@@ -63,18 +50,15 @@ export default function LoginPage() {
       )}
       <button
         onClick={handleLogin}
-        style={{ margin: '10px', padding: '10px 20px' }}
+        style={{ margin: '30px', padding: '10px 40px' }}
         disabled={isSigningIn}
       >
         Login
       </button>
-      <button
-        onClick={handleSignup}
-        style={{ margin: '10px', padding: '10px 20px' }}
-        disabled={isSigningIn}
-      >
-        Sign Up
-      </button>
+      <div style={{ marginTop: '20px' }}>
+        <span>Don't have an account?</span>
+        <Link to="/register" style={{ marginLeft: '5px', color: 'blue' }}>Create Account</Link>
+      </div>
     </div>
   );
 }
