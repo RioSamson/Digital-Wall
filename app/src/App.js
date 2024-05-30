@@ -8,19 +8,23 @@ const App = () => {
     navigate('/drawing');
   };
 
-  const handleLoginClick = () => {
-    navigate('/login');
+  const handleSkipClick = () => {
+    navigate('/landing');
   };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-      <h1>Welcome to BC children Hospital Drawing App</h1>
-      <button onClick={handleGuestClick} style={{ margin: '10px', padding: '10px 20px' }}>
-        Continue as Guest
-      </button>
-      <button onClick={handleLoginClick} style={{ margin: '10px', padding: '10px 20px' }}>
-        Login to retrieve previous drawings
-      </button>
+      {/* <h1>Welcome to BC children Hospital Drawing App</h1> */}
+      <img src={require('./resources/landing.png')} alt="animation" style={{ width: '300px', height: '300px' }} />
+      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+        <span style={{ marginBottom: '20px' }}>(animation video)</span>
+        <button onClick={handleSkipClick} style={{ margin: '10px', padding: '10px 20px' }}>
+          Skip
+        </button>
+        {/* <button onClick={handleGuestClick} style={{ margin: '10px', padding: '10px 20px' }}>
+          Guest
+        </button> */}
+      </div>
     </div>
   );
 };
