@@ -2,6 +2,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/authContext';
 import { auth } from '../firebase/firebase';
+import { collection, getDocs } from "firebase/firestore"; 
+
 
 function GalleryPage() {
   const navigate = useNavigate();
