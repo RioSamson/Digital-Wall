@@ -3,8 +3,7 @@ from flask_cors import CORS  # Import CORS
 import requests
 
 app = Flask(__name__)
-# Enable CORS with specific settings
-CORS(app, resources={r"/proxy": {"origins": "http://localhost:3000"}})
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})  # Enable CORS for requests from localhost:3000
 
 @app.route('/proxy', methods=['POST'])
 def proxy():
