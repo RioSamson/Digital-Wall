@@ -1,6 +1,5 @@
 import React, {
   useEffect,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -8,16 +7,60 @@ import React, {
 import rough from "roughjs/bundled/rough.esm";
 import { useNavigate } from "react-router-dom";
 import "./DrawingPage.css";
+import { storage, db, auth } from "../firebase/firebase"; // Import Firestore and Auth
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { collection, addDoc, query, where, getDocs, updateDoc, doc } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 
 function DrawingPage() {
-  //for page switching
   const navigate = useNavigate();
+
   const uploadClick = () => {
-    // Ensure the /review route exists or update this to an existing route
-    // navigate("/review");
     const canvas = canvasReference.current;
-    const base64Image = canvas.toDataURL("image/png");
-    navigate("/review", { state: { image: base64Image } });
+    canvas.toBlob((blob) => {
+      if (blob) {
+        const storageRef = ref(storage, `drawing/${Date.now()}.png`);
+        uploadBytes(storageRef, blob).then((snapshot) => {
+          getDownloadURL(snapshot.ref).then((url) => {
+            onAuthStateChanged(auth, async (user) => {
+              if (user) {
+                const email = user.email;
+
+                const drawingsCollection = collection(db, "drawing");
+                const q = query(drawingsCollection, where("email", "==", email));
+                const querySnapshot = await getDocs(q);
+
+                if (!querySnapshot.empty) {
+                  // Update existing document
+                  console.log("this is an existing account")
+                  const docId = querySnapshot.docs[0].id;
+                  const docRef = doc(db, "drawing", docId);
+                  const existingDrawings = querySnapshot.docs[0].data().drawings;
+
+                  await updateDoc(docRef, {
+                    drawings: [...existingDrawings, url],
+                    updatedAt: new Date()
+                  });
+                  console.log("Document successfully updated!");
+                } else {
+                  // Create new document
+                  await addDoc(drawingsCollection, {
+                    email: email,
+                    drawings: [url],
+                    createdAt: new Date()
+                  });
+                  console.log("Document successfully created!");
+                }
+
+                navigate("/review", { state: { image: url } });
+              } else {
+                console.log("No user is signed in.");
+              }
+            });
+          });
+        });
+      }
+    }, "image/png");
   };
 
   const colors = useMemo(
@@ -38,7 +81,6 @@ function DrawingPage() {
   };
 
   const beginDraw = (e) => {
-    // e.preventDefault();
     contextReference.current.beginPath();
     const offsetX =
       e.nativeEvent.offsetX !== undefined
@@ -55,14 +97,11 @@ function DrawingPage() {
   };
 
   const endDraw = (e) => {
-    // e.preventDefault(); //this was causeing a bug with the phone version
     contextReference.current.closePath();
-    //tell update draw that mouse click has ended
     setIsPressed(false);
   };
 
   const updateDraw = (e) => {
-    // e.preventDefault();
     if (!isPressed) return;
 
     const offsetX =
@@ -82,7 +121,6 @@ function DrawingPage() {
 
   useEffect(() => {
     const canvas = canvasReference.current;
-    //if you change the w and h, then you have to update the css page .Drawing page width too
     canvas.width = 500;
     canvas.height = 500;
 
@@ -93,7 +131,6 @@ function DrawingPage() {
     contextReference.current = context;
   }, [colors]);
 
-  //this use effect prevents the phone from scrolling when touch drawing on canvas
   useEffect(() => {
     const canvas = canvasReference.current;
 
@@ -110,7 +147,6 @@ function DrawingPage() {
     };
   }, []);
 
-  //set color is a function that receives a color,
   const setColor = (color) => {
     contextReference.current.strokeStyle = color;
   };
@@ -136,12 +172,12 @@ function DrawingPage() {
       <div className="DrawingPage">
         <canvas
           ref={canvasReference}
-          onMouseDown={beginDraw} // When click down
-          onMouseMove={updateDraw} // When clicked and moving
-          onMouseUp={endDraw} // When click up/done
-          onTouchStart={beginDraw} // When touch starts
-          onTouchMove={updateDraw} // When touch moves
-          onTouchEnd={endDraw} // When touch ends
+          onMouseDown={beginDraw}
+          onMouseMove={updateDraw}
+          onMouseUp={endDraw}
+          onTouchStart={beginDraw}
+          onTouchMove={updateDraw}
+          onTouchEnd={endDraw}
         />
         <div className="buttons">
           <button onClick={clearCanvas}>Clear</button>
