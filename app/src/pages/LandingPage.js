@@ -15,7 +15,7 @@ export default function LandingPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
       {/* <h1>Welcome to BC children Hospital Drawing App</h1> */}
-      <img src={require('../resources/login.png')} alt="Login" style={{ width: '300px', height: '300px', marginBottom: '20px' }} />
+      <img src={require('../assets/login.png')} alt="Login" style={{ width: '300px', height: '300px', marginBottom: '20px' }} />
       <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
         <button onClick={handleLoginClick} style={{ margin: '10px', padding: '10px 20px' }}>
           Login
