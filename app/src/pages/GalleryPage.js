@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/authContext';
-import { auth } from '../firebase/firebase';
+import { auth, db } from '../firebase/firebase';
+import { collection, getDocs } from 'firebase/firestore';
 
 function GalleryPage() {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
+  const [prevDrawing, setPrevDrawing] = useState([]);
 
   const handleDraw = () => {
     navigate('/drawing');
@@ -14,11 +16,40 @@ function GalleryPage() {
   const handleLogout = async () => {
     try {
       await auth.signOut();
-      navigate('/drawing');
+      navigate('/');
     } catch (error) {
       console.error('Error logging out:', error);
     }
   };
+
+  const getDrawings = async () => {
+    const querySnapshot = await getDocs(collection(db, "drawing"));
+    if (querySnapshot.empty) {
+      console.log("No matching documents.");
+    } else {
+      //reading the drawings from DB
+        const drawings = await Promise.all(querySnapshot.docs.map(async (doc) => {
+        const data = doc.data();
+        const dataEmail = data.email;
+
+        if (dataEmail === currentUser.email) {
+          const urls = data.drawings;
+          return urls;  // Return the array of URLs
+        } else {
+          console.log("Email is different");
+          return null;
+        }
+      }));
+
+      // Filter out any null values and flatten the array of arrays
+      const filteredDrawings = drawings.filter(urls => urls !== null).flat();
+      setPrevDrawing(filteredDrawings);
+    }
+  };
+
+  useEffect(() => {
+    getDrawings();
+  }, []);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px' }}>
@@ -43,11 +74,15 @@ function GalleryPage() {
       </div>
       <h1>My drawings</h1>
       <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', marginTop: '10px' }}>
-        {[...Array(6)].map((_, index) => (
-          <div key={index} style={{ width: '150px', height: '150px', backgroundColor: '#f0f0f0', margin: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #ccc' }}>
-            <p>Artwork {index + 1}</p>
-          </div>
-        ))}
+        {prevDrawing.length > 0 ? (
+          prevDrawing.map((url, index) => (
+            <div key={index} style={{ width: '150px', height: '150px', margin: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '1px solid #ccc' }}>
+              <img src={url} alt={`Drawing ${index}`} style={{ width: '100%', height: 'auto' }} />
+            </div>
+          ))
+        ) : (
+          <p>No drawings found</p>
+        )}
       </div>
       <button 
         onClick={handleDraw} 
