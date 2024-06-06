@@ -1,20 +1,3 @@
-// import React from "react";
-// import { useLocation } from "react-router-dom";
-
-// function ReviewPage() {
-//   const location = useLocation();
-//   const { image } = location.state || {};
-
-//   return (
-//     <div>
-//       <h1>Review Page</h1>
-//       {image ? <img src={image} alt="Drawing" /> : <p>No drawing found.</p>}
-//     </div>
-//   );
-// }
-
-// export default ReviewPage;
-
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
@@ -26,15 +9,15 @@ function ReviewPage() {
   useEffect(() => {
     if (image) {
       const sendImageToServer = async () => {
-        const url = "https://app.baseten.co/model_versions/q48rmd3/predict"; // Update this URL with your server URL
+        const url = "/model_versions/q48rmd3/predict"; // Relative URL
         const headers = {
-          Authorization: "Api-Key 13235osK.AVglR2jVhzMHR1txMuFJCD49TEmV6FXY", // Update this with your actual API key
+          Authorization: "Api-Key 13235osK.AVglR2jVhzMHR1txMuFJCD49TEmV6FXY",
           "Content-Type": "application/json",
         };
 
-        const imageData = image.split(",")[1]; // Extract base64 data without the prefix
+        const imageData = image.split(",")[1];
         const data = {
-          prompt: "a plushy dog", // Example prompt, update as needed
+          prompt: "a plushy dog",
           images_data: imageData,
           guidance_scale: 8,
           lcm_steps: 50,
@@ -54,7 +37,7 @@ function ReviewPage() {
 
           if (response.ok) {
             const jsonResponse = await response.json();
-            const imgStr = jsonResponse.model_output.image; // Update based on your actual response structure
+            const imgStr = jsonResponse.model_output.image;
             setGeneratedImage(`data:image/png;base64,${imgStr}`);
           } else {
             console.error("Server returned an error", response.statusText);
