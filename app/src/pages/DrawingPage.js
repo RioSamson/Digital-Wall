@@ -91,6 +91,8 @@ function DrawingPage() {
     context.strokeStyle = colors[0];
     context.lineWidth = 5;
     contextReference.current = context;
+
+    clearCanvas();
   }, [colors]);
 
   //this use effect prevents the phone from scrolling when touch drawing on canvas

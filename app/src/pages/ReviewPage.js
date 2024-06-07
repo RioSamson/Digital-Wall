@@ -53,12 +53,16 @@ function ReviewPage() {
 
   return (
     <div>
-      <h1>Review Page</h1>
+      <h1>Generated image</h1>
       {generatedImage ? (
         <img src={generatedImage} alt="Generated Drawing" />
       ) : (
         <p>No generated drawing found.</p>
       )}
+      <div>
+        <h1>Your Drawing</h1>
+        {image ? <img src={image} alt="Drawing" /> : <p>No drawing found.</p>}
+      </div>
     </div>
   );
 }
