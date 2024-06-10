@@ -14,6 +14,13 @@ import { onAuthStateChanged } from "firebase/auth";
 
 function DrawingPage() {
   const navigate = useNavigate();
+  const canvasReference = useRef(null);
+  const contextReference = useRef(null);
+  const [isPressed, setIsPressed] = useState(false);
+  const [lastColor, setLastColor] = useState("black");
+  const [mode, setMode] = useState("pencil");
+  const [showTextInput, setShowTextInput] = useState(false);
+  const [inputText, setInputText] = useState("");
 
   const uploadClick = () => {
     const canvas = canvasReference.current;
