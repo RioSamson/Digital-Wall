@@ -1,20 +1,18 @@
-import React, {
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import rough from "roughjs/bundled/rough.esm";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./DrawingPage.css";
 
 function DrawingPage() {
-  //for page switching
   const navigate = useNavigate();
+  const canvasReference = useRef(null);
+  const contextReference = useRef(null);
+  const [isPressed, setIsPressed] = useState(false);
+  const [lastColor, setLastColor] = useState("black");
+  const [mode, setMode] = useState("pencil");
+  const [showTextInput, setShowTextInput] = useState(false);
+  const [inputText, setInputText] = useState("");
+
   const uploadClick = () => {
-    // Ensure the /review route exists or update this to an existing route
-    // navigate("/review");
     const canvas = canvasReference.current;
     const base64Image = canvas.toDataURL("image/png");
     navigate("/review", { state: { image: base64Image } });
@@ -25,11 +23,6 @@ function DrawingPage() {
     []
   );
 
-  const canvasReference = useRef(null);
-  const contextReference = useRef(null);
-
-  const [isPressed, setIsPressed] = useState(false);
-
   const clearCanvas = () => {
     const canvas = canvasReference.current;
     const context = canvas.getContext("2d");
@@ -38,7 +31,6 @@ function DrawingPage() {
   };
 
   const beginDraw = (e) => {
-    // e.preventDefault();
     contextReference.current.beginPath();
     const offsetX =
       e.nativeEvent.offsetX !== undefined
@@ -54,15 +46,12 @@ function DrawingPage() {
     setIsPressed(true);
   };
 
-  const endDraw = (e) => {
-    // e.preventDefault(); //this was causeing a bug with the phone version
+  const endDraw = () => {
     contextReference.current.closePath();
-    //tell update draw that mouse click has ended
     setIsPressed(false);
   };
 
   const updateDraw = (e) => {
-    // e.preventDefault();
     if (!isPressed) return;
 
     const offsetX =
@@ -82,7 +71,6 @@ function DrawingPage() {
 
   useEffect(() => {
     const canvas = canvasReference.current;
-    //if you change the w and h, then you have to update the css page .Drawing page width too
     canvas.width = 500;
     canvas.height = 500;
 
@@ -95,10 +83,8 @@ function DrawingPage() {
     clearCanvas();
   }, [colors]);
 
-  //this use effect prevents the phone from scrolling when touch drawing on canvas
   useEffect(() => {
     const canvas = canvasReference.current;
-
     const preventDefault = (e) => e.preventDefault();
 
     canvas.addEventListener("touchstart", preventDefault, { passive: false });
@@ -112,9 +98,36 @@ function DrawingPage() {
     };
   }, []);
 
-  //set color is a function that receives a color,
   const setColor = (color) => {
     contextReference.current.strokeStyle = color;
+    contextReference.current.lineWidth = 5;
+    setLastColor(color);
+    setMode("pencil");
+  };
+
+  const setEraser = () => {
+    contextReference.current.strokeStyle = "white";
+    contextReference.current.lineWidth = 10;
+    setMode("eraser");
+  };
+
+  const handleDescribeDrawing = () => {
+    setShowTextInput(true);
+  };
+
+  const handleMagic = () => {
+    console.log("Magic button clicked");
+    // Implement your magic functionality here
+  };
+
+  const handleTextSubmit = () => {
+    const canvas = canvasReference.current;
+    const context = canvas.getContext("2d");
+    context.font = "20px Arial";
+    context.fillStyle = "black";
+    context.fillText(inputText, 50, 50); // Position text at 50, 50 for simplicity
+    setInputText("");
+    setShowTextInput(false);
   };
 
   return (
@@ -127,26 +140,30 @@ function DrawingPage() {
         height: "100vh",
       }}
     >
-      <h1>Drawing Page</h1>
       <button
         className="completeButton"
         onClick={uploadClick}
         style={{ margin: "10px", padding: "10px 20px" }}
       >
-        Complete
+        Upload
+      </button>
+      <button
+        onClick={clearCanvas}
+        style={{ margin: "10px", padding: "10px 20px" }}
+      >
+        Clear
       </button>
       <div className="DrawingPage">
         <canvas
           ref={canvasReference}
-          onMouseDown={beginDraw} // When click down
-          onMouseMove={updateDraw} // When clicked and moving
-          onMouseUp={endDraw} // When click up/done
-          onTouchStart={beginDraw} // When touch starts
-          onTouchMove={updateDraw} // When touch moves
-          onTouchEnd={endDraw} // When touch ends
+          onMouseDown={beginDraw}
+          onMouseMove={updateDraw}
+          onMouseUp={endDraw}
+          onTouchStart={beginDraw}
+          onTouchMove={updateDraw}
+          onTouchEnd={endDraw}
         />
         <div className="buttons">
-          <button onClick={clearCanvas}>Clear</button>
           {colors.map((color) => (
             <button
               className="colorButtons"
@@ -157,6 +174,50 @@ function DrawingPage() {
           ))}
         </div>
       </div>
+      <div
+        className="tools"
+        style={{ display: "flex", gap: "10px", marginTop: "10px" }}
+      >
+        <button onClick={setEraser} style={{ width: "60px", height: "60px" }}>
+          Eraser
+        </button>
+        <button
+          onClick={() => setColor(lastColor)}
+          style={{ width: "60px", height: "60px" }}
+        >
+          Pencil
+        </button>
+        <button
+          onClick={handleDescribeDrawing}
+          style={{ width: "60px", height: "60px" }}
+        >
+          Describe Drawing
+        </button>
+      </div>
+      {showTextInput && (
+        <div
+          className="text-input"
+          style={{
+            display: "flex",
+            gap: "10px",
+            marginTop: "10px",
+            alignItems: "center",
+          }}
+        >
+          <input
+            type="text"
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            style={{ width: "200px", height: "30px" }}
+          />
+          <button
+            onClick={handleTextSubmit}
+            style={{ width: "60px", height: "60px" }}
+          >
+            Enhance
+          </button>
+        </div>
+      )}
     </div>
   );
 }
