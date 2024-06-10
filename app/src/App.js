@@ -1,23 +1,44 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const App = () => {
   const navigate = useNavigate();
 
   const handleGuestClick = () => {
-    navigate('/drawing');
+    navigate("/SceneSelect");
   };
 
   const handleSkipClick = () => {
-    navigate('/landing');
+    navigate("/landing");
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-      <img src={require('./assets/landing.png')} alt="animation" style={{ width: '300px', height: '300px' }} />
-      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-        <span style={{ marginBottom: '20px' }}>(animation video)</span>
-        <button onClick={handleSkipClick} style={{ margin: '10px', padding: '10px 20px' }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100vh",
+      }}
+    >
+      <img
+        src={require("./assets/landing.png")}
+        alt="animation"
+        style={{ width: "300px", height: "300px" }}
+      />
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
+        <span style={{ marginBottom: "20px" }}>(animation video)</span>
+        <button
+          onClick={handleSkipClick}
+          style={{ margin: "10px", padding: "10px 20px" }}
+        >
           Skip
         </button>
         {/* <button onClick={handleGuestClick} style={{ margin: '10px', padding: '10px 20px' }}>

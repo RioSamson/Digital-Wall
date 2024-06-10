@@ -1,18 +1,20 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import LoginPage from './pages/LoginPage';
-import DrawingPage from './pages/DrawingPage';
-import ReviewPage from './pages/ReviewPage';
-import GalleryPage from './pages/GalleryPage';
-import RegisterPage from './pages/RegisterPage';
-import LandingPage from './pages/LandingPage';
-import { AuthProvider } from './contexts/authContext';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import LoginPage from "./pages/LoginPage";
+import DrawingPage from "./pages/DrawingPage";
+import ReviewPage from "./pages/ReviewPage";
+import GalleryPage from "./pages/GalleryPage";
+import RegisterPage from "./pages/RegisterPage";
+import LandingPage from "./pages/LandingPage";
+import { AuthProvider } from "./contexts/authContext";
+import SceneSelectorPage from "./pages/SceneSelectorPage";
+import SceneAreaSelector from "./pages/SceneAreaSelectorPage";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <AuthProvider>
@@ -25,6 +27,8 @@ root.render(
           <Route path="gallery" element={<GalleryPage />} />
           <Route path="register" element={<RegisterPage />} />
           <Route path="landing" element={<LandingPage />} />
+          <Route path="SceneSelect" element={<SceneSelectorPage />} />
+          <Route path="SceneAreaSelect" element={<SceneAreaSelector />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

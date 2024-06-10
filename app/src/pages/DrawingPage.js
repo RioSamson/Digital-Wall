@@ -68,11 +68,6 @@ function DrawingPage() {
     []
   );
 
-  const canvasReference = useRef(null);
-  const contextReference = useRef(null);
-
-  const [isPressed, setIsPressed] = useState(false);
-
   const clearCanvas = () => {
     const canvas = canvasReference.current;
     const context = canvas.getContext("2d");
@@ -129,11 +124,12 @@ function DrawingPage() {
     context.strokeStyle = colors[0];
     context.lineWidth = 5;
     contextReference.current = context;
+
+    clearCanvas();
   }, [colors]);
 
   useEffect(() => {
     const canvas = canvasReference.current;
-
     const preventDefault = (e) => e.preventDefault();
 
     canvas.addEventListener("touchstart", preventDefault, { passive: false });
@@ -149,6 +145,34 @@ function DrawingPage() {
 
   const setColor = (color) => {
     contextReference.current.strokeStyle = color;
+    contextReference.current.lineWidth = 5;
+    setLastColor(color);
+    setMode("pencil");
+  };
+
+  const setEraser = () => {
+    contextReference.current.strokeStyle = "white";
+    contextReference.current.lineWidth = 10;
+    setMode("eraser");
+  };
+
+  const handleDescribeDrawing = () => {
+    setShowTextInput(true);
+  };
+
+  const handleMagic = () => {
+    console.log("Magic button clicked");
+    // Implement your magic functionality here
+  };
+
+  const handleTextSubmit = () => {
+    const canvas = canvasReference.current;
+    const context = canvas.getContext("2d");
+    context.font = "20px Arial";
+    context.fillStyle = "black";
+    context.fillText(inputText, 50, 50); // Position text at 50, 50 for simplicity
+    setInputText("");
+    setShowTextInput(false);
   };
 
   return (
@@ -161,13 +185,18 @@ function DrawingPage() {
         height: "100vh",
       }}
     >
-      <h1>Drawing Page</h1>
       <button
         className="completeButton"
         onClick={uploadClick}
         style={{ margin: "10px", padding: "10px 20px" }}
       >
-        Complete
+        Upload
+      </button>
+      <button
+        onClick={clearCanvas}
+        style={{ margin: "10px", padding: "10px 20px" }}
+      >
+        Clear
       </button>
       <div className="DrawingPage">
         <canvas
@@ -178,9 +207,14 @@ function DrawingPage() {
           onTouchStart={beginDraw}
           onTouchMove={updateDraw}
           onTouchEnd={endDraw}
+          onMouseDown={beginDraw}
+          onMouseMove={updateDraw}
+          onMouseUp={endDraw}
+          onTouchStart={beginDraw}
+          onTouchMove={updateDraw}
+          onTouchEnd={endDraw}
         />
         <div className="buttons">
-          <button onClick={clearCanvas}>Clear</button>
           {colors.map((color) => (
             <button
               className="colorButtons"
@@ -191,6 +225,50 @@ function DrawingPage() {
           ))}
         </div>
       </div>
+      <div
+        className="tools"
+        style={{ display: "flex", gap: "10px", marginTop: "10px" }}
+      >
+        <button onClick={setEraser} style={{ width: "60px", height: "60px" }}>
+          Eraser
+        </button>
+        <button
+          onClick={() => setColor(lastColor)}
+          style={{ width: "60px", height: "60px" }}
+        >
+          Pencil
+        </button>
+        <button
+          onClick={handleDescribeDrawing}
+          style={{ width: "60px", height: "60px" }}
+        >
+          Describe Drawing
+        </button>
+      </div>
+      {showTextInput && (
+        <div
+          className="text-input"
+          style={{
+            display: "flex",
+            gap: "10px",
+            marginTop: "10px",
+            alignItems: "center",
+          }}
+        >
+          <input
+            type="text"
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            style={{ width: "200px", height: "30px" }}
+          />
+          <button
+            onClick={handleTextSubmit}
+            style={{ width: "60px", height: "60px" }}
+          >
+            Enhance
+          </button>
+        </div>
+      )}
     </div>
   );
 }
