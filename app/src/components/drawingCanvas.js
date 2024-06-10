@@ -5,21 +5,10 @@ import React, {
   useRef,
   useState,
 } from "react";
-import rough from "roughjs/bundled/rough.esm";
-import { useNavigate } from "react-router-dom";
-import "./DrawingPage.css";
+import "../pages/DrawingPage.css";
+import "../components/drawingCanvas";
 
-function DrawingPage() {
-  //for page switching
-  const navigate = useNavigate();
-  const uploadClick = () => {
-    // Ensure the /review route exists or update this to an existing route
-    // navigate("/review");
-    const canvas = canvasReference.current;
-    const base64Image = canvas.toDataURL("image/png");
-    navigate("/review", { state: { image: base64Image } });
-  };
-
+function DrawingCanvas() {
   const colors = useMemo(
     () => ["black", "red", "green", "orange", "blue", "purple"],
     []
@@ -91,8 +80,6 @@ function DrawingPage() {
     context.strokeStyle = colors[0];
     context.lineWidth = 5;
     contextReference.current = context;
-
-    clearCanvas();
   }, [colors]);
 
   //this use effect prevents the phone from scrolling when touch drawing on canvas
@@ -118,47 +105,29 @@ function DrawingPage() {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "100vh",
-      }}
-    >
-      <h1>Drawing Page</h1>
-      <button
-        className="completeButton"
-        onClick={uploadClick}
-        style={{ margin: "10px", padding: "10px 20px" }}
-      >
-        Complete
-      </button>
-      <div className="DrawingPage">
-        <canvas
-          ref={canvasReference}
-          onMouseDown={beginDraw} // When click down
-          onMouseMove={updateDraw} // When clicked and moving
-          onMouseUp={endDraw} // When click up/done
-          onTouchStart={beginDraw} // When touch starts
-          onTouchMove={updateDraw} // When touch moves
-          onTouchEnd={endDraw} // When touch ends
-        />
-        <div className="buttons">
-          <button onClick={clearCanvas}>Clear</button>
-          {colors.map((color) => (
-            <button
-              className="colorButtons"
-              key={color}
-              onClick={() => setColor(color)}
-              style={{ backgroundColor: color }}
-            ></button>
-          ))}
-        </div>
+    <div className="DrawingPage">
+      <canvas
+        ref={canvasReference}
+        onMouseDown={beginDraw} // When click down
+        onMouseMove={updateDraw} // When clicked and moving
+        onMouseUp={endDraw} // When click up/done
+        onTouchStart={beginDraw} // When touch starts
+        onTouchMove={updateDraw} // When touch moves
+        onTouchEnd={endDraw} // When touch ends
+      />
+      <div className="buttons">
+        <button onClick={clearCanvas}>Clear</button>
+        {colors.map((color) => (
+          <button
+            className="colorButtons"
+            key={color}
+            onClick={() => setColor(color)}
+            style={{ backgroundColor: color }}
+          ></button>
+        ))}
       </div>
     </div>
   );
 }
 
-export default DrawingPage;
+export default DrawingCanvas;
