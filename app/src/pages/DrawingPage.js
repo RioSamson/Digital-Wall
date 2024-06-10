@@ -1,6 +1,16 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import rough from "roughjs/bundled/rough.esm";
 import { useNavigate } from "react-router-dom";
 import "./DrawingPage.css";
+import { storage, db, auth } from "../firebase/firebase"; // Import Firestore and Auth
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { collection, addDoc, query, where, getDocs, updateDoc, doc } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 
 function DrawingPage() {
   const navigate = useNavigate();
@@ -14,8 +24,50 @@ function DrawingPage() {
 
   const uploadClick = () => {
     const canvas = canvasReference.current;
-    const base64Image = canvas.toDataURL("image/png");
-    navigate("/review", { state: { image: base64Image } });
+    canvas.toBlob((blob) => {
+      if (blob) {
+        const storageRef = ref(storage, `drawing/${Date.now()}.png`);
+        uploadBytes(storageRef, blob).then((snapshot) => {
+          getDownloadURL(snapshot.ref).then((url) => {
+            onAuthStateChanged(auth, async (user) => {
+              if (user) {
+                const email = user.email;
+
+                const drawingsCollection = collection(db, "drawing");
+                const q = query(drawingsCollection, where("email", "==", email));
+                const querySnapshot = await getDocs(q);
+
+                if (!querySnapshot.empty) {
+                  // Update existing document
+                  console.log("this is an existing account")
+                  const docId = querySnapshot.docs[0].id;
+                  const docRef = doc(db, "drawing", docId);
+                  const existingDrawings = querySnapshot.docs[0].data().drawings;
+
+                  await updateDoc(docRef, {
+                    drawings: [...existingDrawings, url],
+                    updatedAt: new Date()
+                  });
+                  console.log("Document successfully updated!");
+                } else {
+                  // Create new document
+                  await addDoc(drawingsCollection, {
+                    email: email,
+                    drawings: [url],
+                    createdAt: new Date()
+                  });
+                  console.log("Document successfully created!");
+                }
+
+                navigate("/review", { state: { image: url } });
+              } else {
+                console.log("No user is signed in.");
+              }
+            });
+          });
+        });
+      }
+    }, "image/png");
   };
 
   const colors = useMemo(
@@ -46,7 +98,7 @@ function DrawingPage() {
     setIsPressed(true);
   };
 
-  const endDraw = () => {
+  const endDraw = (e) => {
     contextReference.current.closePath();
     setIsPressed(false);
   };
@@ -156,6 +208,12 @@ function DrawingPage() {
       <div className="DrawingPage">
         <canvas
           ref={canvasReference}
+          onMouseDown={beginDraw}
+          onMouseMove={updateDraw}
+          onMouseUp={endDraw}
+          onTouchStart={beginDraw}
+          onTouchMove={updateDraw}
+          onTouchEnd={endDraw}
           onMouseDown={beginDraw}
           onMouseMove={updateDraw}
           onMouseUp={endDraw}

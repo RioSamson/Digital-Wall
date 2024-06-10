@@ -22,6 +22,6 @@ const auth = getAuth(app)
 // Initialize Cloud Firestore and get a reference to the service
 const db = getFirestore(app);
 
-const imageDb = getStorage(app)
+const storage = getStorage(app)
 
-export {app, auth , db, imageDb};
+export {app, auth , db, storage};
