@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { doSignInWithEmailAndPassword, doCreateUserWithEmailAndPassword } from '../firebase/auth';
 import { useAuth } from '../contexts/authContext';
+import { doc, setDoc, getFirestore, serverTimestamp } from "firebase/firestore";
 
 export default function RegisterPage() {
     const { userLoggedIn } = useAuth();
@@ -10,13 +11,20 @@ export default function RegisterPage() {
     const [isSigningIn, setIsSigningIn] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
-  
+    const db = getFirestore();
   
     const handleSignup = async () => {
       if (!isSigningIn) {
         setIsSigningIn(true);
         try {
           await doCreateUserWithEmailAndPassword(email, password);
+          // Create user document in Firestore after successful registration
+          await setDoc(doc(db, "Users", email), {
+            email: email,
+            role: "Drawer",
+            CreatedOn: serverTimestamp(),
+            LastActivity: serverTimestamp()
+          });
           navigate('/gallery');
         } catch (error) {
           setErrorMessage(error.message);
@@ -41,7 +49,7 @@ export default function RegisterPage() {
           placeholder="Enter your password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          style={{ margin: '10px', padding: '10px', width: '300px' }}
+          style={{ margin: '10px', padding: '10px', width: '300bs' }}
         />
         {errorMessage && (
           <div style={{ color: 'red', margin: '10px' }}>
