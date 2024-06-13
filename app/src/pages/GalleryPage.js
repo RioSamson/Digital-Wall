@@ -23,31 +23,36 @@ function GalleryPage() {
   };
 
   const getDrawings = async () => {
-    const querySnapshot = await getDocs(collection(db, "drawing"));
-    if (querySnapshot.empty) {
-      console.log("No matching documents.");
-    } else {
-      //reading the drawings from DB
-      const drawings = await Promise.all(
-        querySnapshot.docs.map(async (doc) => {
-          const data = doc.data();
-          const dataEmail = data.email;
-
-          if (dataEmail === currentUser.email) {
-            const urls = data.drawings;
-            return urls; // Return the array of URLs
-          } else {
-            console.log("Email is different");
-            return null;
-          }
-        })
-      );
-
-      // Filter out any null values and flatten the array of arrays
-      const filteredDrawings = drawings.filter((urls) => urls !== null).flat();
-      setPrevDrawing(filteredDrawings);
+    try {
+      const querySnapshot = await getDocs(collection(db, "Drawings"));
+      if (querySnapshot.empty) {
+        console.log("No matching documents.");
+      } else {
+        const drawings = querySnapshot.docs
+          .map((doc) => {
+            const data = doc.data();
+            const enhancedDrawings = data.enhanced_drawings;
+            const email = data?.user_id?.id;
+            console.log("user id is ", email);
+            if (currentUser.email === email) {
+              if (enhancedDrawings && enhancedDrawings.length > 0) {
+                return enhancedDrawings[enhancedDrawings.length - 1];
+              } else {
+                console.log("Nothing found");
+                return null;
+              }
+            } else {
+              return null;
+            }
+          })
+          .filter((url) => url !== null);
+        setPrevDrawing(drawings);
+      }
+    } catch (error) {
+      console.error("Error getting drawings:", error);
     }
   };
+  
 
   useEffect(() => {
     getDrawings();

@@ -13,6 +13,7 @@ import LandingPage from "./pages/LandingPage";
 import { AuthProvider } from "./contexts/authContext";
 import SceneSelectorPage from "./pages/SceneSelectorPage";
 import SceneAreaSelector from "./pages/SceneAreaSelectorPage";
+import DrawOrGalleryPage from './pages/DrawOrGalleryPage'
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -29,6 +30,7 @@ root.render(
           <Route path="landing" element={<LandingPage />} />
           <Route path="SceneSelect" element={<SceneSelectorPage />} />
           <Route path="SceneAreaSelect" element={<SceneAreaSelector />} />
+          <Route path="selection" element={<DrawOrGalleryPage />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

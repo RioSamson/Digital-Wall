@@ -7,7 +7,7 @@ import React, {
 import rough from "roughjs/bundled/rough.esm";
 import { useNavigate } from "react-router-dom";
 import "./DrawingPage.css";
-import { storage, db, auth } from "../firebase/firebase"; // Import Firestore and Auth
+import { storage, db, auth } from "../firebase/firebase"; 
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { collection, addDoc, query, where, getDocs, updateDoc, doc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
@@ -22,54 +22,42 @@ function DrawingPage() {
   const [showTextInput, setShowTextInput] = useState(false);
   const [inputText, setInputText] = useState("");
 
-  const uploadClick = () => {
+  const uploadDrawing = async () => {
     const canvas = canvasReference.current;
-    canvas.toBlob((blob) => {
-      if (blob) {
-        const storageRef = ref(storage, `drawing/${Date.now()}.png`);
-        uploadBytes(storageRef, blob).then((snapshot) => {
-          getDownloadURL(snapshot.ref).then((url) => {
-            onAuthStateChanged(auth, async (user) => {
-              if (user) {
-                const email = user.email;
-
-                const drawingsCollection = collection(db, "drawing");
-                const q = query(drawingsCollection, where("email", "==", email));
-                const querySnapshot = await getDocs(q);
-
-                if (!querySnapshot.empty) {
-                  // Update existing document
-                  console.log("this is an existing account")
-                  const docId = querySnapshot.docs[0].id;
-                  const docRef = doc(db, "drawing", docId);
-                  const existingDrawings = querySnapshot.docs[0].data().drawings;
-
-                  await updateDoc(docRef, {
-                    drawings: [...existingDrawings, url],
-                    updatedAt: new Date()
-                  });
-                  console.log("Document successfully updated!");
-                } else {
-                  // Create new document
-                  await addDoc(drawingsCollection, {
-                    email: email,
-                    drawings: [url],
-                    createdAt: new Date()
-                  });
-                  console.log("Document successfully created!");
-                }
-
-                navigate("/review", { state: { image: url } });
-              } else {
-                console.log("No user is signed in.");
-              }
-            });
-          });
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    if (!blob) return;
+  
+    let originalUrl = "", enhancedUrl = "";
+    const uploadImage = async (path, imageBlob) => {
+      const storageRef = ref(storage, path);
+      const snapshot = await uploadBytes(storageRef, imageBlob);
+      return getDownloadURL(snapshot.ref);
+    };
+  
+    originalUrl = await uploadImage(`drawing/original-${Date.now()}.png`, blob);
+    enhancedUrl = await uploadImage(`drawing/enhanced-${Date.now()}.png`, blob); 
+  
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const drawingsCollection = collection(db, "Drawings");
+        const userRef = doc(db, "Users", user.email); 
+        const themeRef = doc(db, "Themes", "qZ1mMqOE3yqrUYtimAbE");
+  
+        await addDoc(drawingsCollection, {
+          created_at: new Date(),
+          original_drawing: originalUrl,
+          enhanced_drawings: [enhancedUrl],
+          user_id: userRef,
+          theme_id: themeRef
         });
+  
+        console.log("Document successfully created!");
+        navigate("/review", { state: { image: originalUrl } });
+      } else {
+        console.log("No user is signed in.");
       }
-    }, "image/png");
+    });
   };
-
   const colors = useMemo(
     () => ["black", "red", "green", "orange", "blue", "purple"],
     []
@@ -194,7 +182,7 @@ function DrawingPage() {
     >
       <button
         className="completeButton"
-        onClick={uploadClick}
+        onClick={uploadDrawing}
         style={{ margin: "10px", padding: "10px 20px" }}
       >
         Upload
@@ -214,12 +202,12 @@ function DrawingPage() {
           onTouchStart={beginDraw}
           onTouchMove={updateDraw}
           onTouchEnd={endDraw}
-          onMouseDown={beginDraw}
-          onMouseMove={updateDraw}
-          onMouseUp={endDraw}
-          onTouchStart={beginDraw}
-          onTouchMove={updateDraw}
-          onTouchEnd={endDraw}
+          // onMouseDown={beginDraw}
+          // onMouseMove={updateDraw}
+          // onMouseUp={endDraw}
+          // onTouchStart={beginDraw}
+          // onTouchMove={updateDraw}
+          // onTouchEnd={endDraw}
         />
         <div className="buttons">
           {colors.map((color) => (

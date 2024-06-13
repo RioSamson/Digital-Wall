@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { doSignInWithEmailAndPassword, doCreateUserWithEmailAndPassword } from '../firebase/auth';
 import { useAuth } from '../contexts/authContext';
+import { doc, updateDoc, getFirestore, serverTimestamp } from "firebase/firestore";
 
 export default function LoginPage() {
   const { userLoggedIn } = useAuth();
@@ -10,13 +11,19 @@ export default function LoginPage() {
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
+  const db = getFirestore(); 
 
   const handleLogin = async () => {
     if (!isSigningIn) {
       setIsSigningIn(true);
       try {
         await doSignInWithEmailAndPassword(email, password);
-        navigate('/gallery');
+        // Update LastActivity on successful login
+        const userRef = doc(db, "Users", email);
+        await updateDoc(userRef, {
+          LastActivity: serverTimestamp()
+        });
+        navigate('/selection');
       } catch (error) {
         setErrorMessage(error.message);
       } finally {

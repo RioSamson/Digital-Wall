@@ -1,17 +1,35 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import forestScene from "../assets/forestScene.png";
-import loginScene from "../assets/login.png";
+import { db } from "../firebase/firebase"; 
+import { collection, getDocs } from "firebase/firestore";
 
 function SceneSelector() {
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(null);
+  const [scenes, setScenes] = useState([]);
 
-  const scenes = [
-    { id: "scene1", name: "Scene 1", imageUrl: forestScene, clickable: true },
-    { id: "scene2", name: "Scene 2", imageUrl: loginScene, clickable: false },
-    // Add more scenes as needed, with imported image references
-  ];
+  useEffect(() => {
+    getThemes();
+  }, []);
+
+  const getThemes = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "Themes"));
+      if (querySnapshot.empty) {
+        console.log("No matching documents.");
+      } else {
+        const themes = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          name: doc.data().Name,
+          imageUrl: doc.data().background_img,
+          clickable: true
+        }));
+        setScenes(themes);
+      }
+    } catch (error) {
+      console.error("Error getting themes:", error);
+    }
+  };
 
   const handleSceneSelect = (scene) => {
     if (scene.clickable) {
@@ -61,14 +79,7 @@ function SceneSelector() {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        padding: "20px",
-      }}
-    >
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "20px" }}>
       <h1>Select a Scene</h1>
       <div style={sceneGridStyle}>
         {scenes.map((scene) => (
@@ -87,22 +98,6 @@ function SceneSelector() {
               alt={scene.name}
               style={sceneImageStyle}
             />
-            {hovered === scene.id && !scene.clickable && (
-              <div
-                style={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                  backgroundColor: "rgba(0, 0, 0, 0.7)",
-                  color: "white",
-                  padding: "10px",
-                  borderRadius: "5px",
-                }}
-              >
-                Coming soon
-              </div>
-            )}
             <p>{scene.name}</p>
           </div>
         ))}
