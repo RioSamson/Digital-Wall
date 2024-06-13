@@ -35,13 +35,13 @@ function DrawingPage() {
     };
   
     originalUrl = await uploadImage(`drawing/original-${Date.now()}.png`, blob);
-    enhancedUrl = await uploadImage(`drawing/enhanced-${Date.now()}.png`, blob); // Assuming enhancement is a separate process you manage
+    enhancedUrl = await uploadImage(`drawing/enhanced-${Date.now()}.png`, blob); 
   
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         const drawingsCollection = collection(db, "Drawings");
-        const userRef = doc(db, "Users", user.email); // Reference to the Users collection document
-        const themeRef = doc(db, "Themes", "qZ1mMqOE3yqrUYtimAbE"); // Reference to the Themes collection document
+        const userRef = doc(db, "Users", user.email); 
+        const themeRef = doc(db, "Themes", "qZ1mMqOE3yqrUYtimAbE");
   
         await addDoc(drawingsCollection, {
           created_at: new Date(),
