@@ -26,27 +26,31 @@ function DrawingPage() {
     const canvas = canvasReference.current;
     const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
     if (!blob) return;
-
+  
     let originalUrl = "", enhancedUrl = "";
     const uploadImage = async (path, imageBlob) => {
       const storageRef = ref(storage, path);
       const snapshot = await uploadBytes(storageRef, imageBlob);
       return getDownloadURL(snapshot.ref);
     };
-
+  
     originalUrl = await uploadImage(`drawing/original-${Date.now()}.png`, blob);
-    enhancedUrl = await uploadImage(`drawing/enhanced-${Date.now()}.png`, blob);
-
+    enhancedUrl = await uploadImage(`drawing/enhanced-${Date.now()}.png`, blob); // Assuming enhancement is a separate process you manage
+  
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         const drawingsCollection = collection(db, "Drawings");
+        const userRef = doc(db, "Users", user.email); // Reference to the Users collection document
+        const themeRef = doc(db, "Themes", "qZ1mMqOE3yqrUYtimAbE"); // Reference to the Themes collection document
+  
         await addDoc(drawingsCollection, {
           created_at: new Date(),
           original_drawing: originalUrl,
           enhanced_drawings: [enhancedUrl],
-          user_id: user.email,
-          theme_id: "qZ1mMqOE3yqrUYtimAbE"
+          user_id: userRef,
+          theme_id: themeRef
         });
+  
         console.log("Document successfully created!");
         navigate("/review", { state: { image: originalUrl } });
       } else {
@@ -54,7 +58,6 @@ function DrawingPage() {
       }
     });
   };
-
   const colors = useMemo(
     () => ["black", "red", "green", "orange", "blue", "purple"],
     []
@@ -199,12 +202,12 @@ function DrawingPage() {
           onTouchStart={beginDraw}
           onTouchMove={updateDraw}
           onTouchEnd={endDraw}
-          onMouseDown={beginDraw}
-          onMouseMove={updateDraw}
-          onMouseUp={endDraw}
-          onTouchStart={beginDraw}
-          onTouchMove={updateDraw}
-          onTouchEnd={endDraw}
+          // onMouseDown={beginDraw}
+          // onMouseMove={updateDraw}
+          // onMouseUp={endDraw}
+          // onTouchStart={beginDraw}
+          // onTouchMove={updateDraw}
+          // onTouchEnd={endDraw}
         />
         <div className="buttons">
           {colors.map((color) => (
