@@ -23,7 +23,7 @@ export default function LoginPage() {
         await updateDoc(userRef, {
           LastActivity: serverTimestamp()
         });
-        navigate('/gallery');
+        navigate('/selection');
       } catch (error) {
         setErrorMessage(error.message);
       } finally {
