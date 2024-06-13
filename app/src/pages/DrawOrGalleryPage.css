@@ -1,0 +1,29 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .full-screen-button {
+    width: 80%;
+    height: 45%;
+    position: relative;
+    border: none;
+    cursor: pointer;
+    padding: 50;
+    margin-bottom: 50;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: none;
+  }
+  
+  .button-image {
+    width: 90%;
+    height: 90%;
+    object-fit: cover;
+    border-radius: 10%;
+  }
+  

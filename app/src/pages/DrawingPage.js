@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import rough from "roughjs/bundled/rough.esm";
 import { useNavigate } from "react-router-dom";
 import "./DrawingPage.css";
-import { storage, db, auth } from "../firebase/firebase"; // Import Firestore and Auth
+import { storage, db, auth } from "../firebase/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import {
   collection,
@@ -25,58 +25,45 @@ function DrawingPage() {
   const [showTextInput, setShowTextInput] = useState(false);
   const [inputText, setInputText] = useState("");
 
-  const uploadClick = () => {
+  const uploadDrawing = async () => {
     const canvas = canvasReference.current;
-    canvas.toBlob((blob) => {
-      if (blob) {
-        const storageRef = ref(storage, `drawing/${Date.now()}.png`);
-        uploadBytes(storageRef, blob).then((snapshot) => {
-          getDownloadURL(snapshot.ref).then((url) => {
-            onAuthStateChanged(auth, async (user) => {
-              if (user) {
-                const email = user.email;
+    const blob = await new Promise((resolve) =>
+      canvas.toBlob(resolve, "image/png")
+    );
+    if (!blob) return;
 
-                const drawingsCollection = collection(db, "drawing");
-                const q = query(
-                  drawingsCollection,
-                  where("email", "==", email)
-                );
-                const querySnapshot = await getDocs(q);
+    let originalUrl = "",
+      enhancedUrl = "";
+    const uploadImage = async (path, imageBlob) => {
+      const storageRef = ref(storage, path);
+      const snapshot = await uploadBytes(storageRef, imageBlob);
+      return getDownloadURL(snapshot.ref);
+    };
 
-                if (!querySnapshot.empty) {
-                  // Update existing document
-                  console.log("this is an existing account");
-                  const docId = querySnapshot.docs[0].id;
-                  const docRef = doc(db, "drawing", docId);
-                  const existingDrawings =
-                    querySnapshot.docs[0].data().drawings;
+    originalUrl = await uploadImage(`drawing/original-${Date.now()}.png`, blob);
+    enhancedUrl = await uploadImage(`drawing/enhanced-${Date.now()}.png`, blob);
 
-                  await updateDoc(docRef, {
-                    drawings: [...existingDrawings, url],
-                    updatedAt: new Date(),
-                  });
-                  console.log("Document successfully updated!");
-                } else {
-                  // Create new document
-                  await addDoc(drawingsCollection, {
-                    email: email,
-                    drawings: [url],
-                    createdAt: new Date(),
-                  });
-                  console.log("Document successfully created!");
-                }
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const drawingsCollection = collection(db, "Drawings");
+        const userRef = doc(db, "Users", user.email);
+        const themeRef = doc(db, "Themes", "qZ1mMqOE3yqrUYtimAbE");
 
-                navigate("/review", { state: { image: url } });
-              } else {
-                console.log("No user is signed in.");
-              }
-            });
-          });
+        await addDoc(drawingsCollection, {
+          created_at: new Date(),
+          original_drawing: originalUrl,
+          enhanced_drawings: [enhancedUrl],
+          user_id: userRef,
+          theme_id: themeRef,
         });
-      }
-    }, "image/png");
-  };
 
+        console.log("Document successfully created!");
+        navigate("/review", { state: { image: originalUrl } });
+      } else {
+        console.log("No user is signed in.");
+      }
+    });
+  };
   const colors = useMemo(
     () => ["black", "red", "green", "orange", "blue", "purple"],
     []
@@ -201,7 +188,7 @@ function DrawingPage() {
     >
       <button
         className="completeButton"
-        onClick={uploadClick}
+        onClick={uploadDrawing}
         style={{ margin: "10px", padding: "10px 20px" }}
       >
         Upload
