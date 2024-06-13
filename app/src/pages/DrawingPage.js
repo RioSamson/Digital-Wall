@@ -1,15 +1,18 @@
-import React, {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import rough from "roughjs/bundled/rough.esm";
 import { useNavigate } from "react-router-dom";
 import "./DrawingPage.css";
 import { storage, db, auth } from "../firebase/firebase"; // Import Firestore and Auth
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { collection, addDoc, query, where, getDocs, updateDoc, doc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 
 function DrawingPage() {
@@ -34,19 +37,23 @@ function DrawingPage() {
                 const email = user.email;
 
                 const drawingsCollection = collection(db, "drawing");
-                const q = query(drawingsCollection, where("email", "==", email));
+                const q = query(
+                  drawingsCollection,
+                  where("email", "==", email)
+                );
                 const querySnapshot = await getDocs(q);
 
                 if (!querySnapshot.empty) {
                   // Update existing document
-                  console.log("this is an existing account")
+                  console.log("this is an existing account");
                   const docId = querySnapshot.docs[0].id;
                   const docRef = doc(db, "drawing", docId);
-                  const existingDrawings = querySnapshot.docs[0].data().drawings;
+                  const existingDrawings =
+                    querySnapshot.docs[0].data().drawings;
 
                   await updateDoc(docRef, {
                     drawings: [...existingDrawings, url],
-                    updatedAt: new Date()
+                    updatedAt: new Date(),
                   });
                   console.log("Document successfully updated!");
                 } else {
@@ -54,7 +61,7 @@ function DrawingPage() {
                   await addDoc(drawingsCollection, {
                     email: email,
                     drawings: [url],
-                    createdAt: new Date()
+                    createdAt: new Date(),
                   });
                   console.log("Document successfully created!");
                 }
@@ -208,12 +215,6 @@ function DrawingPage() {
       <div className="DrawingPage">
         <canvas
           ref={canvasReference}
-          onMouseDown={beginDraw}
-          onMouseMove={updateDraw}
-          onMouseUp={endDraw}
-          onTouchStart={beginDraw}
-          onTouchMove={updateDraw}
-          onTouchEnd={endDraw}
           onMouseDown={beginDraw}
           onMouseMove={updateDraw}
           onMouseUp={endDraw}
