@@ -9,7 +9,7 @@ function ReviewPage() {
   useEffect(() => {
     if (image) {
       const sendImageToServer = async () => {
-        const url = "/model_versions/q48rmd3/predict"; // Relative URL
+        const url = "https://app.baseten.co/model_versions/q48rmd3/predict"; // Relative URL
         const headers = {
           Authorization: "Api-Key 13235osK.AVglR2jVhzMHR1txMuFJCD49TEmV6FXY",
           "Content-Type": "application/json",
