@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import rough from "roughjs/bundled/rough.esm";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./DrawingPage.css";
 import { storage, db, auth } from "../firebase/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -17,6 +17,7 @@ import { onAuthStateChanged } from "firebase/auth";
 
 function DrawingPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const canvasReference = useRef(null);
   const contextReference = useRef(null);
   const [isPressed, setIsPressed] = useState(false);
@@ -24,6 +25,7 @@ function DrawingPage() {
   const [mode, setMode] = useState("pencil");
   const [showTextInput, setShowTextInput] = useState(false);
   const [inputText, setInputText] = useState("");
+  const { selectedScene, imageUrl } = location.state || {};
 
   const uploadDrawing = async () => {
     const canvas = canvasReference.current;
@@ -47,7 +49,7 @@ function DrawingPage() {
       if (user) {
         const drawingsCollection = collection(db, "Drawings");
         const userRef = doc(db, "Users", user.email);
-        const themeRef = doc(db, "Themes", "qZ1mMqOE3yqrUYtimAbE");
+        const themeRef = doc(db, "Themes", selectedScene);
 
         await addDoc(drawingsCollection, {
           created_at: new Date(),
