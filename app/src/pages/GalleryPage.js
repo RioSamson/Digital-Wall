@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/authContext";
 import { auth, db } from "../firebase/firebase";
 import { collection, getDocs } from "firebase/firestore";
@@ -8,6 +8,8 @@ function GalleryPage() {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const [prevDrawing, setPrevDrawing] = useState([]);
+  const location = useLocation();
+  const { selectedScene, imageUrl } = location.state || {};
 
   const handleDraw = () => {
     navigate("/SceneSelect");
@@ -22,7 +24,7 @@ function GalleryPage() {
     }
   };
 
-  const getDrawings = async () => {
+  const getDrawings = async (selectedScene) => {
     try {
       const querySnapshot = await getDocs(collection(db, "Drawings"));
       if (querySnapshot.empty) {
@@ -33,8 +35,9 @@ function GalleryPage() {
             const data = doc.data();
             const enhancedDrawings = data.enhanced_drawings;
             const email = data?.user_id?.id;
-            console.log("user id is ", email);
-            if (currentUser.email === email) {
+            const themeId = data?.theme_id?.id;
+
+            if (currentUser.email === email && themeId === selectedScene) {
               if (enhancedDrawings && enhancedDrawings.length > 0) {
                 return enhancedDrawings[enhancedDrawings.length - 1];
               } else {
@@ -55,7 +58,7 @@ function GalleryPage() {
   
 
   useEffect(() => {
-    getDrawings();
+    getDrawings(selectedScene);
   }, []);
 
   return (
