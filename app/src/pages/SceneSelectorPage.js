@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { db } from "../firebase/firebase"; 
+import { useNavigate, useLocation } from "react-router-dom";
+import { db } from "../firebase/firebase";
 import { collection, getDocs } from "firebase/firestore";
 
 function SceneSelector() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { mode } = location.state || {};
   const [hovered, setHovered] = useState(null);
   const [scenes, setScenes] = useState([]);
 
@@ -22,7 +24,7 @@ function SceneSelector() {
           id: doc.id,
           name: doc.data().Name,
           imageUrl: doc.data().background_img,
-          clickable: true
+          clickable: true,
         }));
         setScenes(themes);
       }
@@ -33,9 +35,15 @@ function SceneSelector() {
 
   const handleSceneSelect = (scene) => {
     if (scene.clickable) {
-      navigate("/SceneAreaSelect", {
-        state: { selectedScene: scene.id, imageUrl: scene.imageUrl },
-      });
+      if (mode === "drawing") {
+        navigate("/SceneAreaSelect", {
+          state: { selectedScene: scene.id, imageUrl: scene.imageUrl },
+        });
+      } else if (mode === "gallery") {
+        navigate("/gallery", {
+          state: { selectedScene: scene.id, imageUrl: scene.imageUrl },
+        });
+      }
     }
   };
 
@@ -79,7 +87,14 @@ function SceneSelector() {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "20px" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        padding: "20px",
+      }}
+    >
       <h1>Select a Scene</h1>
       <div style={sceneGridStyle}>
         {scenes.map((scene) => (
