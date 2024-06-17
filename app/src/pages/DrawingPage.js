@@ -34,8 +34,7 @@ function DrawingPage() {
     );
     if (!blob) return;
 
-    let originalUrl = "",
-      enhancedUrl = "";
+    let originalUrl = "", enhancedUrl = "";
     const uploadImage = async (path, imageBlob) => {
       const storageRef = ref(storage, path);
       const snapshot = await uploadBytes(storageRef, imageBlob);
@@ -45,27 +44,32 @@ function DrawingPage() {
     originalUrl = await uploadImage(`drawing/original-${Date.now()}.png`, blob);
     enhancedUrl = await uploadImage(`drawing/enhanced-${Date.now()}.png`, blob);
 
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const drawingsCollection = collection(db, "Drawings");
-        const userRef = doc(db, "Users", user.email);
-        const themeRef = doc(db, "Themes", selectedScene);
+    const currentUser = auth.currentUser;
+    const drawingsCollection = collection(db, "Drawings");
+    const themeRef = doc(db, "Themes", selectedScene);
 
-        await addDoc(drawingsCollection, {
-          created_at: new Date(),
-          original_drawing: originalUrl,
-          enhanced_drawings: [enhancedUrl],
-          user_id: userRef,
-          theme_id: themeRef,
-        });
+    let userRef;
+    if (currentUser) {
+        userRef = doc(db, "Users", currentUser.email); 
+    } else {
+        userRef = doc(db, "Users", "guest"); 
+    }
 
-        console.log("Document successfully created!");
-        navigate("/review", { state: { image: originalUrl } });
-      } else {
-        console.log("No user is signed in.");
-      }
-    });
-  };
+    const drawingData = {
+         created_at: new Date(),
+        original_drawing: originalUrl,
+        enhanced_drawings: [enhancedUrl],
+        user_id: userRef,
+        theme_id: themeRef,
+        email: currentUser ? currentUser.email : "guest"
+    };
+
+    await addDoc(drawingsCollection, drawingData);
+
+    console.log("Document successfully created!");
+    navigate("/review", { state: { image: originalUrl } });
+};
+
   const colors = useMemo(
     () => ["black", "red", "green", "orange", "blue", "purple"],
     []
