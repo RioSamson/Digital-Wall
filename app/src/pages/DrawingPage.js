@@ -13,7 +13,9 @@ import {
   updateDoc,
   doc,
 } from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth";
+import penImage from "../assets/pen.png";
+import eraserImage from "../assets/eraser.png";
+
 
 function DrawingPage() {
   const navigate = useNavigate();
@@ -230,15 +232,30 @@ function DrawingPage() {
         className="tools"
         style={{ display: "flex", gap: "10px", marginTop: "10px" }}
       >
-        <button onClick={setEraser} style={{ width: "60px", height: "60px" }}>
-          Eraser
+        <button
+      onClick={() => setEraser()}
+    style={{
+      width: "60px",
+      height: "60px",
+      padding: "10px",
+      background: `url(${eraserImage}) no-repeat center center`,
+      backgroundSize: "cover",
+      border: "none"
+    }}
+  >
         </button>
         <button
-          onClick={() => setColor(lastColor)}
-          style={{ width: "60px", height: "60px" }}
-        >
-          Pencil
-        </button>
+    onClick={() => setColor(lastColor)}
+    style={{
+      width: "60px",
+      height: "60px",
+      padding: "10px",
+      background: `url(${penImage}) no-repeat center center`,
+      backgroundSize: "cover",
+      border: "none"
+    }}
+  >
+  </button>
         <button
           onClick={handleDescribeDrawing}
           style={{ width: "60px", height: "60px" }}
