@@ -95,8 +95,8 @@ function SceneSelector() {
         padding: "20px",
       }}
     >
-      <h1>Select a Scene</h1>
-      <div style={sceneGridStyle}>
+    <h1>{mode === 'drawing' ? 'Pick a theme to draw on!' : 'View your previous drawings'}</h1>
+    <div style={sceneGridStyle}>
         {scenes.map((scene) => (
           <div
             key={scene.id}

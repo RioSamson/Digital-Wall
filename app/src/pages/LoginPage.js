@@ -35,10 +35,10 @@ export default function LoginPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-      <h1>Login</h1>
+      <h1>ArtSpark</h1>
       <input
         type="email"
-        placeholder="Enter your email"
+        placeholder="Email*"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         style={{ margin: '10px', padding: '10px', width: '300px' }}

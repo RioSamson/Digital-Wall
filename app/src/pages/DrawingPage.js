@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import rough from "roughjs/bundled/rough.esm";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./DrawingPage.css";
 import { storage, db, auth } from "../firebase/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -13,10 +13,13 @@ import {
   updateDoc,
   doc,
 } from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth";
+import penImage from "../assets/pen.png";
+import eraserImage from "../assets/eraser.png";
+
 
 function DrawingPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const canvasReference = useRef(null);
   const contextReference = useRef(null);
   const [isPressed, setIsPressed] = useState(false);
@@ -24,6 +27,7 @@ function DrawingPage() {
   const [mode, setMode] = useState("pencil");
   const [showTextInput, setShowTextInput] = useState(false);
   const [inputText, setInputText] = useState("");
+  const { selectedScene, imageUrl } = location.state || {};
 
   const uploadDrawing = async () => {
     const canvas = canvasReference.current;
@@ -32,8 +36,7 @@ function DrawingPage() {
     );
     if (!blob) return;
 
-    let originalUrl = "",
-      enhancedUrl = "";
+    let originalUrl = "", enhancedUrl = "";
     const uploadImage = async (path, imageBlob) => {
       const storageRef = ref(storage, path);
       const snapshot = await uploadBytes(storageRef, imageBlob);
@@ -43,27 +46,32 @@ function DrawingPage() {
     originalUrl = await uploadImage(`drawing/original-${Date.now()}.png`, blob);
     enhancedUrl = await uploadImage(`drawing/enhanced-${Date.now()}.png`, blob);
 
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const drawingsCollection = collection(db, "Drawings");
-        const userRef = doc(db, "Users", user.email);
-        const themeRef = doc(db, "Themes", "qZ1mMqOE3yqrUYtimAbE");
+    const currentUser = auth.currentUser;
+    const drawingsCollection = collection(db, "Drawings");
+    const themeRef = doc(db, "Themes", selectedScene);
 
-        await addDoc(drawingsCollection, {
-          created_at: new Date(),
-          original_drawing: originalUrl,
-          enhanced_drawings: [enhancedUrl],
-          user_id: userRef,
-          theme_id: themeRef,
-        });
+    let userRef;
+    if (currentUser) {
+        userRef = doc(db, "Users", currentUser.email); 
+    } else {
+        userRef = doc(db, "Users", "guest"); 
+    }
 
-        console.log("Document successfully created!");
-        navigate("/review", { state: { image: originalUrl } });
-      } else {
-        console.log("No user is signed in.");
-      }
-    });
-  };
+    const drawingData = {
+         created_at: new Date(),
+        original_drawing: originalUrl,
+        enhanced_drawings: [enhancedUrl],
+        user_id: userRef,
+        theme_id: themeRef,
+        email: currentUser ? currentUser.email : "guest"
+    };
+
+    await addDoc(drawingsCollection, drawingData);
+
+    console.log("Document successfully created!");
+    navigate("/review", { state: { image: originalUrl } });
+};
+
   const colors = useMemo(
     () => ["black", "red", "green", "orange", "blue", "purple"],
     []
@@ -224,15 +232,30 @@ function DrawingPage() {
         className="tools"
         style={{ display: "flex", gap: "10px", marginTop: "10px" }}
       >
-        <button onClick={setEraser} style={{ width: "60px", height: "60px" }}>
-          Eraser
+        <button
+      onClick={() => setEraser()}
+    style={{
+      width: "60px",
+      height: "60px",
+      padding: "10px",
+      background: `url(${eraserImage}) no-repeat center center`,
+      backgroundSize: "cover",
+      border: "none"
+    }}
+  >
         </button>
         <button
-          onClick={() => setColor(lastColor)}
-          style={{ width: "60px", height: "60px" }}
-        >
-          Pencil
-        </button>
+    onClick={() => setColor(lastColor)}
+    style={{
+      width: "60px",
+      height: "60px",
+      padding: "10px",
+      background: `url(${penImage}) no-repeat center center`,
+      backgroundSize: "cover",
+      border: "none"
+    }}
+  >
+  </button>
         <button
           onClick={handleDescribeDrawing}
           style={{ width: "60px", height: "60px" }}
