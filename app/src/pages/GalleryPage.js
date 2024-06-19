@@ -6,13 +6,14 @@ import { collection, getDocs } from "firebase/firestore";
 
 function GalleryPage() {
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
-  const [prevDrawing, setPrevDrawing] = useState([]);
   const location = useLocation();
   const { selectedScene, imageUrl } = location.state || {};
+  const { currentUser } = useAuth();
+  const [prevDrawing, setPrevDrawing] = useState([]);
+  const [selectedImage, setSelectedImage] = useState(null);
 
-  const handleDraw = () => {
-    navigate("/SceneSelect");
+  const handleDisplay = () => {
+    navigate("/display", { state: { selectedScene, imageUrl } });
   };
 
   const handleLogout = async () => {
@@ -55,11 +56,18 @@ function GalleryPage() {
       console.error("Error getting drawings:", error);
     }
   };
-  
 
   useEffect(() => {
     getDrawings(selectedScene);
   }, []);
+
+  const handleImageClick = (url) => {
+    setSelectedImage(url);
+  };
+
+  const closeModal = () => {
+    setSelectedImage(null);
+  };
 
   return (
     <div
@@ -119,7 +127,9 @@ function GalleryPage() {
                 alignItems: "center",
                 justifyContent: "center",
                 border: "1px solid #ccc",
+                cursor: "pointer",
               }}
+              onClick={() => handleImageClick(url)}
             >
               <img
                 src={url}
@@ -133,11 +143,59 @@ function GalleryPage() {
         )}
       </div>
       <button
-        onClick={handleDraw}
+        onClick={handleDisplay}
         style={{ marginTop: "20px", padding: "10px 20px" }}
       >
-        Click to Draw
+        View the display
       </button>
+
+      {selectedImage && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.8)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              position: "relative",
+              backgroundColor: "white",
+              padding: "20px",
+              borderRadius: "10px",
+              textAlign: "center",
+            }}
+          >
+            <button
+              onClick={closeModal}
+              style={{
+                position: "absolute",
+                top: "10px",
+                right: "10px",
+                backgroundColor: "transparent",
+                border: "none",
+                fontSize: "1.5rem",
+                cursor: "pointer",
+                color: "black",
+              }}
+            >
+              &times;
+            </button>
+            <img
+              src={selectedImage}
+              alt="Selected Drawing"
+              style={{ maxWidth: "100%", maxHeight: "80vh" }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
