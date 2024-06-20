@@ -92,21 +92,6 @@ function DrawingPage() {
     []
   );
 
-  const drawDottedBackground = (context, canvas) => {
-    const dotRadius = 2; // Radius of each dot
-    const spacing = 20; // Space between dots
-    
-    context.fillStyle = 'black'; // Color of dots
-    for (let x = 0; x < canvas.width; x += spacing) {
-      for (let y = 0; y < canvas.height; y += spacing) {
-        context.beginPath();
-        context.arc(x, y, dotRadius, 0, 2 * Math.PI);
-        context.fill();
-      }
-    }
-  };
-  
-
   const clearCanvas = () => {
     const canvas = canvasReference.current;
     const context = canvas.getContext("2d");
@@ -262,8 +247,8 @@ function DrawingPage() {
                 onClick={() => setColor(color)}
                 style={{
                   backgroundColor: color,
-                  width: "30px",
-                  height: "30px",
+                  width: "25px",
+                  height: "25px",
                   borderRadius: "50%",
                   margin: "5px", 
                   border: selectedColor === color ? "2px solid black" : "none",
