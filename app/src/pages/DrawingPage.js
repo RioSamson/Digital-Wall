@@ -27,7 +27,7 @@ function DrawingPage() {
   const [mode, setMode] = useState("pencil");
   const [showTextInput, setShowTextInput] = useState(false);
   const [inputText, setInputText] = useState("");
-  const { selectedScene, imageUrl } = location.state || {};
+  const { selectedScene, area } = location.state || {};
 
   const uploadDrawing = async () => {
     const canvas = canvasReference.current;
@@ -35,6 +35,10 @@ function DrawingPage() {
       canvas.toBlob(resolve, "image/png")
     );
     if (!blob) return;
+
+    const displayArea = area === 'air' ? 'top' :
+                        area === 'land' ? 'center' : 
+                        area === 'water' ? 'bottom' : 'undefined';
 
     let originalUrl = "", enhancedUrl = "";
     const uploadImage = async (path, imageBlob) => {
@@ -63,7 +67,9 @@ function DrawingPage() {
         enhanced_drawings: [enhancedUrl],
         user_id: userRef,
         theme_id: themeRef,
-        email: currentUser ? currentUser.email : "guest"
+        email: currentUser ? currentUser.email : "guest",
+        displayArea: displayArea,
+        isReviewed: false
     };
 
     await addDoc(drawingsCollection, drawingData);
