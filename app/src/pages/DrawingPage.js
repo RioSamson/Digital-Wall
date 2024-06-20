@@ -15,6 +15,12 @@ import {
 } from "firebase/firestore";
 import penImage from "../assets/pen.png";
 import eraserImage from "../assets/eraser.png";
+import width1Image from "../assets/width1.png";
+import width2Image from "../assets/width2.png";
+import width3Image from "../assets/width3.png";
+import width4Image from "../assets/width4.png";
+import width5Image from "../assets/width5.png";
+
 
 
 function DrawingPage() {
@@ -23,11 +29,14 @@ function DrawingPage() {
   const canvasReference = useRef(null);
   const contextReference = useRef(null);
   const [isPressed, setIsPressed] = useState(false);
-  const [lastColor, setLastColor] = useState("black");
+  const [selectedColor, setSelectedColor] = useState("black"); 
   const [mode, setMode] = useState("pencil");
   const [showTextInput, setShowTextInput] = useState(false);
   const [inputText, setInputText] = useState("");
   const { selectedScene, area } = location.state || {};
+  const [showColorPopup, setShowColorPopup] = useState(false);
+  const [lineWidth, setLineWidth] = useState(5);
+
 
   const uploadDrawing = async () => {
     const canvas = canvasReference.current;
@@ -82,6 +91,21 @@ function DrawingPage() {
     () => ["black", "red", "green", "orange", "blue", "purple"],
     []
   );
+
+  const drawDottedBackground = (context, canvas) => {
+    const dotRadius = 2; // Radius of each dot
+    const spacing = 20; // Space between dots
+    
+    context.fillStyle = 'black'; // Color of dots
+    for (let x = 0; x < canvas.width; x += spacing) {
+      for (let y = 0; y < canvas.height; y += spacing) {
+        context.beginPath();
+        context.arc(x, y, dotRadius, 0, 2 * Math.PI);
+        context.fill();
+      }
+    }
+  };
+  
 
   const clearCanvas = () => {
     const canvas = canvasReference.current;
@@ -160,9 +184,15 @@ function DrawingPage() {
 
   const setColor = (color) => {
     contextReference.current.strokeStyle = color;
-    contextReference.current.lineWidth = 5;
-    setLastColor(color);
+    setSelectedColor(color);
     setMode("pencil");
+  };
+  const toggleColorPicker = () => {
+    setShowColorPopup(!showColorPopup);
+  };
+  const setWidth = (width) => {
+    contextReference.current.lineWidth = width;
+    setLineWidth(width);
   };
 
   const setEraser = () => {
@@ -223,21 +253,49 @@ function DrawingPage() {
           onTouchMove={updateDraw}
           onTouchEnd={endDraw}
         />
-        <div className="buttons">
-          {colors.map((color) => (
-            <button
-              className="colorButtons"
-              key={color}
-              onClick={() => setColor(color)}
-              style={{ backgroundColor: color }}
-            ></button>
-          ))}
+        {showColorPopup && (
+        <div className="colorPopup" style={{ display: "flex", flexDirection: "column", padding: "10px", background: "#fff", border: "none" }}>
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            {colors.map((color) => (
+              <button
+                key={color}
+                onClick={() => setColor(color)}
+                style={{
+                  backgroundColor: color,
+                  width: "30px",
+                  height: "30px",
+                  borderRadius: "50%",
+                  margin: "5px", 
+                  border: selectedColor === color ? "2px solid black" : "none",
+                  padding: "10px",
+                  boxSizing: "border-box",
+                }}
+              ></button>
+            ))}
+          </div>
+          <div style={{ marginTop: "10px", textAlign: "center" }}>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <button onClick={() => setWidth(1)} style={{ background: `url(${width1Image})`, width: "30px", height: "30px", backgroundSize: "cover", border: lineWidth === 1 ? "2px solid blue" : "none" }}></button>
+              <button onClick={() => setWidth(3)} style={{ background: `url(${width2Image})`, width: "30px", height: "30px", backgroundSize: "cover", border: lineWidth === 3 ? "2px solid blue" : "none" }}></button>
+              <button onClick={() => setWidth(5)} style={{ background: `url(${width3Image})`, width: "30px", height: "30px", backgroundSize: "cover", border: lineWidth === 5 ? "2px solid blue" : "none" }}></button>
+              <button onClick={() => setWidth(10)} style={{ background: `url(${width4Image})`, width: "30px", height: "30px", backgroundSize: "cover", border: lineWidth === 10 ? "2px solid blue" : "none" }}></button>
+              <button onClick={() => setWidth(15)} style={{ background: `url(${width5Image})`, width: "30px", height: "30px", backgroundSize: "cover", border: lineWidth === 15 ? "2px solid blue" : "none" }}></button>
+            </div>
+          </div>
         </div>
-      </div>
-      <div
-        className="tools"
-        style={{ display: "flex", gap: "10px", marginTop: "10px" }}
-      >
+      )}
+        <button
+            onClick={toggleColorPicker}
+            style={{
+              width: "60px",
+              height: "60px",
+              padding: "10px",
+              background: `url(${penImage}) no-repeat center center`,
+              backgroundSize: "cover",
+              border: "none"
+            }}
+          >
+          </button>
         <button
       onClick={() => setEraser()}
     style={{
@@ -250,18 +308,6 @@ function DrawingPage() {
     }}
   >
         </button>
-        <button
-    onClick={() => setColor(lastColor)}
-    style={{
-      width: "60px",
-      height: "60px",
-      padding: "10px",
-      background: `url(${penImage}) no-repeat center center`,
-      backgroundSize: "cover",
-      border: "none"
-    }}
-  >
-  </button>
         <button
           onClick={handleDescribeDrawing}
           style={{ width: "60px", height: "60px" }}
