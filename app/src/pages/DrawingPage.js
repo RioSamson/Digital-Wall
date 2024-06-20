@@ -15,6 +15,8 @@ import {
 } from "firebase/firestore";
 import penImage from "../assets/pen.png";
 import eraserImage from "../assets/eraser.png";
+import fillImage from "../assets/fill.png";
+import magicImage from "../assets/magic.png";
 import width1Image from "../assets/width1.png";
 import width2Image from "../assets/width2.png";
 import width3Image from "../assets/width3.png";
@@ -192,9 +194,10 @@ function DrawingPage() {
 
   const handleMagic = () => {
     console.log("Magic button clicked");
-    // Implement your magic functionality here
   };
-
+  const handleFill = () => {
+    console.log("Fill button clicked");
+  };
   const handleTextSubmit = () => {
     const canvas = canvasReference.current;
     const context = canvas.getContext("2d");
@@ -294,10 +297,28 @@ function DrawingPage() {
   >
         </button>
         <button
-          onClick={handleDescribeDrawing}
-          style={{ width: "60px", height: "60px" }}
-        >
-          Describe Drawing
+      onClick={() => handleFill()}
+    style={{
+      width: "60px",
+      height: "60px",
+      padding: "10px",
+      background: `url(${fillImage}) no-repeat center center`,
+      backgroundSize: "cover",
+      border: "none"
+    }}
+  >
+        </button>
+        <button
+      onClick={() => handleDescribeDrawing()}
+    style={{
+      width: "60px",
+      height: "60px",
+      padding: "10px",
+      background: `url(${magicImage}) no-repeat center center`,
+      backgroundSize: "cover",
+      border: "none"
+    }}
+  >
         </button>
       </div>
       {showTextInput && (
