@@ -1,21 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import rough from "roughjs/bundled/rough.esm";
 import { useNavigate, useLocation } from "react-router-dom";
-import "./DrawingPage.css";
 import { storage, db, auth } from "../firebase/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import {
-  collection,
-  addDoc,
-  query,
-  where,
-  getDocs,
-  updateDoc,
-  doc,
-} from "firebase/firestore";
+import { collection, addDoc, doc } from "firebase/firestore";
 import penImage from "../assets/pen.png";
 import eraserImage from "../assets/eraser.png";
-
+import "./DrawingPage.css";
 
 function DrawingPage() {
   const navigate = useNavigate();
@@ -31,12 +21,15 @@ function DrawingPage() {
 
   const uploadDrawing = async () => {
     const canvas = canvasReference.current;
+    const base64Image = canvas.toDataURL("image/png");
+
     const blob = await new Promise((resolve) =>
       canvas.toBlob(resolve, "image/png")
     );
     if (!blob) return;
 
-    let originalUrl = "", enhancedUrl = "";
+    // Upload the original image to Firebase Storage
+    let originalUrl = "";
     const uploadImage = async (path, imageBlob) => {
       const storageRef = ref(storage, path);
       const snapshot = await uploadBytes(storageRef, imageBlob);
@@ -44,33 +37,92 @@ function DrawingPage() {
     };
 
     originalUrl = await uploadImage(`drawing/original-${Date.now()}.png`, blob);
-    enhancedUrl = await uploadImage(`drawing/enhanced-${Date.now()}.png`, blob);
 
+    // Send the base64 image to Baseten
+    const sendToBaseten = async (base64Img) => {
+      const url = "/model_versions/q48rmd3/predict"; // Replace with your Baseten endpoint
+      const headers = {
+        Authorization: "Api-Key 13235osK.AVglR2jVhzMHR1txMuFJCD49TEmV6FXY",
+        "Content-Type": "application/json",
+      };
+
+      const imageData = base64Img.split(",")[1];
+      const data = {
+        prompt: "a plushy dog",
+        images_data: imageData,
+        guidance_scale: 8,
+        lcm_steps: 50,
+        seed: 2159232,
+        num_inference_steps: 4,
+        strength: 0.7,
+        width: 512,
+        height: 512,
+      };
+
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify(data),
+        });
+
+        if (response.ok) {
+          const jsonResponse = await response.json();
+          return `data:image/png;base64,${jsonResponse.model_output.image}`;
+        } else {
+          console.error("Server returned an error", response.statusText);
+          return null;
+        }
+      } catch (error) {
+        console.error("Error sending image to server:", error);
+        return null;
+      }
+    };
+
+    const enhancedBase64 = await sendToBaseten(base64Image);
+    if (!enhancedBase64) return;
+
+    // Convert the enhanced base64 image to a Blob
+    const enhancedBlob = await fetch(enhancedBase64)
+      .then((res) => res.blob())
+      .catch((error) =>
+        console.error("Error converting base64 to Blob:", error)
+      );
+
+    // Upload the enhanced image to Firebase Storage
+    const enhancedUrl = await uploadImage(
+      `drawing/enhanced-${Date.now()}.png`,
+      enhancedBlob
+    );
+
+    // Prepare Firestore document data
     const currentUser = auth.currentUser;
     const drawingsCollection = collection(db, "Drawings");
     const themeRef = doc(db, "Themes", selectedScene);
 
     let userRef;
     if (currentUser) {
-        userRef = doc(db, "Users", currentUser.email); 
+      userRef = doc(db, "Users", currentUser.email);
     } else {
-        userRef = doc(db, "Users", "guest"); 
+      userRef = doc(db, "Users", "guest");
     }
 
     const drawingData = {
-         created_at: new Date(),
-        original_drawing: originalUrl,
-        enhanced_drawings: [enhancedUrl],
-        user_id: userRef,
-        theme_id: themeRef,
-        email: currentUser ? currentUser.email : "guest"
+      created_at: new Date(),
+      original_drawing: originalUrl,
+      enhanced_drawings: [enhancedUrl],
+      user_id: userRef,
+      theme_id: themeRef,
+      email: currentUser ? currentUser.email : "guest",
     };
 
-    await addDoc(drawingsCollection, drawingData);
+    // Add the drawing data to Firestore
+    const docRef = await addDoc(drawingsCollection, drawingData);
 
-    console.log("Document successfully created!");
-    navigate("/review", { state: { image: originalUrl } });
-};
+    navigate("/review", {
+      state: { docId: docRef.id },
+    });
+  };
 
   const colors = useMemo(
     () => ["black", "red", "green", "orange", "blue", "purple"],
@@ -100,7 +152,7 @@ function DrawingPage() {
     setIsPressed(true);
   };
 
-  const endDraw = (e) => {
+  const endDraw = () => {
     contextReference.current.closePath();
     setIsPressed(false);
   };
@@ -169,11 +221,6 @@ function DrawingPage() {
     setShowTextInput(true);
   };
 
-  const handleMagic = () => {
-    console.log("Magic button clicked");
-    // Implement your magic functionality here
-  };
-
   const handleTextSubmit = () => {
     const canvas = canvasReference.current;
     const context = canvas.getContext("2d");
@@ -233,29 +280,27 @@ function DrawingPage() {
         style={{ display: "flex", gap: "10px", marginTop: "10px" }}
       >
         <button
-      onClick={() => setEraser()}
-    style={{
-      width: "60px",
-      height: "60px",
-      padding: "10px",
-      background: `url(${eraserImage}) no-repeat center center`,
-      backgroundSize: "cover",
-      border: "none"
-    }}
-  >
-        </button>
+          onClick={() => setEraser()}
+          style={{
+            width: "60px",
+            height: "60px",
+            padding: "10px",
+            background: `url(${eraserImage}) no-repeat center center`,
+            backgroundSize: "cover",
+            border: "none",
+          }}
+        ></button>
         <button
-    onClick={() => setColor(lastColor)}
-    style={{
-      width: "60px",
-      height: "60px",
-      padding: "10px",
-      background: `url(${penImage}) no-repeat center center`,
-      backgroundSize: "cover",
-      border: "none"
-    }}
-  >
-  </button>
+          onClick={() => setColor(lastColor)}
+          style={{
+            width: "60px",
+            height: "60px",
+            padding: "10px",
+            background: `url(${penImage}) no-repeat center center`,
+            backgroundSize: "cover",
+            border: "none",
+          }}
+        ></button>
         <button
           onClick={handleDescribeDrawing}
           style={{ width: "60px", height: "60px" }}
