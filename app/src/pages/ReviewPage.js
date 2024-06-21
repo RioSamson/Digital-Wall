@@ -1,67 +1,55 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { db } from "../firebase/firebase";
+import { doc, getDoc } from "firebase/firestore";
 
 function ReviewPage() {
   const location = useLocation();
-  const { image } = location.state || {};
-  const [generatedImage, setGeneratedImage] = useState(null);
+  const { docId } = location.state || {};
+  const [originalImage, setOriginalImage] = useState(null);
+  const [enhancedImage, setEnhancedImage] = useState(null);
 
   useEffect(() => {
-    if (image) {
-      const sendImageToServer = async () => {
-        const url = "https://app.baseten.co/model_versions/q48rmd3/predict"; // Relative URL
-        const headers = {
-          Authorization: "Api-Key 13235osK.AVglR2jVhzMHR1txMuFJCD49TEmV6FXY",
-          "Content-Type": "application/json",
-        };
-
-        const imageData = image.split(",")[1];
-        const data = {
-          prompt: "a plushy dog",
-          images_data: imageData,
-          guidance_scale: 8,
-          lcm_steps: 50,
-          seed: 2159232,
-          num_inference_steps: 4,
-          strength: 0.7,
-          width: 512,
-          height: 512,
-        };
-
+    const fetchImages = async () => {
+      if (docId) {
         try {
-          const response = await fetch(url, {
-            method: "POST",
-            headers: headers,
-            body: JSON.stringify(data),
-          });
+          const drawingDocRef = doc(db, "Drawings", docId);
+          const drawingDoc = await getDoc(drawingDocRef);
 
-          if (response.ok) {
-            const jsonResponse = await response.json();
-            const imgStr = jsonResponse.model_output.image;
-            setGeneratedImage(`data:image/png;base64,${imgStr}`);
+          if (drawingDoc.exists()) {
+            const drawingData = drawingDoc.data();
+            setOriginalImage(drawingData.original_drawing);
+            setEnhancedImage(drawingData.enhanced_drawings[0]);
           } else {
-            console.error("Server returned an error", response.statusText);
+            console.error("No such document!");
           }
         } catch (error) {
-          console.error("Error sending image to server:", error);
+          console.error("Error fetching document:", error);
         }
-      };
+      }
+    };
 
-      sendImageToServer();
-    }
-  }, [image]);
+    fetchImages();
+  }, [docId]);
 
   return (
     <div>
-      <h1>Generated image</h1>
-      {generatedImage ? (
-        <img src={generatedImage} alt="Generated Drawing" />
-      ) : (
-        <p>No generated drawing found.</p>
-      )}
+      <h1>Your Drawings</h1>
       <div>
-        <h1>Your Drawing</h1>
-        {image ? <img src={image} alt="Drawing" /> : <p>No drawing found.</p>}
+        <h2>Original Drawing</h2>
+        {originalImage ? (
+          <img src={originalImage} alt="Original Drawing" />
+        ) : (
+          <p>No original drawing found.</p>
+        )}
+      </div>
+      <div>
+        <h2>Enhanced Drawing</h2>
+        {enhancedImage ? (
+          <img src={enhancedImage} alt="Enhanced Drawing" />
+        ) : (
+          <p>No enhanced drawing found.</p>
+        )}
       </div>
     </div>
   );
