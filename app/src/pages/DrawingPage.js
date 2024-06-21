@@ -5,6 +5,14 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { collection, addDoc, doc } from "firebase/firestore";
 import penImage from "../assets/pen.png";
 import eraserImage from "../assets/eraser.png";
+import fillImage from "../assets/fill.png";
+import magicImage from "../assets/magic.png";
+import width1Image from "../assets/width1.png";
+import width2Image from "../assets/width2.png";
+import width3Image from "../assets/width3.png";
+import width4Image from "../assets/width4.png";
+import width5Image from "../assets/width5.png";
+
 import "./DrawingPage.css";
 
 function DrawingPage() {
@@ -13,11 +21,14 @@ function DrawingPage() {
   const canvasReference = useRef(null);
   const contextReference = useRef(null);
   const [isPressed, setIsPressed] = useState(false);
-  const [lastColor, setLastColor] = useState("black");
+  const [selectedColor, setSelectedColor] = useState("black"); 
   const [mode, setMode] = useState("pencil");
   const [showTextInput, setShowTextInput] = useState(false);
   const [inputText, setInputText] = useState("");
-  const { selectedScene, imageUrl } = location.state || {};
+  const { selectedScene, area } = location.state || {};
+  const [showColorPopup, setShowColorPopup] = useState(false);
+  const [lineWidth, setLineWidth] = useState(5);
+
 
   const uploadDrawing = async () => {
     const canvas = canvasReference.current;
@@ -28,7 +39,10 @@ function DrawingPage() {
     );
     if (!blob) return;
 
-    // Upload the original image to Firebase Storage
+    const displayArea = area === 'air' ? 'top' :
+                        area === 'land' ? 'center' : 
+                        area === 'water' ? 'bottom' : 'undefined';
+
     let originalUrl = "";
     const uploadImage = async (path, imageBlob) => {
       const storageRef = ref(storage, path);
@@ -108,12 +122,14 @@ function DrawingPage() {
     }
 
     const drawingData = {
-      created_at: new Date(),
-      original_drawing: originalUrl,
-      enhanced_drawings: [enhancedUrl],
-      user_id: userRef,
-      theme_id: themeRef,
-      email: currentUser ? currentUser.email : "guest",
+         created_at: new Date(),
+        original_drawing: originalUrl,
+        enhanced_drawings: [enhancedUrl],
+        user_id: userRef,
+        theme_id: themeRef,
+        email: currentUser ? currentUser.email : "guest",
+        displayArea: displayArea,
+        isReviewed: false
     };
 
     // Add the drawing data to Firestore
@@ -206,9 +222,15 @@ function DrawingPage() {
 
   const setColor = (color) => {
     contextReference.current.strokeStyle = color;
-    contextReference.current.lineWidth = 5;
-    setLastColor(color);
+    setSelectedColor(color);
     setMode("pencil");
+  };
+  const toggleColorPicker = () => {
+    setShowColorPopup(!showColorPopup);
+  };
+  const setWidth = (width) => {
+    contextReference.current.lineWidth = width;
+    setLineWidth(width);
   };
 
   const setEraser = () => {
@@ -221,6 +243,12 @@ function DrawingPage() {
     setShowTextInput(true);
   };
 
+  const handleMagic = () => {
+    console.log("Magic button clicked");
+  };
+  const handleFill = () => {
+    console.log("Fill button clicked");
+  };
   const handleTextSubmit = () => {
     const canvas = canvasReference.current;
     const context = canvas.getContext("2d");
@@ -264,21 +292,49 @@ function DrawingPage() {
           onTouchMove={updateDraw}
           onTouchEnd={endDraw}
         />
-        <div className="buttons">
-          {colors.map((color) => (
-            <button
-              className="colorButtons"
-              key={color}
-              onClick={() => setColor(color)}
-              style={{ backgroundColor: color }}
-            ></button>
-          ))}
+        {showColorPopup && (
+        <div className="colorPopup" style={{ display: "flex", flexDirection: "column", padding: "10px", background: "#fff", border: "none" }}>
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            {colors.map((color) => (
+              <button
+                key={color}
+                onClick={() => setColor(color)}
+                style={{
+                  backgroundColor: color,
+                  width: "25px",
+                  height: "25px",
+                  borderRadius: "50%",
+                  margin: "5px", 
+                  border: selectedColor === color ? "2px solid black" : "none",
+                  padding: "10px",
+                  boxSizing: "border-box",
+                }}
+              ></button>
+            ))}
+          </div>
+          <div style={{ marginTop: "10px", textAlign: "center" }}>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <button onClick={() => setWidth(1)} style={{ background: `url(${width1Image})`, width: "30px", height: "30px", backgroundSize: "cover", border: lineWidth === 1 ? "2px solid blue" : "none" }}></button>
+              <button onClick={() => setWidth(3)} style={{ background: `url(${width2Image})`, width: "30px", height: "30px", backgroundSize: "cover", border: lineWidth === 3 ? "2px solid blue" : "none" }}></button>
+              <button onClick={() => setWidth(5)} style={{ background: `url(${width3Image})`, width: "30px", height: "30px", backgroundSize: "cover", border: lineWidth === 5 ? "2px solid blue" : "none" }}></button>
+              <button onClick={() => setWidth(10)} style={{ background: `url(${width4Image})`, width: "30px", height: "30px", backgroundSize: "cover", border: lineWidth === 10 ? "2px solid blue" : "none" }}></button>
+              <button onClick={() => setWidth(15)} style={{ background: `url(${width5Image})`, width: "30px", height: "30px", backgroundSize: "cover", border: lineWidth === 15 ? "2px solid blue" : "none" }}></button>
+            </div>
+          </div>
         </div>
-      </div>
-      <div
-        className="tools"
-        style={{ display: "flex", gap: "10px", marginTop: "10px" }}
-      >
+      )}
+        <button
+            onClick={toggleColorPicker}
+            style={{
+              width: "60px",
+              height: "60px",
+              padding: "10px",
+              background: `url(${penImage}) no-repeat center center`,
+              backgroundSize: "cover",
+              border: "none"
+            }}
+          >
+          </button>
         <button
           onClick={() => setEraser()}
           style={{
@@ -291,21 +347,28 @@ function DrawingPage() {
           }}
         ></button>
         <button
-          onClick={() => setColor(lastColor)}
-          style={{
-            width: "60px",
-            height: "60px",
-            padding: "10px",
-            background: `url(${penImage}) no-repeat center center`,
-            backgroundSize: "cover",
-            border: "none",
-          }}
-        ></button>
+      onClick={() => handleFill()}
+    style={{
+      width: "60px",
+      height: "60px",
+      padding: "10px",
+      background: `url(${fillImage}) no-repeat center center`,
+      backgroundSize: "cover",
+      border: "none"
+    }}
+  >
+        </button>
         <button
-          onClick={handleDescribeDrawing}
-          style={{ width: "60px", height: "60px" }}
-        >
-          Describe Drawing
+      onClick={() => handleDescribeDrawing()}
+    style={{
+      width: "60px",
+      height: "60px",
+      padding: "10px",
+      background: `url(${magicImage}) no-repeat center center`,
+      backgroundSize: "cover",
+      border: "none"
+    }}
+  >
         </button>
       </div>
       {showTextInput && (
