@@ -1,4 +1,4 @@
-import React, { useRef, useState, useMemo } from "react";
+import React, { useRef, useState, useMemo, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { storage, db, auth } from "../firebase/firebase";
 import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -23,6 +23,8 @@ function DrawingPage() {
   const [showColorPopup, setShowColorPopup] = useState(false);
   const [lineWidth, setLineWidth] = useState(5);
   const [showEraserPopup, setShowEraserPopup] = useState(false);
+  const [history, setHistory] = useState([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
 
   const uploadDrawing = async () => {
     const canvas = canvasRef.current;
@@ -180,7 +182,80 @@ function DrawingPage() {
     context.fillText(inputText, 50, 50);
     setInputText("");
     setShowTextInput(false);
+    saveHistory(); // Save history after adding text
   };
+
+  // Resize canvas on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      const canvas = canvasRef.current;
+      if (canvas) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    // Initial resize
+    handleResize();
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  const saveHistory = () => {
+    const canvas = canvasRef.current;
+    const newHistory = history.slice(0, historyIndex + 1);
+    newHistory.push(canvas.toDataURL());
+    setHistory(newHistory);
+    setHistoryIndex(newHistory.length - 1);
+  };
+
+  const undo = () => {
+    if (historyIndex > 0) {
+      const newIndex = historyIndex - 1;
+      setHistoryIndex(newIndex);
+      const canvas = canvasRef.current;
+      const context = canvas.getContext("2d");
+      const img = new Image();
+      img.src = history[newIndex];
+      img.onload = () => {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(img, 0, 0);
+      };
+    }
+  };
+
+  const redo = () => {
+    if (historyIndex < history.length - 1) {
+      const newIndex = historyIndex + 1;
+      setHistoryIndex(newIndex);
+      const canvas = canvasRef.current;
+      const context = canvas.getContext("2d");
+      const img = new Image();
+      img.src = history[newIndex];
+      img.onload = () => {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(img, 0, 0);
+      };
+    }
+  };
+
+  // Save the initial blank state to history
+  useEffect(() => {
+    if (canvasRef.current) {
+      saveHistory();
+    }
+  }, []);
+
+  // Save history after each drawing action
+  useEffect(() => {
+    if (!isPressed) {
+      saveHistory();
+    }
+  }, [isPressed]);
 
   return (
     <div className="DrawingPage">
@@ -189,8 +264,19 @@ function DrawingPage() {
         <button className="completeButton" onClick={uploadDrawing}>
           Upload
         </button>
-        <button onClick={() => canvasRef.current.getContext("2d").clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)}>
+        <button onClick={() => {
+          const canvas = canvasRef.current;
+          const context = canvas.getContext("2d");
+          context.clearRect(0, 0, canvas.width, canvas.height);
+          saveHistory();
+        }}>
           Clear
+        </button>
+        <button onClick={undo} disabled={historyIndex <= 0}>
+          Undo
+        </button>
+        <button onClick={redo} disabled={historyIndex >= history.length - 1}>
+          Redo
         </button>
         <Toolbox setEraser={setEraser} toggleColorPicker={toggleColorPicker} handleFill={handleFill} handleDescribeDrawing={handleDescribeDrawing} />
         {showColorPopup && <ColorPicker colors={colors} selectedColor={selectedColor} setColor={setColor} showColorPopup={showColorPopup} />}
