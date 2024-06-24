@@ -28,6 +28,7 @@ function DrawingPage() {
   const { selectedScene, area } = location.state || {};
   const [showColorPopup, setShowColorPopup] = useState(false);
   const [lineWidth, setLineWidth] = useState(5);
+  const [showEraserPopup, setShowEraserPopup] = useState(false);
 
 
   const uploadDrawing = async () => {
@@ -200,6 +201,7 @@ function DrawingPage() {
     context.lineCap = "round";
     context.strokeStyle = colors[0];
     context.lineWidth = 5;
+    context.eraserLineWidth = 5;
     contextReference.current = context;
 
     clearCanvas();
@@ -226,16 +228,18 @@ function DrawingPage() {
     setMode("pencil");
   };
   const toggleColorPicker = () => {
+    setShowEraserPopup(false);
     setShowColorPopup(!showColorPopup);
   };
   const setWidth = (width) => {
-    contextReference.current.lineWidth = width;
-    setLineWidth(width);
+      contextReference.current.lineWidth = width;
+      setLineWidth(width);
   };
 
   const setEraser = () => {
+    setShowEraserPopup(!showEraserPopup)
+    setShowColorPopup(false);
     contextReference.current.strokeStyle = "white";
-    contextReference.current.lineWidth = 10;
     setMode("eraser");
   };
 
@@ -243,12 +247,10 @@ function DrawingPage() {
     setShowTextInput(true);
   };
 
-  const handleMagic = () => {
-    console.log("Magic button clicked");
-  };
   const handleFill = () => {
-    console.log("Fill button clicked");
+    //handle fill
   };
+  
   const handleTextSubmit = () => {
     const canvas = canvasReference.current;
     const context = canvas.getContext("2d");
@@ -312,6 +314,19 @@ function DrawingPage() {
               ></button>
             ))}
           </div>
+          <div style={{ marginTop: "10px", textAlign: "center" }}>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <button onClick={() => setWidth(1)} style={{ background: `url(${width1Image})`, width: "30px", height: "30px", backgroundSize: "cover", border: lineWidth === 1 ? "2px solid blue" : "none" }}></button>
+              <button onClick={() => setWidth(3)} style={{ background: `url(${width2Image})`, width: "30px", height: "30px", backgroundSize: "cover", border: lineWidth === 3 ? "2px solid blue" : "none" }}></button>
+              <button onClick={() => setWidth(5)} style={{ background: `url(${width3Image})`, width: "30px", height: "30px", backgroundSize: "cover", border: lineWidth === 5 ? "2px solid blue" : "none" }}></button>
+              <button onClick={() => setWidth(10)} style={{ background: `url(${width4Image})`, width: "30px", height: "30px", backgroundSize: "cover", border: lineWidth === 10 ? "2px solid blue" : "none" }}></button>
+              <button onClick={() => setWidth(15)} style={{ background: `url(${width5Image})`, width: "30px", height: "30px", backgroundSize: "cover", border: lineWidth === 15 ? "2px solid blue" : "none" }}></button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showEraserPopup && (
+        <div className="colorPopup" style={{ display: "flex", flexDirection: "column", padding: "10px", background: "#fff", border: "none" }}>
           <div style={{ marginTop: "10px", textAlign: "center" }}>
             <div style={{ display: "flex", justifyContent: "center" }}>
               <button onClick={() => setWidth(1)} style={{ background: `url(${width1Image})`, width: "30px", height: "30px", backgroundSize: "cover", border: lineWidth === 1 ? "2px solid blue" : "none" }}></button>
