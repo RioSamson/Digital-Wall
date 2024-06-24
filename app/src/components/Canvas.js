@@ -3,8 +3,8 @@ import React, { useEffect } from "react";
 const Canvas = React.forwardRef(({ colors, selectedColor, lineWidth, mode, setIsPressed, updateDraw }, ref) => {
   useEffect(() => {
     const canvas = ref.current;
-    canvas.width = 500;
-    canvas.height = 500;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
     const context = canvas.getContext("2d");
     context.lineCap = "round";
@@ -54,6 +54,7 @@ const Canvas = React.forwardRef(({ colors, selectedColor, lineWidth, mode, setIs
   return (
     <canvas
       ref={ref}
+      style={{ position: 'absolute', top: 0, left: 0, zIndex: 0 }}
       onMouseDown={beginDraw}
       onMouseMove={updateDraw}
       onMouseUp={endDraw}

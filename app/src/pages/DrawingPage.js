@@ -3,12 +3,12 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { storage, db, auth } from "../firebase/firebase";
 import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import { collection, addDoc, doc } from "firebase/firestore";
-import "./DrawingPage.css";
 import Canvas from "../components/Canvas";
 import Toolbox from "../components/Toolbox";
 import ColorPicker from "../components/ColorPicker";
 import TextInput from "../components/TextInput";
 import LineWidthPicker from "../components/LineWidthPicker";
+import "./DrawingPage.css";
 
 function DrawingPage() {
   const navigate = useNavigate();
@@ -183,30 +183,19 @@ function DrawingPage() {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "100vh",
-      }}
-    >
-      <button
-        className="completeButton"
-        onClick={uploadDrawing}
-        style={{ margin: "10px", padding: "10px 20px" }}
-      >
-        Upload
-      </button>
-      <button onClick={() => canvasRef.current.getContext("2d").clearRect(0, 0, 500, 500)} style={{ margin: "10px", padding: "10px 20px" }}>
-        Clear
-      </button>
-      <div className="DrawingPage">
-        <Canvas ref={canvasRef} colors={colors} selectedColor={selectedColor} lineWidth={lineWidth} mode={mode} setIsPressed={setIsPressed} updateDraw={updateDraw} />
+    <div className="DrawingPage">
+      <Canvas ref={canvasRef} colors={colors} selectedColor={selectedColor} lineWidth={lineWidth} mode={mode} setIsPressed={setIsPressed} updateDraw={updateDraw} />
+      <div className="toolbar">
+        <button className="completeButton" onClick={uploadDrawing}>
+          Upload
+        </button>
+        <button onClick={() => canvasRef.current.getContext("2d").clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)}>
+          Clear
+        </button>
         <Toolbox setEraser={setEraser} toggleColorPicker={toggleColorPicker} handleFill={handleFill} handleDescribeDrawing={handleDescribeDrawing} />
-        <ColorPicker colors={colors} selectedColor={selectedColor} setColor={setColor} showColorPopup={showColorPopup} />
-        <LineWidthPicker setWidth={setWidth} lineWidth={lineWidth} showLineWidthPopup={showColorPopup || showEraserPopup} />
+        {showColorPopup && <ColorPicker colors={colors} selectedColor={selectedColor} setColor={setColor} showColorPopup={showColorPopup} />}
+        {showColorPopup && <LineWidthPicker setWidth={setWidth} lineWidth={lineWidth} showLineWidthPopup={showColorPopup} />}
+        {showEraserPopup && <LineWidthPicker setWidth={setWidth} lineWidth={lineWidth} showLineWidthPopup={showEraserPopup} />}
         <TextInput showTextInput={showTextInput} inputText={inputText} setInputText={setInputText} handleTextSubmit={handleTextSubmit} />
       </div>
     </div>
