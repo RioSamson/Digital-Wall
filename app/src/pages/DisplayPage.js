@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/authContext";
 import { db } from "../firebase/firebase";
@@ -17,6 +17,8 @@ function DisplayPage() {
   const { currentUser } = useAuth();
   const [backgroundImage, setBackgroundImage] = useState(imageUrl);
   const [drawings, setDrawings] = useState([]);
+  const [drawingPositions, setDrawingPositions] = useState([]);
+  const containerRef = useRef(null);
 
   useEffect(() => {
     const fetchScene = async () => {
@@ -53,6 +55,7 @@ function DisplayPage() {
           }));
 
           setDrawings(drawingsList);
+          calculatePositions(drawingsList);
         } catch (error) {
           console.error("Error fetching drawings:", error);
         }
@@ -63,6 +66,66 @@ function DisplayPage() {
     fetchDrawings();
   }, [selectedScene, currentUser, backgroundImage]);
 
+  const calculatePositions = (drawingsList) => {
+    const positions = [];
+    const checkOverlap = (newPos, positions) => {
+      return positions.some(
+        (pos) =>
+          Math.abs(newPos.top - pos.top) < 10 &&
+          Math.abs(newPos.left - pos.left) < 10
+      );
+    };
+
+    drawingsList.forEach((drawing) => {
+      let top, left, newPos;
+
+      do {
+        left = Math.random() * 90; // Random left position between 0 and 90%
+        if (drawing.displayArea === "top") {
+          top = Math.random() * 30; // Random top position in the top third (0-30%)
+        } else if (drawing.displayArea === "center") {
+          top = 30 + Math.random() * 30; // Random top position in the middle third (30-60%)
+        } else if (drawing.displayArea === "bottom") {
+          top = 60 + Math.random() * 30; // Random top position in the bottom third (60-90%)
+        }
+
+        newPos = { top, left };
+      } while (checkOverlap(newPos, positions));
+
+      positions.push(newPos);
+    });
+
+    setDrawingPositions(
+      positions.map((pos) => ({
+        top: `${pos.top}%`,
+        left: `${pos.left}%`,
+      }))
+    );
+  };
+
+  useEffect(() => {
+    const handleResize = () => {
+      const container = containerRef.current;
+      const aspectRatio = 1920 / 1080;
+      const windowAspectRatio = window.innerWidth / window.innerHeight;
+
+      if (windowAspectRatio > aspectRatio) {
+        container.style.width = `${window.innerHeight * aspectRatio}px`;
+        container.style.height = `${window.innerHeight}px`;
+      } else {
+        container.style.width = `${window.innerWidth}px`;
+        container.style.height = `${window.innerWidth / aspectRatio}px`;
+      }
+    };
+
+    handleResize(); // Initial call
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   return (
     <div
       style={{
@@ -71,59 +134,70 @@ function DisplayPage() {
         height: "100vh",
         backgroundColor: "black",
         overflow: "hidden",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
       }}
     >
-      {backgroundImage && (
-        <img
-          src={backgroundImage}
-          alt="Background"
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            width: "100%",
-            height: "100%",
-            objectFit: "contain",
-            transform: "translate(-50%, -50%)",
-          }}
-        />
-      )}
       <div
+        ref={containerRef}
         style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
+          position: "relative",
           width: "100%",
           height: "100%",
-          transform: "translate(-50%, -50%)",
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "center",
-          alignItems: "center",
-          boxSizing: "border-box",
+          maxWidth: "1920px",
+          maxHeight: "1080px",
         }}
       >
-        {drawings.map((drawing, index) => (
-          <div
-            key={index}
+        {backgroundImage && (
+          <img
+            src={backgroundImage}
+            alt="Background"
             style={{
-              width: "5vw",
-              height: "5vw",
-              margin: "5px",
-              boxSizing: "border-box",
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+              transform: "translate(-50%, -50%)",
             }}
-          >
-            <img
-              src={drawing.original_drawing}
-              alt={`Drawing ${index}`}
+          />
+        )}
+        <div
+          style={{
+            position: "absolute",
+            top: "0",
+            left: "0",
+            width: "100%",
+            height: "100%",
+            boxSizing: "border-box",
+          }}
+        >
+          {drawings.map((drawing, index) => (
+            <div
+              key={index}
               style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "contain",
+                position: "absolute",
+                width: "10%",
+                height: "10%",
+                top: drawingPositions[index]?.top || "0%",
+                left: drawingPositions[index]?.left || "0%",
+                boxSizing: "border-box",
               }}
-            />
-          </div>
-        ))}
+            >
+              <img
+                src={drawing.enhanced_drawings}
+                alt={`Drawing ${index}`}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "contain",
+                }}
+              />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
