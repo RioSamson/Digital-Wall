@@ -92,12 +92,28 @@ function DisplayPage() {
     };
   }, []);
 
-  const getRandomDrawings = (drawingsList, numCoordinates) => {
-    const shuffledDrawings = drawingsList.sort(() => 0.5 - Math.random());
+  const getRandomDrawings = (drawingsList, area, numCoordinates) => {
+    const filteredDrawings = drawingsList.filter(
+      (drawing) => drawing.displayArea === area
+    );
+    const shuffledDrawings = filteredDrawings.sort(() => 0.5 - Math.random());
     return shuffledDrawings.slice(0, numCoordinates);
   };
 
-  const selectedDrawings = getRandomDrawings(drawings, coordinates.length);
+  const groupedCoordinates = coordinates.reduce((acc, coord) => {
+    if (!acc[coord.area]) acc[coord.area] = [];
+    acc[coord.area].push(coord);
+    return acc;
+  }, {});
+
+  const selectedDrawings = {};
+  Object.keys(groupedCoordinates).forEach((area) => {
+    selectedDrawings[area] = getRandomDrawings(
+      drawings,
+      area,
+      groupedCoordinates[area].length
+    );
+  });
 
   return (
     <div
@@ -147,29 +163,37 @@ function DisplayPage() {
             boxSizing: "border-box",
           }}
         >
-          {selectedDrawings.map((drawing, index) => (
-            <div
-              key={index}
-              style={{
-                position: "absolute",
-                width: "10%",
-                height: "10%",
-                top: `${coordinates[index].y}%`,
-                left: `${coordinates[index].x}%`,
-                boxSizing: "border-box",
-              }}
-            >
-              <img
-                src={drawing.enhanced_drawings}
-                alt={`Drawing ${index}`}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "contain",
-                }}
-              />
-            </div>
-          ))}
+          {Object.keys(groupedCoordinates).map((area) =>
+            groupedCoordinates[area].map((coord, index) => {
+              const drawing = selectedDrawings[area][index];
+              if (drawing) {
+                return (
+                  <div
+                    key={`${area}-${index}`}
+                    style={{
+                      position: "absolute",
+                      width: "10%",
+                      height: "10%",
+                      top: `${coord.y}%`,
+                      left: `${coord.x}%`,
+                      boxSizing: "border-box",
+                    }}
+                  >
+                    <img
+                      src={drawing.enhanced_drawings}
+                      alt={`Drawing ${index}`}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "contain",
+                      }}
+                    />
+                  </div>
+                );
+              }
+              return null;
+            })
+          )}
         </div>
       </div>
     </div>
