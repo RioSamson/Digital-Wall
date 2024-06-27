@@ -14,6 +14,7 @@ import TextInput from "../components/TextInput";
 import LineWidthPicker from "../components/LineWidthPicker";
 import "./DrawingPage.css";
 
+
 function DrawingPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -29,6 +30,8 @@ function DrawingPage() {
   const [showEraserPopup, setShowEraserPopup] = useState(false);
   const [history, setHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+
 
   const uploadDrawing = async () => {
     const canvas = canvasRef.current;
@@ -208,7 +211,7 @@ function DrawingPage() {
     saveHistory(); // Save history after adding text
   };
 
-  // Resize canvas on window resize
+  
   useEffect(() => {
     const handleResize = () => {
       const canvas = canvasRef.current;
@@ -266,14 +269,12 @@ function DrawingPage() {
     }
   };
 
-  // Save the initial blank state to history
   useEffect(() => {
     if (canvasRef.current) {
       saveHistory();
     }
   }, []);
 
-  // Save history after each drawing action
   useEffect(() => {
     if (!isPressed) {
       saveHistory();
