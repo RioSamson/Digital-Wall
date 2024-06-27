@@ -13,6 +13,9 @@ import ColorPicker from "../components/ColorPicker";
 import TextInput from "../components/TextInput";
 import LineWidthPicker from "../components/LineWidthPicker";
 import "./DrawingPage.css";
+import redoImg from "../assets/redo.png";
+import undoImg from "../assets/undo.png";
+import clearImg from "../assets/garbage.png";
 
 
 function DrawingPage() {
@@ -31,6 +34,7 @@ function DrawingPage() {
   const [history, setHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [colors, setColors] = useState(["black", "red", "green", "orange", "blue", "purple"]);
 
 
   const uploadDrawing = async () => {
@@ -143,10 +147,10 @@ function DrawingPage() {
     });
   };
 
-  const colors = useMemo(
-    () => ["black", "red", "green", "orange", "blue", "purple"],
-    []
-  );
+  const generateRandomColors = () => {
+    const randomColors = Array.from({ length: 6 }, () => `#${Math.floor(Math.random() * 16777215).toString(16)}`);
+    setColors(randomColors);
+  };
 
   const updateDraw = (e) => {
     if (!isPressed) return;
@@ -208,7 +212,7 @@ function DrawingPage() {
     context.fillText(inputText, 50, 50);
     setInputText("");
     setShowTextInput(false);
-    saveHistory(); // Save history after adding text
+    saveHistory(); 
   };
 
   
@@ -296,22 +300,43 @@ function DrawingPage() {
         <button className="completeButton" onClick={uploadDrawing}>
           Upload
         </button>
-        <button
-          onClick={() => {
-            const canvas = canvasRef.current;
-            const context = canvas.getContext("2d");
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            saveHistory();
-          }}
-        >
-          Clear
-        </button>
-        <button onClick={undo} disabled={historyIndex <= 0}>
-          Undo
-        </button>
-        <button onClick={redo} disabled={historyIndex >= history.length - 1}>
-          Redo
-        </button>
+        <button onClick={() => {
+        const canvas = canvasRef.current;
+        const context = canvas.getContext("2d");
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        saveHistory();
+        }}
+        style={{
+          background: `url(${clearImg}) no-repeat center center`,
+          backgroundSize: "contain",
+          width: "30px",
+          height: "30px",
+          border: "none",
+          cursor: "pointer",
+        }}
+        />
+        <button onClick={undo} disabled={historyIndex <= 0}
+        style={{
+          background: `url(${undoImg}) no-repeat center center`,
+          backgroundSize: "contain",
+          width: "30px",
+          height: "30px",
+          border: "none",
+          cursor: "pointer",
+          opacity: historyIndex <= 0 ? 0.5 : 1,
+        }}
+        />
+        <button onClick={redo} disabled={historyIndex >= history.length - 1}
+        style={{
+          background: `url(${redoImg}) no-repeat center center`,
+          backgroundSize: "contain",
+          width: "30px",
+          height: "30px",
+          border: "none",
+          cursor: "pointer",
+          opacity: historyIndex >= history.length - 1 ? 0.5 : 1,
+        }}
+        />
         <Toolbox
           setEraser={setEraser}
           toggleColorPicker={toggleColorPicker}
@@ -319,13 +344,16 @@ function DrawingPage() {
           handleDescribeDrawing={handleDescribeDrawing}
         />
         {showColorPopup && (
-          <ColorPicker
-            colors={colors}
-            selectedColor={selectedColor}
-            setColor={setColor}
-            showColorPopup={showColorPopup}
-          />
-        )}
+      <>
+    <ColorPicker
+      colors={colors}
+      selectedColor={selectedColor}
+      setColor={setColor}
+      showColorPopup={showColorPopup}
+      generateRandomColors={generateRandomColors}
+    />
+  </>
+)}
         {showColorPopup && (
           <LineWidthPicker
             setWidth={setWidth}
