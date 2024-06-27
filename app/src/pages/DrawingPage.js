@@ -1,7 +1,11 @@
 import React, { useRef, useState, useMemo, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { storage, db, auth } from "../firebase/firebase";
-import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
+import {
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL,
+} from "firebase/storage";
 import { collection, addDoc, doc } from "firebase/firestore";
 import Canvas from "../components/Canvas";
 import Toolbox from "../components/Toolbox";
@@ -35,7 +39,14 @@ function DrawingPage() {
     );
     if (!blob) return;
 
-    const displayArea = area === "air" ? "top" : area === "land" ? "center" : area === "water" ? "bottom" : "undefined";
+    const displayArea =
+      area === "air"
+        ? "top"
+        : area === "land"
+        ? "center"
+        : area === "water"
+        ? "bottom"
+        : "undefined";
 
     let originalUrl = "";
     const uploadImage = async (path, imageBlob) => {
@@ -55,7 +66,7 @@ function DrawingPage() {
 
       const imageData = base64Img.split(",")[1];
       const data = {
-        prompt: "a plushy dog",
+        prompt: "an angel fish",
         images_data: imageData,
         guidance_scale: 8,
         lcm_steps: 50,
@@ -95,7 +106,10 @@ function DrawingPage() {
         console.error("Error converting base64 to Blob:", error)
       );
 
-    const enhancedUrl = await uploadImage(`drawing/enhanced-${Date.now()}.png`, enhancedBlob);
+    const enhancedUrl = await uploadImage(
+      `drawing/enhanced-${Date.now()}.png`,
+      enhancedBlob
+    );
 
     const currentUser = auth.currentUser;
     const drawingsCollection = collection(db, "Drawings");
@@ -126,14 +140,23 @@ function DrawingPage() {
     });
   };
 
-  const colors = useMemo(() => ["black", "red", "green", "orange", "blue", "purple"], []);
+  const colors = useMemo(
+    () => ["black", "red", "green", "orange", "blue", "purple"],
+    []
+  );
 
   const updateDraw = (e) => {
     if (!isPressed) return;
 
     const canvas = canvasRef.current;
-    const offsetX = e.nativeEvent.offsetX !== undefined ? e.nativeEvent.offsetX : (e.touches[0]?.clientX || 0) - canvas.getBoundingClientRect().left;
-    const offsetY = e.nativeEvent.offsetY !== undefined ? e.nativeEvent.offsetY : (e.touches[0]?.clientY || 0) - canvas.getBoundingClientRect().top;
+    const offsetX =
+      e.nativeEvent.offsetX !== undefined
+        ? e.nativeEvent.offsetX
+        : (e.touches[0]?.clientX || 0) - canvas.getBoundingClientRect().left;
+    const offsetY =
+      e.nativeEvent.offsetY !== undefined
+        ? e.nativeEvent.offsetY
+        : (e.touches[0]?.clientY || 0) - canvas.getBoundingClientRect().top;
 
     const context = canvas.getContext("2d");
     context.lineTo(offsetX, offsetY);
@@ -259,17 +282,27 @@ function DrawingPage() {
 
   return (
     <div className="DrawingPage">
-      <Canvas ref={canvasRef} colors={colors} selectedColor={selectedColor} lineWidth={lineWidth} mode={mode} setIsPressed={setIsPressed} updateDraw={updateDraw} />
+      <Canvas
+        ref={canvasRef}
+        colors={colors}
+        selectedColor={selectedColor}
+        lineWidth={lineWidth}
+        mode={mode}
+        setIsPressed={setIsPressed}
+        updateDraw={updateDraw}
+      />
       <div className="toolbar">
         <button className="completeButton" onClick={uploadDrawing}>
           Upload
         </button>
-        <button onClick={() => {
-          const canvas = canvasRef.current;
-          const context = canvas.getContext("2d");
-          context.clearRect(0, 0, canvas.width, canvas.height);
-          saveHistory();
-        }}>
+        <button
+          onClick={() => {
+            const canvas = canvasRef.current;
+            const context = canvas.getContext("2d");
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            saveHistory();
+          }}
+        >
           Clear
         </button>
         <button onClick={undo} disabled={historyIndex <= 0}>
@@ -278,11 +311,40 @@ function DrawingPage() {
         <button onClick={redo} disabled={historyIndex >= history.length - 1}>
           Redo
         </button>
-        <Toolbox setEraser={setEraser} toggleColorPicker={toggleColorPicker} handleFill={handleFill} handleDescribeDrawing={handleDescribeDrawing} />
-        {showColorPopup && <ColorPicker colors={colors} selectedColor={selectedColor} setColor={setColor} showColorPopup={showColorPopup} />}
-        {showColorPopup && <LineWidthPicker setWidth={setWidth} lineWidth={lineWidth} showLineWidthPopup={showColorPopup} />}
-        {showEraserPopup && <LineWidthPicker setWidth={setWidth} lineWidth={lineWidth} showLineWidthPopup={showEraserPopup} />}
-        <TextInput showTextInput={showTextInput} inputText={inputText} setInputText={setInputText} handleTextSubmit={handleTextSubmit} />
+        <Toolbox
+          setEraser={setEraser}
+          toggleColorPicker={toggleColorPicker}
+          handleFill={handleFill}
+          handleDescribeDrawing={handleDescribeDrawing}
+        />
+        {showColorPopup && (
+          <ColorPicker
+            colors={colors}
+            selectedColor={selectedColor}
+            setColor={setColor}
+            showColorPopup={showColorPopup}
+          />
+        )}
+        {showColorPopup && (
+          <LineWidthPicker
+            setWidth={setWidth}
+            lineWidth={lineWidth}
+            showLineWidthPopup={showColorPopup}
+          />
+        )}
+        {showEraserPopup && (
+          <LineWidthPicker
+            setWidth={setWidth}
+            lineWidth={lineWidth}
+            showLineWidthPopup={showEraserPopup}
+          />
+        )}
+        <TextInput
+          showTextInput={showTextInput}
+          inputText={inputText}
+          setInputText={setInputText}
+          handleTextSubmit={handleTextSubmit}
+        />
       </div>
     </div>
   );
