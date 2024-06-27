@@ -14,7 +14,6 @@ import TextInput from "../components/TextInput";
 import LineWidthPicker from "../components/LineWidthPicker";
 import "./DrawingPage.css";
 
-
 function DrawingPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -31,8 +30,6 @@ function DrawingPage() {
   const [showEraserPopup, setShowEraserPopup] = useState(false);
   const [history, setHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-
 
   const uploadDrawing = async () => {
     const canvas = canvasRef.current;
@@ -213,13 +210,15 @@ function DrawingPage() {
     saveHistory(); // Save history after adding text
   };
 
-  
   useEffect(() => {
     const handleResize = () => {
       const canvas = canvasRef.current;
       if (canvas) {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
+        const context = canvas.getContext("2d");
+        context.fillStyle = "white"; // Set the fill color to white
+        context.fillRect(0, 0, canvas.width, canvas.height); // Fill the entire canvas with white
       }
     };
 
@@ -303,6 +302,8 @@ function DrawingPage() {
             const canvas = canvasRef.current;
             const context = canvas.getContext("2d");
             context.clearRect(0, 0, canvas.width, canvas.height);
+            context.fillStyle = "white"; // Ensure the canvas is filled with white when cleared
+            context.fillRect(0, 0, canvas.width, canvas.height);
             saveHistory();
           }}
         >

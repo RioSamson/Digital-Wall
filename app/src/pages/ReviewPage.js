@@ -46,7 +46,7 @@ function ReviewPage() {
           <img
             src={originalImage}
             alt="Original Drawing"
-            style={{ maxWidth: "100%", height: "auto" }}
+            style={{ maxWidth: "50%", maxHeight: "50%" }}
           />
         ) : (
           <p>No original drawing found.</p>
