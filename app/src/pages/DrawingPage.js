@@ -23,6 +23,7 @@ function DrawingPage() {
   const [mode, setMode] = useState("pencil");
   const [showTextInput, setShowTextInput] = useState(false);
   const [inputText, setInputText] = useState("");
+  const [enhancePrompt, setEnhancePrompt] = useState(""); // New state for enhanced prompt
   const { selectedScene, area } = location.state || {};
   const [showColorPopup, setShowColorPopup] = useState(false);
   const [lineWidth, setLineWidth] = useState(5);
@@ -57,7 +58,7 @@ function DrawingPage() {
 
     originalUrl = await uploadImage(`drawing/original-${Date.now()}.png`, blob);
 
-    const sendToBaseten = async (base64Img) => {
+    const sendToBaseten = async (base64Img, prompt) => {
       const url = "/model_versions/q48rmd3/predict"; // Replace with your Baseten endpoint
       const headers = {
         Authorization: "Api-Key 13235osK.AVglR2jVhzMHR1txMuFJCD49TEmV6FXY",
@@ -66,7 +67,7 @@ function DrawingPage() {
 
       const imageData = base64Img.split(",")[1];
       const data = {
-        prompt: "an angel fish",
+        prompt: prompt,
         images_data: imageData,
         guidance_scale: 8,
         lcm_steps: 50,
@@ -97,7 +98,7 @@ function DrawingPage() {
       }
     };
 
-    const enhancedBase64 = await sendToBaseten(base64Image);
+    const enhancedBase64 = await sendToBaseten(base64Image, enhancePrompt);
     if (!enhancedBase64) return;
 
     const enhancedBlob = await fetch(enhancedBase64)
@@ -203,6 +204,7 @@ function DrawingPage() {
     context.font = "20px Arial";
     context.fillStyle = "black";
     context.fillText(inputText, 50, 50);
+    setEnhancePrompt(inputText); // Save the text as the prompt
     setInputText("");
     setShowTextInput(false);
     saveHistory(); // Save history after adding text
@@ -344,6 +346,7 @@ function DrawingPage() {
           inputText={inputText}
           setInputText={setInputText}
           handleTextSubmit={handleTextSubmit}
+          buttonLabel="Enhance"
         />
       </div>
     </div>
