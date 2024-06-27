@@ -225,25 +225,39 @@ function DrawingPage() {
     saveHistory(); 
   };
 
-  
+  const drawingRef = useRef(null); // Ref to store current drawing
+
   useEffect(() => {
     const handleResize = () => {
       const canvas = canvasRef.current;
       if (canvas) {
+        // Save current drawing to a data URL
+        drawingRef.current = canvas.toDataURL();
+  
+        // Resize the canvas
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
+  
+        // Restore the saved drawing
+        const context = canvas.getContext("2d");
+        const img = new Image();
+        img.src = drawingRef.current;
+        img.onload = () => {
+          context.drawImage(img, 0, 0);
+        };
       }
     };
-
+  
     window.addEventListener("resize", handleResize);
-
+  
     // Initial resize
     handleResize();
-
+  
     return () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+  
 
   const saveHistory = () => {
     const canvas = canvasRef.current;
@@ -297,19 +311,7 @@ function DrawingPage() {
 
   return (
     <div className="DrawingPage">
-      <Canvas
-        ref={canvasRef}
-        colors={colors}
-        selectedColor={selectedColor}
-        lineWidth={lineWidth}
-        mode={mode}
-        setIsPressed={setIsPressed}
-        updateDraw={updateDraw}
-      />
-      <div className="toolbar">
-        <button className="completeButton" onClick={uploadDrawing}>
-          Upload
-        </button>
+      <div className="top-toolbar">
         <ActionButtons
           onClear={() => {
             const canvas = canvasRef.current;
@@ -322,6 +324,20 @@ function DrawingPage() {
           undoDisabled={historyIndex <= 0}
           redoDisabled={historyIndex >= history.length - 1}
         />
+        <button className="completeButton" onClick={uploadDrawing}>
+          Upload
+        </button>
+      </div>
+      <Canvas
+        ref={canvasRef}
+        colors={colors}
+        selectedColor={selectedColor}
+        lineWidth={lineWidth}
+        mode={mode}
+        setIsPressed={setIsPressed}
+        updateDraw={updateDraw}
+      />
+      <div className="bottom-toolbar">
         <Toolbox
           setEraser={setEraser}
           toggleColorPicker={toggleColorPicker}
