@@ -12,10 +12,8 @@ import Toolbox from "../components/Toolbox";
 import ColorPicker from "../components/ColorPicker";
 import TextInput from "../components/TextInput";
 import LineWidthPicker from "../components/LineWidthPicker";
+import ActionButtons from "../components/ActionButton"; 
 import "./DrawingPage.css";
-import redoImg from "../assets/redo.png";
-import undoImg from "../assets/undo.png";
-import clearImg from "../assets/garbage.png";
 
 
 function DrawingPage() {
@@ -146,10 +144,22 @@ function DrawingPage() {
       state: { docId: docRef.id },
     });
   };
+  
 
   const generateRandomColors = () => {
+    const canvas = canvasRef.current;
+    const currentDrawing = canvas.toDataURL();
+
     const randomColors = Array.from({ length: 6 }, () => `#${Math.floor(Math.random() * 16777215).toString(16)}`);
     setColors(randomColors);
+
+    const context = canvas.getContext("2d");
+    const img = new Image();
+    img.src = currentDrawing;
+    img.onload = () => {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(img, 0, 0);
+    };
   };
 
   const updateDraw = (e) => {
@@ -300,42 +310,17 @@ function DrawingPage() {
         <button className="completeButton" onClick={uploadDrawing}>
           Upload
         </button>
-        <button onClick={() => {
-        const canvas = canvasRef.current;
-        const context = canvas.getContext("2d");
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        saveHistory();
-        }}
-        style={{
-          background: `url(${clearImg}) no-repeat center center`,
-          backgroundSize: "contain",
-          width: "30px",
-          height: "30px",
-          border: "none",
-          cursor: "pointer",
-        }}
-        />
-        <button onClick={undo} disabled={historyIndex <= 0}
-        style={{
-          background: `url(${undoImg}) no-repeat center center`,
-          backgroundSize: "contain",
-          width: "30px",
-          height: "30px",
-          border: "none",
-          cursor: "pointer",
-          opacity: historyIndex <= 0 ? 0.5 : 1,
-        }}
-        />
-        <button onClick={redo} disabled={historyIndex >= history.length - 1}
-        style={{
-          background: `url(${redoImg}) no-repeat center center`,
-          backgroundSize: "contain",
-          width: "30px",
-          height: "30px",
-          border: "none",
-          cursor: "pointer",
-          opacity: historyIndex >= history.length - 1 ? 0.5 : 1,
-        }}
+        <ActionButtons
+          onClear={() => {
+            const canvas = canvasRef.current;
+            const context = canvas.getContext("2d");
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            saveHistory();
+          }}
+          onUndo={undo}
+          onRedo={redo}
+          undoDisabled={historyIndex <= 0}
+          redoDisabled={historyIndex >= history.length - 1}
         />
         <Toolbox
           setEraser={setEraser}
