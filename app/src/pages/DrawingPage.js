@@ -21,14 +21,13 @@ function DrawingPage() {
   const canvasReference = useRef(null);
   const contextReference = useRef(null);
   const [isPressed, setIsPressed] = useState(false);
-  const [selectedColor, setSelectedColor] = useState("black"); 
+  const [selectedColor, setSelectedColor] = useState("black");
   const [mode, setMode] = useState("pencil");
   const [showTextInput, setShowTextInput] = useState(false);
   const [inputText, setInputText] = useState("");
   const { selectedScene, area } = location.state || {};
   const [showColorPopup, setShowColorPopup] = useState(false);
   const [lineWidth, setLineWidth] = useState(5);
-
 
   const uploadDrawing = async () => {
     const canvas = canvasReference.current;
@@ -39,9 +38,14 @@ function DrawingPage() {
     );
     if (!blob) return;
 
-    const displayArea = area === 'air' ? 'top' :
-                        area === 'land' ? 'center' : 
-                        area === 'water' ? 'bottom' : 'undefined';
+    const displayArea =
+      area === "air"
+        ? "top"
+        : area === "land"
+        ? "center"
+        : area === "water"
+        ? "bottom"
+        : "undefined";
 
     let originalUrl = "";
     const uploadImage = async (path, imageBlob) => {
@@ -62,7 +66,7 @@ function DrawingPage() {
 
       const imageData = base64Img.split(",")[1];
       const data = {
-        prompt: "a plushy dog",
+        prompt: "an angel fish",
         images_data: imageData,
         guidance_scale: 8,
         lcm_steps: 50,
@@ -122,14 +126,14 @@ function DrawingPage() {
     }
 
     const drawingData = {
-         created_at: new Date(),
-        original_drawing: originalUrl,
-        enhanced_drawings: [enhancedUrl],
-        user_id: userRef,
-        theme_id: themeRef,
-        email: currentUser ? currentUser.email : "guest",
-        displayArea: displayArea,
-        isReviewed: false
+      created_at: new Date(),
+      original_drawing: originalUrl,
+      enhanced_drawings: [enhancedUrl],
+      user_id: userRef,
+      theme_id: themeRef,
+      email: currentUser ? currentUser.email : "guest",
+      displayArea: displayArea,
+      isReviewed: false,
     };
 
     // Add the drawing data to Firestore
@@ -293,48 +297,102 @@ function DrawingPage() {
           onTouchEnd={endDraw}
         />
         {showColorPopup && (
-        <div className="colorPopup" style={{ display: "flex", flexDirection: "column", padding: "10px", background: "#fff", border: "none" }}>
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            {colors.map((color) => (
-              <button
-                key={color}
-                onClick={() => setColor(color)}
-                style={{
-                  backgroundColor: color,
-                  width: "25px",
-                  height: "25px",
-                  borderRadius: "50%",
-                  margin: "5px", 
-                  border: selectedColor === color ? "2px solid black" : "none",
-                  padding: "10px",
-                  boxSizing: "border-box",
-                }}
-              ></button>
-            ))}
-          </div>
-          <div style={{ marginTop: "10px", textAlign: "center" }}>
-            <div style={{ display: "flex", justifyContent: "center" }}>
-              <button onClick={() => setWidth(1)} style={{ background: `url(${width1Image})`, width: "30px", height: "30px", backgroundSize: "cover", border: lineWidth === 1 ? "2px solid blue" : "none" }}></button>
-              <button onClick={() => setWidth(3)} style={{ background: `url(${width2Image})`, width: "30px", height: "30px", backgroundSize: "cover", border: lineWidth === 3 ? "2px solid blue" : "none" }}></button>
-              <button onClick={() => setWidth(5)} style={{ background: `url(${width3Image})`, width: "30px", height: "30px", backgroundSize: "cover", border: lineWidth === 5 ? "2px solid blue" : "none" }}></button>
-              <button onClick={() => setWidth(10)} style={{ background: `url(${width4Image})`, width: "30px", height: "30px", backgroundSize: "cover", border: lineWidth === 10 ? "2px solid blue" : "none" }}></button>
-              <button onClick={() => setWidth(15)} style={{ background: `url(${width5Image})`, width: "30px", height: "30px", backgroundSize: "cover", border: lineWidth === 15 ? "2px solid blue" : "none" }}></button>
-            </div>
-          </div>
-        </div>
-      )}
-        <button
-            onClick={toggleColorPicker}
+          <div
+            className="colorPopup"
             style={{
-              width: "60px",
-              height: "60px",
+              display: "flex",
+              flexDirection: "column",
               padding: "10px",
-              background: `url(${penImage}) no-repeat center center`,
-              backgroundSize: "cover",
-              border: "none"
+              background: "#fff",
+              border: "none",
             }}
           >
-          </button>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              {colors.map((color) => (
+                <button
+                  key={color}
+                  onClick={() => setColor(color)}
+                  style={{
+                    backgroundColor: color,
+                    width: "25px",
+                    height: "25px",
+                    borderRadius: "50%",
+                    margin: "5px",
+                    border:
+                      selectedColor === color ? "2px solid black" : "none",
+                    padding: "10px",
+                    boxSizing: "border-box",
+                  }}
+                ></button>
+              ))}
+            </div>
+            <div style={{ marginTop: "10px", textAlign: "center" }}>
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <button
+                  onClick={() => setWidth(1)}
+                  style={{
+                    background: `url(${width1Image})`,
+                    width: "30px",
+                    height: "30px",
+                    backgroundSize: "cover",
+                    border: lineWidth === 1 ? "2px solid blue" : "none",
+                  }}
+                ></button>
+                <button
+                  onClick={() => setWidth(3)}
+                  style={{
+                    background: `url(${width2Image})`,
+                    width: "30px",
+                    height: "30px",
+                    backgroundSize: "cover",
+                    border: lineWidth === 3 ? "2px solid blue" : "none",
+                  }}
+                ></button>
+                <button
+                  onClick={() => setWidth(5)}
+                  style={{
+                    background: `url(${width3Image})`,
+                    width: "30px",
+                    height: "30px",
+                    backgroundSize: "cover",
+                    border: lineWidth === 5 ? "2px solid blue" : "none",
+                  }}
+                ></button>
+                <button
+                  onClick={() => setWidth(10)}
+                  style={{
+                    background: `url(${width4Image})`,
+                    width: "30px",
+                    height: "30px",
+                    backgroundSize: "cover",
+                    border: lineWidth === 10 ? "2px solid blue" : "none",
+                  }}
+                ></button>
+                <button
+                  onClick={() => setWidth(15)}
+                  style={{
+                    background: `url(${width5Image})`,
+                    width: "30px",
+                    height: "30px",
+                    backgroundSize: "cover",
+                    border: lineWidth === 15 ? "2px solid blue" : "none",
+                  }}
+                ></button>
+              </div>
+            </div>
+          </div>
+        )}
+        <button
+          onClick={toggleColorPicker}
+          style={{
+            width: "60px",
+            height: "60px",
+            padding: "10px",
+            background: `url(${penImage}) no-repeat center center`,
+            backgroundSize: "cover",
+            border: "none",
+          }}
+        ></button>
         <button
           onClick={() => setEraser()}
           style={{
@@ -347,29 +405,27 @@ function DrawingPage() {
           }}
         ></button>
         <button
-      onClick={() => handleFill()}
-    style={{
-      width: "60px",
-      height: "60px",
-      padding: "10px",
-      background: `url(${fillImage}) no-repeat center center`,
-      backgroundSize: "cover",
-      border: "none"
-    }}
-  >
-        </button>
+          onClick={() => handleFill()}
+          style={{
+            width: "60px",
+            height: "60px",
+            padding: "10px",
+            background: `url(${fillImage}) no-repeat center center`,
+            backgroundSize: "cover",
+            border: "none",
+          }}
+        ></button>
         <button
-      onClick={() => handleDescribeDrawing()}
-    style={{
-      width: "60px",
-      height: "60px",
-      padding: "10px",
-      background: `url(${magicImage}) no-repeat center center`,
-      backgroundSize: "cover",
-      border: "none"
-    }}
-  >
-        </button>
+          onClick={() => handleDescribeDrawing()}
+          style={{
+            width: "60px",
+            height: "60px",
+            padding: "10px",
+            background: `url(${magicImage}) no-repeat center center`,
+            backgroundSize: "cover",
+            border: "none",
+          }}
+        ></button>
       </div>
       {showTextInput && (
         <div
