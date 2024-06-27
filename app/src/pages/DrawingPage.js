@@ -12,6 +12,7 @@ import Toolbox from "../components/Toolbox";
 import ColorPicker from "../components/ColorPicker";
 import TextInput from "../components/TextInput";
 import LineWidthPicker from "../components/LineWidthPicker";
+import ActionButtons from "../components/ActionButton"; 
 import "./DrawingPage.css";
 
 
@@ -31,6 +32,7 @@ function DrawingPage() {
   const [history, setHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [colors, setColors] = useState(["black", "red", "green", "orange", "blue", "purple"]);
 
 
   const uploadDrawing = async () => {
@@ -142,11 +144,23 @@ function DrawingPage() {
       state: { docId: docRef.id },
     });
   };
+  
 
-  const colors = useMemo(
-    () => ["black", "red", "green", "orange", "blue", "purple"],
-    []
-  );
+  const generateRandomColors = () => {
+    const canvas = canvasRef.current;
+    const currentDrawing = canvas.toDataURL();
+
+    const randomColors = Array.from({ length: 6 }, () => `#${Math.floor(Math.random() * 16777215).toString(16)}`);
+    setColors(randomColors);
+
+    const context = canvas.getContext("2d");
+    const img = new Image();
+    img.src = currentDrawing;
+    img.onload = () => {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(img, 0, 0);
+    };
+  };
 
   const updateDraw = (e) => {
     if (!isPressed) return;
@@ -208,28 +222,42 @@ function DrawingPage() {
     context.fillText(inputText, 50, 50);
     setInputText("");
     setShowTextInput(false);
-    saveHistory(); // Save history after adding text
+    saveHistory(); 
   };
 
-  
+  const drawingRef = useRef(null); // Ref to store current drawing
+
   useEffect(() => {
     const handleResize = () => {
       const canvas = canvasRef.current;
       if (canvas) {
+        // Save current drawing to a data URL
+        drawingRef.current = canvas.toDataURL();
+  
+        // Resize the canvas
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
+  
+        // Restore the saved drawing
+        const context = canvas.getContext("2d");
+        const img = new Image();
+        img.src = drawingRef.current;
+        img.onload = () => {
+          context.drawImage(img, 0, 0);
+        };
       }
     };
-
+  
     window.addEventListener("resize", handleResize);
-
+  
     // Initial resize
     handleResize();
-
+  
     return () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+  
 
   const saveHistory = () => {
     const canvas = canvasRef.current;
@@ -283,6 +311,23 @@ function DrawingPage() {
 
   return (
     <div className="DrawingPage">
+      <div className="top-toolbar">
+        <ActionButtons
+          onClear={() => {
+            const canvas = canvasRef.current;
+            const context = canvas.getContext("2d");
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            saveHistory();
+          }}
+          onUndo={undo}
+          onRedo={redo}
+          undoDisabled={historyIndex <= 0}
+          redoDisabled={historyIndex >= history.length - 1}
+        />
+        <button className="completeButton" onClick={uploadDrawing}>
+          Upload
+        </button>
+      </div>
       <Canvas
         ref={canvasRef}
         colors={colors}
@@ -292,26 +337,7 @@ function DrawingPage() {
         setIsPressed={setIsPressed}
         updateDraw={updateDraw}
       />
-      <div className="toolbar">
-        <button className="completeButton" onClick={uploadDrawing}>
-          Upload
-        </button>
-        <button
-          onClick={() => {
-            const canvas = canvasRef.current;
-            const context = canvas.getContext("2d");
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            saveHistory();
-          }}
-        >
-          Clear
-        </button>
-        <button onClick={undo} disabled={historyIndex <= 0}>
-          Undo
-        </button>
-        <button onClick={redo} disabled={historyIndex >= history.length - 1}>
-          Redo
-        </button>
+      <div className="bottom-toolbar">
         <Toolbox
           setEraser={setEraser}
           toggleColorPicker={toggleColorPicker}
@@ -319,13 +345,16 @@ function DrawingPage() {
           handleDescribeDrawing={handleDescribeDrawing}
         />
         {showColorPopup && (
-          <ColorPicker
-            colors={colors}
-            selectedColor={selectedColor}
-            setColor={setColor}
-            showColorPopup={showColorPopup}
-          />
-        )}
+      <>
+    <ColorPicker
+      colors={colors}
+      selectedColor={selectedColor}
+      setColor={setColor}
+      showColorPopup={showColorPopup}
+      generateRandomColors={generateRandomColors}
+    />
+  </>
+)}
         {showColorPopup && (
           <LineWidthPicker
             setWidth={setWidth}
