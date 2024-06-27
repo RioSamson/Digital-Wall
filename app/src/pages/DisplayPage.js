@@ -17,18 +17,22 @@ function DisplayPage() {
   const { currentUser } = useAuth();
   const [backgroundImage, setBackgroundImage] = useState(imageUrl);
   const [drawings, setDrawings] = useState([]);
-  const [drawingPositions, setDrawingPositions] = useState([]);
+  const [coordinates, setCoordinates] = useState([]);
   const containerRef = useRef(null);
 
   useEffect(() => {
     const fetchScene = async () => {
-      if (!backgroundImage && selectedScene) {
+      if (selectedScene) {
         try {
           const docRef = doc(db, "Themes", selectedScene);
           const docSnap = await getDoc(docRef);
 
           if (docSnap.exists()) {
-            setBackgroundImage(docSnap.data().background_img);
+            const data = docSnap.data();
+            setCoordinates(data.coordinates || []);
+            if (!backgroundImage) {
+              setBackgroundImage(data.background_img);
+            }
           } else {
             console.log("No such document!");
           }
@@ -55,7 +59,6 @@ function DisplayPage() {
           }));
 
           setDrawings(drawingsList);
-          calculatePositions(drawingsList);
         } catch (error) {
           console.error("Error fetching drawings:", error);
         }
@@ -65,43 +68,6 @@ function DisplayPage() {
     fetchScene();
     fetchDrawings();
   }, [selectedScene, currentUser, backgroundImage]);
-
-  const calculatePositions = (drawingsList) => {
-    const positions = [];
-    const checkOverlap = (newPos, positions) => {
-      return positions.some(
-        (pos) =>
-          Math.abs(newPos.top - pos.top) < 10 &&
-          Math.abs(newPos.left - pos.left) < 10
-      );
-    };
-
-    drawingsList.forEach((drawing) => {
-      let top, left, newPos;
-
-      do {
-        left = Math.random() * 90; // Random left position between 0 and 90%
-        if (drawing.displayArea === "top") {
-          top = Math.random() * 30; // Random top position in the top third (0-30%)
-        } else if (drawing.displayArea === "center") {
-          top = 30 + Math.random() * 30; // Random top position in the middle third (30-60%)
-        } else if (drawing.displayArea === "bottom") {
-          top = 60 + Math.random() * 30; // Random top position in the bottom third (60-90%)
-        }
-
-        newPos = { top, left };
-      } while (checkOverlap(newPos, positions));
-
-      positions.push(newPos);
-    });
-
-    setDrawingPositions(
-      positions.map((pos) => ({
-        top: `${pos.top}%`,
-        left: `${pos.left}%`,
-      }))
-    );
-  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -125,6 +91,29 @@ function DisplayPage() {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  const getRandomDrawings = (drawingsList, area, numCoordinates) => {
+    const filteredDrawings = drawingsList.filter(
+      (drawing) => drawing.displayArea === area
+    );
+    const shuffledDrawings = filteredDrawings.sort(() => 0.5 - Math.random());
+    return shuffledDrawings.slice(0, numCoordinates);
+  };
+
+  const groupedCoordinates = coordinates.reduce((acc, coord) => {
+    if (!acc[coord.area]) acc[coord.area] = [];
+    acc[coord.area].push(coord);
+    return acc;
+  }, {});
+
+  const selectedDrawings = {};
+  Object.keys(groupedCoordinates).forEach((area) => {
+    selectedDrawings[area] = getRandomDrawings(
+      drawings,
+      area,
+      groupedCoordinates[area].length
+    );
+  });
 
   return (
     <div
@@ -174,29 +163,37 @@ function DisplayPage() {
             boxSizing: "border-box",
           }}
         >
-          {drawings.map((drawing, index) => (
-            <div
-              key={index}
-              style={{
-                position: "absolute",
-                width: "10%",
-                height: "10%",
-                top: drawingPositions[index]?.top || "0%",
-                left: drawingPositions[index]?.left || "0%",
-                boxSizing: "border-box",
-              }}
-            >
-              <img
-                src={drawing.enhanced_drawings}
-                alt={`Drawing ${index}`}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "contain",
-                }}
-              />
-            </div>
-          ))}
+          {Object.keys(groupedCoordinates).map((area) =>
+            groupedCoordinates[area].map((coord, index) => {
+              const drawing = selectedDrawings[area][index];
+              if (drawing) {
+                return (
+                  <div
+                    key={`${area}-${index}`}
+                    style={{
+                      position: "absolute",
+                      width: "10%",
+                      height: "10%",
+                      top: `${coord.y}%`,
+                      left: `${coord.x}%`,
+                      boxSizing: "border-box",
+                    }}
+                  >
+                    <img
+                      src={drawing.enhanced_drawings}
+                      alt={`Drawing ${index}`}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "contain",
+                      }}
+                    />
+                  </div>
+                );
+              }
+              return null;
+            })
+          )}
         </div>
       </div>
     </div>
