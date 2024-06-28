@@ -24,14 +24,13 @@ function DrawingPage() {
   const [mode, setMode] = useState("pencil");
   const [showTextInput, setShowTextInput] = useState(false);
   const [inputText, setInputText] = useState("");
-  const [enhancePrompt, setEnhancePrompt] = useState(""); // New state for enhanced prompt
+  const [enhancePrompt, setEnhancePrompt] = useState(""); // State for storing the enhance prompt
   const { selectedScene, area } = location.state || {};
   const [showColorPopup, setShowColorPopup] = useState(false);
   const [lineWidth, setLineWidth] = useState(5);
   const [showEraserPopup, setShowEraserPopup] = useState(false);
   const [history, setHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
   const [colors, setColors] = useState([
     "black",
     "red",
@@ -68,7 +67,7 @@ function DrawingPage() {
 
     originalUrl = await uploadImage(`drawing/original-${Date.now()}.png`, blob);
 
-    const sendToBaseten = async (base64Img, prompt) => {
+    const sendToBaseten = async (base64Img) => {
       const url = "/model_versions/q48rmd3/predict"; // Replace with your Baseten endpoint
       const headers = {
         Authorization: "Api-Key 13235osK.AVglR2jVhzMHR1txMuFJCD49TEmV6FXY",
@@ -77,7 +76,7 @@ function DrawingPage() {
 
       const imageData = base64Img.split(",")[1];
       const data = {
-        prompt: prompt,
+        prompt: enhancePrompt || "an angel fish", // Use the saved prompt or default
         images_data: imageData,
         guidance_scale: 8,
         lcm_steps: 50,
@@ -108,7 +107,7 @@ function DrawingPage() {
       }
     };
 
-    const enhancedBase64 = await sendToBaseten(base64Image, enhancePrompt);
+    const enhancedBase64 = await sendToBaseten(base64Image);
     if (!enhancedBase64) return;
 
     const enhancedBlob = await fetch(enhancedBase64)
@@ -223,11 +222,6 @@ function DrawingPage() {
   };
 
   const handleTextSubmit = () => {
-    const canvas = canvasRef.current;
-    const context = canvas.getContext("2d");
-    context.font = "20px Arial";
-    context.fillStyle = "black";
-    context.fillText(inputText, 50, 50);
     setEnhancePrompt(inputText); // Save the text as the prompt
     setInputText("");
     setShowTextInput(false);
@@ -246,11 +240,9 @@ function DrawingPage() {
         // Resize the canvas
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        const context = canvas.getContext("2d");
-        context.fillStyle = "white"; // Set the fill color to white
-        context.fillRect(0, 0, canvas.width, canvas.height); // Fill the entire canvas with white
 
         // Restore the saved drawing
+        const context = canvas.getContext("2d");
         const img = new Image();
         img.src = drawingRef.current;
         img.onload = () => {
@@ -347,28 +339,7 @@ function DrawingPage() {
         setIsPressed={setIsPressed}
         updateDraw={updateDraw}
       />
-      <div className="toolbar">
-        <button className="completeButton" onClick={uploadDrawing}>
-          Upload
-        </button>
-        <button
-          onClick={() => {
-            const canvas = canvasRef.current;
-            const context = canvas.getContext("2d");
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            context.fillStyle = "white"; // Ensure the canvas is filled with white when cleared
-            context.fillRect(0, 0, canvas.width, canvas.height);
-            saveHistory();
-          }}
-        >
-          Clear
-        </button>
-        <button onClick={undo} disabled={historyIndex <= 0}>
-          Undo
-        </button>
-        <button onClick={redo} disabled={historyIndex >= history.length - 1}>
-          Redo
-        </button>
+      <div className="bottom-toolbar">
         <Toolbox
           setEraser={setEraser}
           toggleColorPicker={toggleColorPicker}
