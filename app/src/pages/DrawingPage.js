@@ -29,6 +29,7 @@ function DrawingPage() {
   const [showColorPopup, setShowColorPopup] = useState(false);
   const [lineWidth, setLineWidth] = useState(5);
   const [showEraserPopup, setShowEraserPopup] = useState(false);
+  const [showFillPopup, setShowFillPopup] = useState(false);
   const [history, setHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -190,6 +191,7 @@ function DrawingPage() {
   const toggleColorPicker = () => {
     setShowEraserPopup(false);
     setShowColorPopup(!showColorPopup);
+    setShowFillPopup(false);
   };
 
   const setWidth = (width) => {
@@ -201,6 +203,7 @@ function DrawingPage() {
   const setEraser = () => {
     setShowEraserPopup(!showEraserPopup);
     setShowColorPopup(false);
+    setShowFillPopup(false);
     const context = canvasRef.current.getContext("2d");
     context.strokeStyle = "white";
     setMode("eraser");
@@ -211,7 +214,9 @@ function DrawingPage() {
   };
 
   const handleFill = () => {
-    // handle fill
+    setShowColorPopup(false);
+    setShowEraserPopup(false);
+    setShowFillPopup(!showFillPopup);
   };
 
   const handleTextSubmit = () => {
@@ -338,44 +343,51 @@ function DrawingPage() {
         updateDraw={updateDraw}
       />
       <div className="bottom-toolbar">
-        <Toolbox
-          setEraser={setEraser}
-          toggleColorPicker={toggleColorPicker}
-          handleFill={handleFill}
-          handleDescribeDrawing={handleDescribeDrawing}
-        />
-        {showColorPopup && (
-      <>
+  <Toolbox
+    setEraser={setEraser}
+    toggleColorPicker={toggleColorPicker}
+    handleFill={handleFill}
+    handleDescribeDrawing={handleDescribeDrawing}
+  />
+  {showFillPopup && (
     <ColorPicker
       colors={colors}
       selectedColor={selectedColor}
       setColor={setColor}
-      showColorPopup={showColorPopup}
+      showColorPopup={showFillPopup}
       generateRandomColors={generateRandomColors}
     />
-  </>
-)}
-        {showColorPopup && (
-          <LineWidthPicker
-            setWidth={setWidth}
-            lineWidth={lineWidth}
-            showLineWidthPopup={showColorPopup}
-          />
-        )}
-        {showEraserPopup && (
-          <LineWidthPicker
-            setWidth={setWidth}
-            lineWidth={lineWidth}
-            showLineWidthPopup={showEraserPopup}
-          />
-        )}
-        <TextInput
-          showTextInput={showTextInput}
-          inputText={inputText}
-          setInputText={setInputText}
-          handleTextSubmit={handleTextSubmit}
-        />
-      </div>
+  )}
+  {showColorPopup && (
+    <>
+      <ColorPicker
+        colors={colors}
+        selectedColor={selectedColor}
+        setColor={setColor}
+        showColorPopup={showColorPopup}
+        generateRandomColors={generateRandomColors}
+      />
+      <LineWidthPicker
+        setWidth={setWidth}
+        lineWidth={lineWidth}
+        showLineWidthPopup={showColorPopup}
+      />
+    </>
+  )}
+  {showEraserPopup && (
+    <LineWidthPicker
+      setWidth={setWidth}
+      lineWidth={lineWidth}
+      showLineWidthPopup={showEraserPopup}
+    />
+  )}
+  <TextInput
+    showTextInput={showTextInput}
+    inputText={inputText}
+    setInputText={setInputText}
+    handleTextSubmit={handleTextSubmit}
+  />
+</div>
     </div>
   );
 }
