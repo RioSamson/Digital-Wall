@@ -217,6 +217,7 @@ function DrawingPage() {
     setShowColorPopup(false);
     setShowEraserPopup(false);
     setShowFillPopup(!showFillPopup);
+    setMode("fill");
   };
 
   const handleTextSubmit = () => {
@@ -314,6 +315,88 @@ function DrawingPage() {
     }
   }, [isPressed]);
 
+  //fill functionality
+  const floodFill = (x, y, fillColor) => {
+    const canvas = canvasRef.current;
+    const context = canvas.getContext("2d");
+    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+  console.log("this is inside flood fill")
+    const targetColor = getColorAtPixel(data, x, y);
+    if (colorsMatch(targetColor, fillColor)) {
+      console.log("inside colour match")
+      return;
+    }
+  
+    const stack = [[x, y]];
+    while (stack.length > 0) {
+      console.log("stack length > 0")
+      const [cx, cy] = stack.pop();
+
+    if (cx < 0 || cy < 0 || cx >= canvas.width || cy >= canvas.height) {
+      continue;
+    }
+
+    const currentIndex = (cy * canvas.width + cx) * 4;
+    if (!colorsMatch(getColorAtPixel(data, cx, cy), targetColor)) {
+      continue;
+    }
+
+    setColorAtPixel(data, cx, cy, fillColor);
+    stack.push([cx + 1, cy]);
+    stack.push([cx - 1, cy]);
+    stack.push([cx, cy + 1]);
+    stack.push([cx, cy - 1]);
+    }
+  
+    context.putImageData(imageData, 0, 0);
+    saveHistory(); // Save the state after filling
+  };
+  
+  const getColorAtPixel = (data, x, y) => {
+    const index = (y * canvasRef.current.width + x) * 4;
+    return [data[index], data[index + 1], data[index + 2], data[index + 3]];
+  };
+  
+  const setColorAtPixel = (data, x, y, color) => {
+    const index = (y * canvasRef.current.width + x) * 4;
+    data[index] = color[0];
+    data[index + 1] = color[1];
+    data[index + 2] = color[2];
+    data[index + 3] = color[3];
+  };
+  
+  const colorsMatch = (color1, color2) => {
+    return color1[0] === color2[0] && color1[1] === color2[1] && color1[2] === color2[2] && color1[3] === color2[3];
+  };
+
+  const hexToRGBA = (hex) => {
+    let r = 0, g = 0, b = 0, a = 255;
+    if (hex.length === 7) {
+      r = parseInt(hex.slice(1, 3), 16);
+      g = parseInt(hex.slice(3, 5), 16);
+      b = parseInt(hex.slice(5, 7), 16);
+    }
+    return [r, g, b, a];
+  };
+
+  const handleCanvasClick = (event) => {
+    console.log("canvas is clicked")
+    if (mode === "fill") {
+      console.log("mode is fill");
+      const canvas = canvasRef.current;
+      const rect = canvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      const fillColor = hexToRGBA(selectedColor);
+  
+      floodFill(x, y, fillColor); 
+    }
+  };
+  
+
+
+  
   return (
     <div className="DrawingPage">
       <div className="top-toolbar">
@@ -333,15 +416,17 @@ function DrawingPage() {
           Upload
         </button>
       </div>
-      <Canvas
-        ref={canvasRef}
-        colors={colors}
-        selectedColor={selectedColor}
-        lineWidth={lineWidth}
-        mode={mode}
-        setIsPressed={setIsPressed}
-        updateDraw={updateDraw}
-      />
+      <div className="canvas-container" onClick={handleCanvasClick}>
+        <Canvas
+          ref={canvasRef}
+          colors={colors}
+          selectedColor={selectedColor}
+          lineWidth={lineWidth}
+          mode={mode}
+          setIsPressed={setIsPressed}
+          updateDraw={updateDraw}
+        />
+      </div>
       <div className="bottom-toolbar">
   <Toolbox
     setEraser={setEraser}
@@ -356,6 +441,8 @@ function DrawingPage() {
       setColor={setColor}
       showColorPopup={showFillPopup}
       generateRandomColors={generateRandomColors}
+      floodFill={floodFill}
+      canvasRef={canvasRef}
     />
   )}
   {showColorPopup && (
@@ -366,6 +453,7 @@ function DrawingPage() {
         setColor={setColor}
         showColorPopup={showColorPopup}
         generateRandomColors={generateRandomColors}
+        canvasRef={canvasRef}
       />
       <LineWidthPicker
         setWidth={setWidth}
