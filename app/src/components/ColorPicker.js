@@ -28,10 +28,10 @@ const ColorPicker = ({ colors, selectedColor, setColor, showColorPopup, generate
           style={{
             width: "25px",
             height: "25px",
-            padding: "2px",
             background: `url(${regenerateImg}) no-repeat center center`,
             backgroundSize: "cover",
             border: "none",
+            padding:"5px",
             marginLeft: "5px",
           }}
         />
