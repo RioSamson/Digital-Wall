@@ -177,6 +177,18 @@ function DrawingPage() {
         : (e.touches[0]?.clientY || 0) - canvas.getBoundingClientRect().top;
 
     const context = canvas.getContext("2d");
+    if (mode === "eraser") {
+      context.globalCompositeOperation = "destination-out";
+      context.strokeStyle = "rgba(0,0,0,1)";
+    } else {
+      context.globalCompositeOperation = "source-over";
+      context.strokeStyle = selectedColor;
+    }
+  
+    context.lineWidth = lineWidth;
+    context.lineCap = "round";
+    context.lineJoin = "round";
+  
     context.lineTo(offsetX, offsetY);
     context.stroke();
   };
@@ -204,8 +216,6 @@ function DrawingPage() {
     setShowEraserPopup(!showEraserPopup);
     setShowColorPopup(false);
     setShowFillPopup(false);
-    const context = canvasRef.current.getContext("2d");
-    context.strokeStyle = "white";
     setMode("eraser");
   };
 
@@ -384,13 +394,13 @@ function DrawingPage() {
     console.log("canvas is clicked")
     if (mode === "fill") {
       console.log("mode is fill");
-      const canvas = canvasRef.current;
-      const rect = canvas.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      const fillColor = hexToRGBA(selectedColor);
+      // const canvas = canvasRef.current;
+      // const rect = canvas.getBoundingClientRect();
+      // const x = event.clientX - rect.left;
+      // const y = event.clientY - rect.top;
+      // const fillColor = hexToRGBA(selectedColor);
   
-      floodFill(x, y, fillColor); 
+      // floodFill(x, y, fillColor); 
     }
   };
   
