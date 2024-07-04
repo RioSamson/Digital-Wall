@@ -446,6 +446,8 @@ function DrawingPage() {
     toggleColorPicker={toggleColorPicker}
     handleFill={handleFill}
     handleDescribeDrawing={handleDescribeDrawing}
+    mode={mode}
+    setMode={setMode}
   />
   {showFillPopup && (
   <div className="popup">
@@ -462,21 +464,25 @@ function DrawingPage() {
 )}
   {showColorPopup && (
   <div className="popup">
-    <ColorPicker
-      colors={colors}
-      selectedColor={selectedColor}
-      setColor={setColor}
-      showColorPopup={showColorPopup}
-      generateRandomColors={generateRandomColors}
-      canvasRef={canvasRef}
-    />
-    <LineWidthPicker
-      setWidth={setWidth}
-      lineWidth={lineWidth}
-      showLineWidthPopup={showColorPopup}
-    />
+    <div className="color-picker-wrapper">
+      <ColorPicker
+        colors={colors}
+        selectedColor={selectedColor}
+        setColor={setColor}
+        showColorPopup={showColorPopup}
+        generateRandomColors={generateRandomColors}
+        canvasRef={canvasRef}
+      />
+      <div className="divider"></div>
+      <LineWidthPicker
+        setWidth={setWidth}
+        lineWidth={lineWidth}
+        showLineWidthPopup={showColorPopup}
+      />
+    </div>
   </div>
 )}
+
  {showEraserPopup && (
   <div className="popup">
     <LineWidthPicker
