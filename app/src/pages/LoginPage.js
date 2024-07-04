@@ -57,14 +57,15 @@ export default function LoginPage() {
       )}
       <button
         onClick={handleLogin}
-        style={{ margin: '30px', padding: '10px 40px' }}
+        style={{ margin: '30px', padding: '10px 40px',backgroundColor: 'black', color:'white', border:'none', borderRadius:'5px' }}
         disabled={isSigningIn}
+        
       >
         Login
       </button>
       <div style={{ marginTop: '20px' }}>
         <span>Don't have an account?</span>
-        <Link to="/register" style={{ marginLeft: '5px', color: 'blue' }}>Create Account</Link>
+        <Link to="/register" style={{ marginLeft: '5px', color: 'orange',textDecoration: 'none'  }}>Create Account</Link>
       </div>
     </div>
   );
