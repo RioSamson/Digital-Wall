@@ -193,11 +193,10 @@ function DrawingPage() {
     };
   };
   
-  // Function to check if two colors are similar
   const isColorSimilar = (color1, color2) => {
     const rgb1 = hexToRgb(color1);
     const rgb2 = hexToRgb(color2);
-    const threshold = 30; // Adjust the threshold as needed
+    const threshold = 50;
   
     return (
       Math.abs(rgb1.r - rgb2.r) < threshold &&
