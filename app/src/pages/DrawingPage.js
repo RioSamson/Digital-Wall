@@ -12,9 +12,8 @@ import Toolbox from "../components/Toolbox";
 import ColorPicker from "../components/ColorPicker";
 import TextInput from "../components/TextInput";
 import LineWidthPicker from "../components/LineWidthPicker";
-import ActionButtons from "../components/ActionButton"; 
+import ActionButtons from "../components/ActionButton";
 import "./DrawingPage.css";
-
 
 function DrawingPage() {
   const navigate = useNavigate();
@@ -25,6 +24,7 @@ function DrawingPage() {
   const [mode, setMode] = useState("pencil");
   const [showTextInput, setShowTextInput] = useState(false);
   const [inputText, setInputText] = useState("");
+  const [enhancePrompt, setEnhancePrompt] = useState(""); // State for storing the enhance prompt
   const { selectedScene, area } = location.state || {};
   const [showColorPopup, setShowColorPopup] = useState(false);
   const [lineWidth, setLineWidth] = useState(5);
@@ -32,9 +32,14 @@ function DrawingPage() {
   const [showFillPopup, setShowFillPopup] = useState(false);
   const [history, setHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [colors, setColors] = useState(["black", "red", "green", "orange", "blue", "purple"]);
-
+  const [colors, setColors] = useState([
+    "black",
+    "red",
+    "green",
+    "orange",
+    "blue",
+    "purple",
+  ]);
 
   const uploadDrawing = async () => {
     const canvas = canvasRef.current;
@@ -72,7 +77,7 @@ function DrawingPage() {
 
       const imageData = base64Img.split(",")[1];
       const data = {
-        prompt: "an angel fish",
+        prompt: enhancePrompt || "an angel fish", // Use the saved prompt or default
         images_data: imageData,
         guidance_scale: 8,
         lcm_steps: 50,
@@ -145,13 +150,15 @@ function DrawingPage() {
       state: { docId: docRef.id },
     });
   };
-  
 
   const generateRandomColors = () => {
     const canvas = canvasRef.current;
     const currentDrawing = canvas.toDataURL();
 
-    const randomColors = Array.from({ length: 6 }, () => `#${Math.floor(Math.random() * 16777215).toString(16)}`);
+    const randomColors = Array.from(
+      { length: 6 },
+      () => `#${Math.floor(Math.random() * 16777215).toString(16)}`
+    );
     setColors(randomColors);
 
     const context = canvas.getContext("2d");
@@ -231,14 +238,10 @@ function DrawingPage() {
   };
 
   const handleTextSubmit = () => {
-    const canvas = canvasRef.current;
-    const context = canvas.getContext("2d");
-    context.font = "20px Arial";
-    context.fillStyle = "black";
-    context.fillText(inputText, 50, 50);
+    setEnhancePrompt(inputText); // Save the text as the prompt
     setInputText("");
     setShowTextInput(false);
-    saveHistory(); 
+    saveHistory();
   };
 
   const drawingRef = useRef(null); // Ref to store current drawing
@@ -249,11 +252,11 @@ function DrawingPage() {
       if (canvas) {
         // Save current drawing to a data URL
         drawingRef.current = canvas.toDataURL();
-  
+
         // Resize the canvas
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-  
+
         // Restore the saved drawing
         const context = canvas.getContext("2d");
         const img = new Image();
@@ -263,17 +266,16 @@ function DrawingPage() {
         };
       }
     };
-  
+
     window.addEventListener("resize", handleResize);
-  
+
     // Initial resize
     handleResize();
-  
+
     return () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-  
 
   const saveHistory = () => {
     const canvas = canvasRef.current;
@@ -484,6 +486,7 @@ function DrawingPage() {
     inputText={inputText}
     setInputText={setInputText}
     handleTextSubmit={handleTextSubmit}
+    buttonLabel="Enhance"
   />
 </div>
     </div>

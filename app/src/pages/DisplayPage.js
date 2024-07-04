@@ -172,8 +172,8 @@ function DisplayPage() {
                     key={`${area}-${index}`}
                     style={{
                       position: "absolute",
-                      width: "10%",
-                      height: "10%",
+                      width: "13%",
+                      height: "13%",
                       top: `${coord.y}%`,
                       left: `${coord.x}%`,
                       boxSizing: "border-box",
