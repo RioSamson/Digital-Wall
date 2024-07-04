@@ -1,5 +1,5 @@
 import React from "react";
-import regenerateImg from "../assets/regenarate.png"; // Ensure this path is correct
+import regenerateImg from "../assets/regenarate.png";
 
 const ColorPicker = ({ colors, selectedColor, setColor, showColorPopup, generateRandomColors }) => {
   if (!showColorPopup) return null;

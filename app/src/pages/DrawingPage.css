@@ -6,20 +6,6 @@
   overflow: hidden;
 }
 
-/* .top-bar {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px;
-  background-color: #f0f0f0;
-  z-index: 1;
-  width: 100%;
-  position: fixed;
-  top: 0;
-} */
-
-/* .top-bar button {
-  margin: 0 5px;
-} */
 .completeButton {
   margin-left: 10px;
   margin-right: 20px; 
@@ -44,12 +30,21 @@
   display: flex;
   justify-content: center;
   padding: 10px;
-  background-color: #f0f0f0;
+  background-color: white;
   position: fixed;
   bottom: 0;
   width: 100%;
+  z-index: 10;
+  margin-top: '5px';
 }
 
+.popup {
+  position: absolute;
+  bottom: 60px; /* Adjust based on toolbar height */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9; /* Ensure the popup is above other elements but below the toolbar */
+}
 .Canvas {
   flex: 1;
   display: flex;

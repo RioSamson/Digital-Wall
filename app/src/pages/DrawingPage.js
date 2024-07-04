@@ -173,6 +173,10 @@ function DrawingPage() {
   const updateDraw = (e) => {
     if (!isPressed) return;
 
+    setShowColorPopup(false);
+    setShowEraserPopup(false);
+    setShowFillPopup(false);
+
     const canvas = canvasRef.current;
     const offsetX =
       e.nativeEvent.offsetX !== undefined
@@ -406,9 +410,6 @@ function DrawingPage() {
     }
   };
   
-
-
-  
   return (
     <div className="DrawingPage">
       <div className="top-toolbar">
@@ -447,6 +448,7 @@ function DrawingPage() {
     handleDescribeDrawing={handleDescribeDrawing}
   />
   {showFillPopup && (
+  <div className="popup">
     <ColorPicker
       colors={colors}
       selectedColor={selectedColor}
@@ -456,31 +458,34 @@ function DrawingPage() {
       floodFill={floodFill}
       canvasRef={canvasRef}
     />
-  )}
+  </div>
+)}
   {showColorPopup && (
-    <>
-      <ColorPicker
-        colors={colors}
-        selectedColor={selectedColor}
-        setColor={setColor}
-        showColorPopup={showColorPopup}
-        generateRandomColors={generateRandomColors}
-        canvasRef={canvasRef}
-      />
-      <LineWidthPicker
-        setWidth={setWidth}
-        lineWidth={lineWidth}
-        showLineWidthPopup={showColorPopup}
-      />
-    </>
-  )}
-  {showEraserPopup && (
+  <div className="popup">
+    <ColorPicker
+      colors={colors}
+      selectedColor={selectedColor}
+      setColor={setColor}
+      showColorPopup={showColorPopup}
+      generateRandomColors={generateRandomColors}
+      canvasRef={canvasRef}
+    />
+    <LineWidthPicker
+      setWidth={setWidth}
+      lineWidth={lineWidth}
+      showLineWidthPopup={showColorPopup}
+    />
+  </div>
+)}
+ {showEraserPopup && (
+  <div className="popup">
     <LineWidthPicker
       setWidth={setWidth}
       lineWidth={lineWidth}
       showLineWidthPopup={showEraserPopup}
     />
-  )}
+  </div>
+)}
   <TextInput
     showTextInput={showTextInput}
     inputText={inputText}
