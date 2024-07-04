@@ -63,12 +63,13 @@ const Toolbox = ({ setEraser, toggleColorPicker, handleFill, handleDescribeDrawi
         style={{
           width: "60px",
           height: "60px",
-          padding: "10px",
+          padding: "5px",
           background: mode === "pencil" ? "orange" : "white",
           border: "none",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+          borderRadius: "5px",
         }}
       >
         {mode === "pencil" ? SelectedPenSVG : DefaultPenSVG}
@@ -79,12 +80,13 @@ const Toolbox = ({ setEraser, toggleColorPicker, handleFill, handleDescribeDrawi
         style={{
           width: "60px",
           height: "60px",
-          padding: "10px",
+          padding: "5px",
           background: mode === "eraser" ? "orange" : "white",
           border: "none",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+          borderRadius: "5px",
         }}
       >
         {mode === "eraser" ? SelectedEraserSVG : DefaultEraserSVG}
@@ -95,12 +97,13 @@ const Toolbox = ({ setEraser, toggleColorPicker, handleFill, handleDescribeDrawi
         style={{
           width: "60px",
           height: "60px",
-          padding: "10px",
+          padding: "5px",
           background: mode === "fill" ? "orange" : "white",
           border: "none",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+          borderRadius: "5px",
         }}
       >
         {mode === "fill" ? SelectedFillSVG : DefaultFillSVG}

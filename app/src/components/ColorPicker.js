@@ -18,7 +18,7 @@ const ColorPicker = ({ colors, selectedColor, setColor, showColorPopup, generate
               borderRadius: "50%",
               margin: "5px",
               border: selectedColor === color ? "2px solid black" : "none",
-              padding: "10px",
+              padding: selectedColor === color ? "15px" : "5px",
               boxSizing: "border-box",
             }}
           />
