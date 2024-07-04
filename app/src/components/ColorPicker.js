@@ -1,5 +1,5 @@
 import React from "react";
-import regenerateImg from "../assets/regenarate.png"; // Ensure this path is correct
+import regenerateImg from "../assets/regenarate.png";
 
 const ColorPicker = ({ colors, selectedColor, setColor, showColorPopup, generateRandomColors }) => {
   if (!showColorPopup) return null;
@@ -18,7 +18,7 @@ const ColorPicker = ({ colors, selectedColor, setColor, showColorPopup, generate
               borderRadius: "50%",
               margin: "5px",
               border: selectedColor === color ? "2px solid black" : "none",
-              padding: "10px",
+              padding: selectedColor === color ? "15px" : "5px",
               boxSizing: "border-box",
             }}
           />
@@ -28,10 +28,10 @@ const ColorPicker = ({ colors, selectedColor, setColor, showColorPopup, generate
           style={{
             width: "25px",
             height: "25px",
-            padding: "2px",
             background: `url(${regenerateImg}) no-repeat center center`,
             backgroundSize: "cover",
             border: "none",
+            padding:"5px",
             marginLeft: "5px",
           }}
         />

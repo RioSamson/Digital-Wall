@@ -7,18 +7,6 @@ const ActionButtons = ({ onClear, onUndo, onRedo, undoDisabled, redoDisabled }) 
   return (
     <div style={{ display: "flex", gap: "10px" }}>
       <button
-        onClick={onClear}
-        style={{
-          background: `url(${clearImg}) no-repeat center center`,
-          backgroundSize: "contain",
-          width: "30px",
-          height: "30px",
-          border: "none",
-          cursor: "pointer",
-        }}
-        aria-label="Clear"
-      />
-      <button
         onClick={onUndo}
         disabled={undoDisabled}
         style={{
@@ -28,6 +16,7 @@ const ActionButtons = ({ onClear, onUndo, onRedo, undoDisabled, redoDisabled }) 
           height: "30px",
           border: "none",
           cursor: "pointer",
+          margin: "3px",
           opacity: undoDisabled ? 0.5 : 1,
         }}
         aria-label="Undo"
@@ -42,9 +31,23 @@ const ActionButtons = ({ onClear, onUndo, onRedo, undoDisabled, redoDisabled }) 
           height: "30px",
           border: "none",
           cursor: "pointer",
+          margin: "3px",
           opacity: redoDisabled ? 0.5 : 1,
         }}
         aria-label="Redo"
+      />
+      <button
+        onClick={onClear}
+        style={{
+          background: `url(${clearImg}) no-repeat center center`,
+          backgroundSize: "contain",
+          width: "30px",
+          height: "30px",
+          border: "none",
+          cursor: "pointer",
+          margin: "3px",
+        }}
+        aria-label="Clear"
       />
     </div>
   );

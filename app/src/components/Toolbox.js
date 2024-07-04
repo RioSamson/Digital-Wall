@@ -37,26 +37,24 @@ const DefaultFillSVG = (
   </svg>
 );
 
-const Toolbox = ({ setEraser, toggleColorPicker, handleFill, handleDescribeDrawing }) => {
+const Toolbox = ({ setEraser, toggleColorPicker, handleFill, handleDescribeDrawing, mode, setMode }) => {
   const [selectedTool, setSelectedTool] = useState(null);
 
   const handlePenClick = () => {
-    const isSelected = selectedTool === "pen";
-    setSelectedTool(isSelected ? null : "pen");
+    setMode("pencil");
     toggleColorPicker();
   };
 
   const handleEraserClick = () => {
-    const isSelected = selectedTool === "eraser";
-    setSelectedTool(isSelected ? null : "eraser");
+    setMode("eraser");
     setEraser();
   };
 
   const handleFillClick = () => {
-    const isSelected = selectedTool === "fill";
-    setSelectedTool(isSelected ? null : "fill");
+    setMode("fill");
     handleFill();
   };
+
 
   return (
     <div style={{ display: "flex", flexDirection: "row" }}>
@@ -65,15 +63,16 @@ const Toolbox = ({ setEraser, toggleColorPicker, handleFill, handleDescribeDrawi
         style={{
           width: "60px",
           height: "60px",
-          padding: "10px",
-          background: selectedTool === "pen" ? "orange" : "white",
+          padding: "5px",
+          background: mode === "pencil" ? "orange" : "white",
           border: "none",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+          borderRadius: "5px",
         }}
       >
-        {selectedTool === "pen" ? SelectedPenSVG : DefaultPenSVG}
+        {mode === "pencil" ? SelectedPenSVG : DefaultPenSVG}
       </button>
 
       <button
@@ -81,32 +80,33 @@ const Toolbox = ({ setEraser, toggleColorPicker, handleFill, handleDescribeDrawi
         style={{
           width: "60px",
           height: "60px",
-          padding: "10px",
-          background: selectedTool === "eraser" ? "orange" : "white",
+          padding: "5px",
+          background: mode === "eraser" ? "orange" : "white",
           border: "none",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+          borderRadius: "5px",
         }}
       >
-        {selectedTool === "eraser" ? SelectedEraserSVG : DefaultEraserSVG}
+        {mode === "eraser" ? SelectedEraserSVG : DefaultEraserSVG}
       </button>
-  
-      {/* Fill button */}
+ 
       <button
         onClick={handleFillClick}
         style={{
           width: "60px",
           height: "60px",
-          padding: "10px",
-          background: selectedTool === "fill" ? "orange" : "white",
+          padding: "5px",
+          background: mode === "fill" ? "orange" : "white",
           border: "none",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+          borderRadius: "5px",
         }}
       >
-        {selectedTool === "fill" ? SelectedFillSVG : DefaultFillSVG}
+        {mode === "fill" ? SelectedFillSVG : DefaultFillSVG}
       </button>
     </div>
   );

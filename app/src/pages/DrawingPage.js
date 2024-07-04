@@ -154,13 +154,36 @@ function DrawingPage() {
   const generateRandomColors = () => {
     const canvas = canvasRef.current;
     const currentDrawing = canvas.toDataURL();
-
-    const randomColors = Array.from(
-      { length: 6 },
-      () => `#${Math.floor(Math.random() * 16777215).toString(16)}`
-    );
+  
+    const randomColors = [];
+    while (randomColors.length < 6) {
+      let color;
+      let isUnique = true;
+      
+      do {
+        color = `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
+        isUnique = true;
+  
+        // Avoid white color
+        if (color.toLowerCase() === '#ffffff') {
+          isUnique = false;
+          continue;
+        }
+  
+        // Check if the color is similar to existing colors
+        for (let i = 0; i < randomColors.length; i++) {
+          if (isColorSimilar(color, randomColors[i])) {
+            isUnique = false;
+            break;
+          }
+        }
+      } while (!isUnique);
+      
+      randomColors.push(color);
+    }
+  
     setColors(randomColors);
-
+  
     const context = canvas.getContext("2d");
     const img = new Image();
     img.src = currentDrawing;
@@ -169,9 +192,36 @@ function DrawingPage() {
       context.drawImage(img, 0, 0);
     };
   };
+  
+  const isColorSimilar = (color1, color2) => {
+    const rgb1 = hexToRgb(color1);
+    const rgb2 = hexToRgb(color2);
+    const threshold = 50;
+  
+    return (
+      Math.abs(rgb1.r - rgb2.r) < threshold &&
+      Math.abs(rgb1.g - rgb2.g) < threshold &&
+      Math.abs(rgb1.b - rgb2.b) < threshold
+    );
+  };
+  
+  // Function to convert hex color to RGB
+  const hexToRgb = (hex) => {
+    const bigint = parseInt(hex.slice(1), 16);
+    return {
+      r: (bigint >> 16) & 255,
+      g: (bigint >> 8) & 255,
+      b: bigint & 255,
+    };
+  };
+  
 
   const updateDraw = (e) => {
     if (!isPressed) return;
+
+    setShowColorPopup(false);
+    setShowEraserPopup(false);
+    setShowFillPopup(false);
 
     const canvas = canvasRef.current;
     const offsetX =
@@ -406,9 +456,6 @@ function DrawingPage() {
     }
   };
   
-
-
-  
   return (
     <div className="DrawingPage">
       <div className="top-toolbar">
@@ -445,8 +492,11 @@ function DrawingPage() {
     toggleColorPicker={toggleColorPicker}
     handleFill={handleFill}
     handleDescribeDrawing={handleDescribeDrawing}
+    mode={mode}
+    setMode={setMode}
   />
   {showFillPopup && (
+  <div className="popup">
     <ColorPicker
       colors={colors}
       selectedColor={selectedColor}
@@ -456,9 +506,11 @@ function DrawingPage() {
       floodFill={floodFill}
       canvasRef={canvasRef}
     />
-  )}
+  </div>
+)}
   {showColorPopup && (
-    <>
+  <div className="popup">
+    <div className="color-picker-wrapper">
       <ColorPicker
         colors={colors}
         selectedColor={selectedColor}
@@ -467,20 +519,25 @@ function DrawingPage() {
         generateRandomColors={generateRandomColors}
         canvasRef={canvasRef}
       />
+      <div className="divider"></div>
       <LineWidthPicker
         setWidth={setWidth}
         lineWidth={lineWidth}
         showLineWidthPopup={showColorPopup}
       />
-    </>
-  )}
-  {showEraserPopup && (
+    </div>
+  </div>
+)}
+
+ {showEraserPopup && (
+  <div className="popup">
     <LineWidthPicker
       setWidth={setWidth}
       lineWidth={lineWidth}
       showLineWidthPopup={showEraserPopup}
     />
-  )}
+  </div>
+)}
   <TextInput
     showTextInput={showTextInput}
     inputText={inputText}
