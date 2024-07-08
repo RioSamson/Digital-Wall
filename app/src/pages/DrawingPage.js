@@ -1,4 +1,4 @@
-import React, { useRef, useState, useMemo, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { storage, db, auth } from "../firebase/firebase";
 import {
@@ -10,7 +10,6 @@ import { collection, addDoc, doc } from "firebase/firestore";
 import Canvas from "../components/Canvas";
 import Toolbox from "../components/Toolbox";
 import ColorPicker from "../components/ColorPicker";
-import TextInput from "../components/TextInput";
 import LineWidthPicker from "../components/LineWidthPicker";
 import ActionButtons from "../components/ActionButton";
 import "./DrawingPage.css";
@@ -24,7 +23,6 @@ function DrawingPage() {
   const [mode, setMode] = useState("pencil");
   const [showTextInput, setShowTextInput] = useState(false);
   const [inputText, setInputText] = useState("");
-  const [enhancePrompt, setEnhancePrompt] = useState(""); // State for storing the enhance prompt
   const { selectedScene, area } = location.state || {};
   const [showColorPopup, setShowColorPopup] = useState(false);
   const [lineWidth, setLineWidth] = useState(5);
@@ -40,8 +38,23 @@ function DrawingPage() {
     "blue",
     "purple",
   ]);
+  const [isUploading, setIsUploading] = useState(false); // State to manage the uploading process
 
-  const uploadDrawing = async () => {
+  const handleUploadClick = () => {
+    setShowTextInput(true);
+  };
+
+  const handleTextSubmit = async () => {
+    setIsUploading(true); // Set uploading state to true
+    setShowTextInput(false);
+
+    console.log("User's input:", inputText);
+
+    await uploadDrawing(inputText); // Pass the user input directly to uploadDrawing
+    setIsUploading(false); // Set uploading state to false after upload completes
+  };
+
+  const uploadDrawing = async (prompt) => {
     const canvas = canvasRef.current;
     const base64Image = canvas.toDataURL("image/png");
 
@@ -68,8 +81,8 @@ function DrawingPage() {
 
     originalUrl = await uploadImage(`drawing/original-${Date.now()}.png`, blob);
 
-    const sendToBaseten = async (base64Img) => {
-      const url = "https://app.baseten.co/model_versions/q48rmd3/predict"; // Replace with your Baseten endpoint
+    const sendToBaseten = async (base64Img, prompt) => {
+      const url = "/model_versions/q48rmd3/predict"; // Replace with your Baseten endpoint
       const headers = {
         Authorization: "Api-Key 13235osK.AVglR2jVhzMHR1txMuFJCD49TEmV6FXY",
         "Content-Type": "application/json",
@@ -77,7 +90,7 @@ function DrawingPage() {
 
       const imageData = base64Img.split(",")[1];
       const data = {
-        prompt: enhancePrompt || "an angel fish", // Use the saved prompt or default
+        prompt: prompt || "a polarbear", // Use the prompt passed to this function
         images_data: imageData,
         guidance_scale: 8,
         lcm_steps: 50,
@@ -87,6 +100,8 @@ function DrawingPage() {
         width: 512,
         height: 512,
       };
+
+      console.log("Data being sent to Baseten:", data);
 
       try {
         const response = await fetch(url, {
@@ -108,7 +123,7 @@ function DrawingPage() {
       }
     };
 
-    const enhancedBase64 = await sendToBaseten(base64Image);
+    const enhancedBase64 = await sendToBaseten(base64Image, prompt);
     if (!enhancedBase64) return;
 
     const enhancedBlob = await fetch(enhancedBase64)
@@ -288,13 +303,6 @@ function DrawingPage() {
     setMode("fill");
   };
 
-  const handleTextSubmit = () => {
-    setEnhancePrompt(inputText); // Save the text as the prompt
-    setInputText("");
-    setShowTextInput(false);
-    saveHistory();
-  };
-
   const drawingRef = useRef(null); // Ref to store current drawing
 
   useEffect(() => {
@@ -444,8 +452,8 @@ function DrawingPage() {
       b = 0,
       a = 255;
     if (hex.length === 7) {
-      r = parseInt(hex.slice(1, 3), 16);
-      g = parseInt(hex.slice(3, 5), 16);
+      r = parseInt(hex.slice(1), 16);
+      g = parseInt(hex.slice(3), 16);
       b = parseInt(hex.slice(5, 7), 16);
     }
     return [r, g, b, a];
@@ -480,7 +488,7 @@ function DrawingPage() {
           undoDisabled={historyIndex <= 0}
           redoDisabled={historyIndex >= history.length - 1}
         />
-        <button className="completeButton" onClick={uploadDrawing}>
+        <button className="completeButton" onClick={handleUploadClick}>
           Upload
         </button>
       </div>
@@ -547,14 +555,75 @@ function DrawingPage() {
             />
           </div>
         )}
-        <TextInput
-          showTextInput={showTextInput}
-          inputText={inputText}
-          setInputText={setInputText}
-          handleTextSubmit={handleTextSubmit}
-          buttonLabel="Enhance"
-        />
       </div>
+
+      {showTextInput && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "white",
+              padding: "20px",
+              borderRadius: "10px",
+              width: "90%",
+              maxWidth: "500px",
+              textAlign: "center",
+            }}
+          >
+            <h2 style={{ marginBottom: "20px" }}>What did you draw?</h2>
+            <div
+              className="text-input"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "10px",
+              }}
+            >
+              <input
+                type="text"
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  borderRadius: "5px",
+                  border: "1px solid #ccc",
+                  fontSize: "16px",
+                }}
+              />
+              <button
+                onClick={handleTextSubmit}
+                disabled={isUploading}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  borderRadius: "5px",
+                  backgroundColor: isUploading ? "#ccc" : "#007bff",
+                  color: "white",
+                  border: "none",
+                  fontSize: "16px",
+                  cursor: isUploading ? "not-allowed" : "pointer",
+                }}
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
