@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
-import { useAuth } from '../contexts/authContext';
 import { doc, setDoc, getFirestore, serverTimestamp } from "firebase/firestore";
 
 export default function RegisterPage() {
-    const { userLoggedIn } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');

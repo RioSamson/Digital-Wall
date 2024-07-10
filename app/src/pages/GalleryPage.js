@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../contexts/authContext";
-import { auth, db } from "../firebase/firebase";
+import { db } from "../firebase/firebase";
 import { collection, getDocs } from "firebase/firestore";
 
 function GalleryPage() {
@@ -16,13 +16,8 @@ function GalleryPage() {
     navigate("/display", { state: { selectedScene, imageUrl } });
   };
 
-  const handleLogout = async () => {
-    try {
-      await auth.signOut();
-      navigate("/");
-    } catch (error) {
-      console.error("Error logging out:", error);
-    }
+  const viewAllHandler = () => {
+    navigate("/myDrawing", { state: { drawings: prevDrawing, selectedScene, imageUrl } });
   };
 
   const getDrawings = async (selectedScene) => {
@@ -49,7 +44,8 @@ function GalleryPage() {
               return null;
             }
           })
-          .filter((url) => url !== null);
+          .filter((url) => url !== null)
+          .sort((a, b) => b.timestamp - a.timestamp); 
         setPrevDrawing(drawings);
       }
     } catch (error) {
@@ -75,7 +71,6 @@ function GalleryPage() {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        padding: "20px",
       }}
     >
       <div
@@ -84,28 +79,19 @@ function GalleryPage() {
           display: "flex",
           justifyContent: "space-between",
           padding: "10px",
-          borderBottom: "1px solid #ccc",
         }}
       >
-        <h3>Hello {currentUser ? currentUser.email : "Guest"}</h3>
-        <button
-          onClick={handleLogout}
-          style={{
-            padding: "5px 15px",
-            borderRadius: "5px",
-            backgroundColor: "#007BFF",
-            color: "#fff",
-            border: "none",
-            cursor: "pointer",
-            transition: "background-color 0.3s ease",
-          }}
-          onMouseOver={(e) => (e.target.style.backgroundColor = "#0056b3")}
-          onMouseOut={(e) => (e.target.style.backgroundColor = "#007BFF")}
-        >
-          Log Out
+      </div>
+      <h1>Gallery</h1>
+      <div style={{ display: "flex", alignItems: "center", marginTop: "10px", justifyContent: "space-between", width: "100%" }}>
+      <h5 style={{ fontSize: "1.2rem", marginLeft:"20px" }}>My drawings on the display</h5>
+      </div>
+      <div style={{ display: "flex", alignItems: "center", marginTop: "10px", justifyContent: "space-between", width: "100%" }}>
+      <h5 style={{ fontSize: "1.2rem", marginLeft:"20px" }}>My drawings</h5>
+      <button onClick={viewAllHandler} style={{ marginRight: '20px', color: 'black', textDecoration: 'underline', fontSize: '1rem', border: "none", background:"white" }}>
+          View All
         </button>
       </div>
-      <h1>My drawings</h1>
       <div
         style={{
           display: "flex",
@@ -115,7 +101,7 @@ function GalleryPage() {
         }}
       >
         {prevDrawing.length > 0 ? (
-          prevDrawing.map((url, index) => (
+          prevDrawing.slice(0,4).map((url, index) => (
             <div
               key={index}
               style={{
@@ -144,9 +130,9 @@ function GalleryPage() {
       </div>
       <button
         onClick={handleDisplay}
-        style={{ marginTop: "20px", padding: "10px 20px" }}
+        style={{ margin: '20px', padding: '10px 45px',backgroundColor: 'black', color:'white', border:'none', borderRadius:'5px', fontSize: '1rem'  }}
       >
-        View the display
+        View Live Display
       </button>
 
       {selectedImage && (
