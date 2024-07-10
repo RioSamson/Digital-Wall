@@ -1,4 +1,4 @@
-import React, { useRef, useState, useMemo, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { storage, db, auth } from "../firebase/firebase";
 import {
@@ -10,7 +10,6 @@ import { collection, addDoc, doc } from "firebase/firestore";
 import Canvas from "../components/Canvas";
 import Toolbox from "../components/Toolbox";
 import ColorPicker from "../components/ColorPicker";
-import TextInput from "../components/TextInput";
 import LineWidthPicker from "../components/LineWidthPicker";
 import ActionButtons from "../components/ActionButton";
 import "./DrawingPage.css";
@@ -24,7 +23,6 @@ function DrawingPage() {
   const [mode, setMode] = useState("pencil");
   const [showTextInput, setShowTextInput] = useState(false);
   const [inputText, setInputText] = useState("");
-  const [enhancePrompt, setEnhancePrompt] = useState(""); // State for storing the enhance prompt
   const { selectedScene, area } = location.state || {};
   const [showColorPopup, setShowColorPopup] = useState(false);
   const [lineWidth, setLineWidth] = useState(5);
@@ -40,8 +38,23 @@ function DrawingPage() {
     "blue",
     "purple",
   ]);
+  const [isUploading, setIsUploading] = useState(false); // State to manage the uploading process
 
-  const uploadDrawing = async () => {
+  const handleUploadClick = () => {
+    setShowTextInput(true);
+  };
+
+  const handleTextSubmit = async () => {
+    setIsUploading(true); // Set uploading state to true
+    setShowTextInput(false);
+
+    console.log("User's input:", inputText);
+
+    await uploadDrawing(inputText); // Pass the user input directly to uploadDrawing
+    setIsUploading(false); // Set uploading state to false after upload completes
+  };
+
+  const uploadDrawing = async (prompt) => {
     const canvas = canvasRef.current;
     const base64Image = canvas.toDataURL("image/png");
 
@@ -68,7 +81,7 @@ function DrawingPage() {
 
     originalUrl = await uploadImage(`drawing/original-${Date.now()}.png`, blob);
 
-    const sendToBaseten = async (base64Img) => {
+    const sendToBaseten = async (base64Img, prompt) => {
       const url = "/model_versions/q48rmd3/predict"; // Replace with your Baseten endpoint
       const headers = {
         Authorization: "Api-Key 13235osK.AVglR2jVhzMHR1txMuFJCD49TEmV6FXY",
@@ -77,7 +90,7 @@ function DrawingPage() {
 
       const imageData = base64Img.split(",")[1];
       const data = {
-        prompt: enhancePrompt || "an angel fish", // Use the saved prompt or default
+        prompt: prompt || "a polarbear", // Use the prompt passed to this function
         images_data: imageData,
         guidance_scale: 8,
         lcm_steps: 50,
@@ -87,6 +100,8 @@ function DrawingPage() {
         width: 512,
         height: 512,
       };
+
+      console.log("Data being sent to Baseten:", data);
 
       try {
         const response = await fetch(url, {
@@ -108,7 +123,7 @@ function DrawingPage() {
       }
     };
 
-    const enhancedBase64 = await sendToBaseten(base64Image);
+    const enhancedBase64 = await sendToBaseten(base64Image, prompt);
     if (!enhancedBase64) return;
 
     const enhancedBlob = await fetch(enhancedBase64)
@@ -154,22 +169,24 @@ function DrawingPage() {
   const generateRandomColors = () => {
     const canvas = canvasRef.current;
     const currentDrawing = canvas.toDataURL();
-  
+
     const randomColors = [];
     while (randomColors.length < 6) {
       let color;
       let isUnique = true;
-      
+
       do {
-        color = `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
+        color = `#${Math.floor(Math.random() * 16777215)
+          .toString(16)
+          .padStart(6, "0")}`;
         isUnique = true;
-  
+
         // Avoid white color
-        if (color.toLowerCase() === '#ffffff') {
+        if (color.toLowerCase() === "#ffffff") {
           isUnique = false;
           continue;
         }
-  
+
         // Check if the color is similar to existing colors
         for (let i = 0; i < randomColors.length; i++) {
           if (isColorSimilar(color, randomColors[i])) {
@@ -178,12 +195,12 @@ function DrawingPage() {
           }
         }
       } while (!isUnique);
-      
+
       randomColors.push(color);
     }
-  
+
     setColors(randomColors);
-  
+
     const context = canvas.getContext("2d");
     const img = new Image();
     img.src = currentDrawing;
@@ -192,19 +209,19 @@ function DrawingPage() {
       context.drawImage(img, 0, 0);
     };
   };
-  
+
   const isColorSimilar = (color1, color2) => {
     const rgb1 = hexToRgb(color1);
     const rgb2 = hexToRgb(color2);
     const threshold = 50;
-  
+
     return (
       Math.abs(rgb1.r - rgb2.r) < threshold &&
       Math.abs(rgb1.g - rgb2.g) < threshold &&
       Math.abs(rgb1.b - rgb2.b) < threshold
     );
   };
-  
+
   // Function to convert hex color to RGB
   const hexToRgb = (hex) => {
     const bigint = parseInt(hex.slice(1), 16);
@@ -214,7 +231,6 @@ function DrawingPage() {
       b: bigint & 255,
     };
   };
-  
 
   const updateDraw = (e) => {
     if (!isPressed) return;
@@ -241,11 +257,11 @@ function DrawingPage() {
       context.globalCompositeOperation = "source-over";
       context.strokeStyle = selectedColor;
     }
-  
+
     context.lineWidth = lineWidth;
     context.lineCap = "round";
     context.lineJoin = "round";
-  
+
     context.lineTo(offsetX, offsetY);
     context.stroke();
   };
@@ -285,13 +301,6 @@ function DrawingPage() {
     setShowEraserPopup(false);
     setShowFillPopup(!showFillPopup);
     setMode("fill");
-  };
-
-  const handleTextSubmit = () => {
-    setEnhancePrompt(inputText); // Save the text as the prompt
-    setInputText("");
-    setShowTextInput(false);
-    saveHistory();
   };
 
   const drawingRef = useRef(null); // Ref to store current drawing
@@ -383,43 +392,43 @@ function DrawingPage() {
     const context = canvas.getContext("2d");
     const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
-  console.log("this is inside flood fill")
+    console.log("this is inside flood fill");
     const targetColor = getColorAtPixel(data, x, y);
     if (colorsMatch(targetColor, fillColor)) {
-      console.log("inside colour match")
+      console.log("inside colour match");
       return;
     }
-  
+
     const stack = [[x, y]];
     while (stack.length > 0) {
-      console.log("stack length > 0")
+      console.log("stack length > 0");
       const [cx, cy] = stack.pop();
 
-    if (cx < 0 || cy < 0 || cx >= canvas.width || cy >= canvas.height) {
-      continue;
+      if (cx < 0 || cy < 0 || cx >= canvas.width || cy >= canvas.height) {
+        continue;
+      }
+
+      const currentIndex = (cy * canvas.width + cx) * 4;
+      if (!colorsMatch(getColorAtPixel(data, cx, cy), targetColor)) {
+        continue;
+      }
+
+      setColorAtPixel(data, cx, cy, fillColor);
+      stack.push([cx + 1, cy]);
+      stack.push([cx - 1, cy]);
+      stack.push([cx, cy + 1]);
+      stack.push([cx, cy - 1]);
     }
 
-    const currentIndex = (cy * canvas.width + cx) * 4;
-    if (!colorsMatch(getColorAtPixel(data, cx, cy), targetColor)) {
-      continue;
-    }
-
-    setColorAtPixel(data, cx, cy, fillColor);
-    stack.push([cx + 1, cy]);
-    stack.push([cx - 1, cy]);
-    stack.push([cx, cy + 1]);
-    stack.push([cx, cy - 1]);
-    }
-  
     context.putImageData(imageData, 0, 0);
     saveHistory(); // Save the state after filling
   };
-  
+
   const getColorAtPixel = (data, x, y) => {
     const index = (y * canvasRef.current.width + x) * 4;
     return [data[index], data[index + 1], data[index + 2], data[index + 3]];
   };
-  
+
   const setColorAtPixel = (data, x, y, color) => {
     const index = (y * canvasRef.current.width + x) * 4;
     data[index] = color[0];
@@ -427,23 +436,31 @@ function DrawingPage() {
     data[index + 2] = color[2];
     data[index + 3] = color[3];
   };
-  
+
   const colorsMatch = (color1, color2) => {
-    return color1[0] === color2[0] && color1[1] === color2[1] && color1[2] === color2[2] && color1[3] === color2[3];
+    return (
+      color1[0] === color2[0] &&
+      color1[1] === color2[1] &&
+      color1[2] === color2[2] &&
+      color1[3] === color2[3]
+    );
   };
 
   const hexToRGBA = (hex) => {
-    let r = 0, g = 0, b = 0, a = 255;
+    let r = 0,
+      g = 0,
+      b = 0,
+      a = 255;
     if (hex.length === 7) {
-      r = parseInt(hex.slice(1, 3), 16);
-      g = parseInt(hex.slice(3, 5), 16);
+      r = parseInt(hex.slice(1), 16);
+      g = parseInt(hex.slice(3), 16);
       b = parseInt(hex.slice(5, 7), 16);
     }
     return [r, g, b, a];
   };
 
   const handleCanvasClick = (event) => {
-    console.log("canvas is clicked")
+    console.log("canvas is clicked");
     if (mode === "fill") {
       console.log("mode is fill");
       // const canvas = canvasRef.current;
@@ -451,11 +468,11 @@ function DrawingPage() {
       // const x = event.clientX - rect.left;
       // const y = event.clientY - rect.top;
       // const fillColor = hexToRGBA(selectedColor);
-  
-      // floodFill(x, y, fillColor); 
+
+      // floodFill(x, y, fillColor);
     }
   };
-  
+
   return (
     <div className="DrawingPage">
       <div className="top-toolbar">
@@ -471,7 +488,7 @@ function DrawingPage() {
           undoDisabled={historyIndex <= 0}
           redoDisabled={historyIndex >= history.length - 1}
         />
-        <button className="completeButton" onClick={uploadDrawing}>
+        <button className="completeButton" onClick={handleUploadClick}>
           Upload
         </button>
       </div>
@@ -487,65 +504,126 @@ function DrawingPage() {
         />
       </div>
       <div className="bottom-toolbar">
-  <Toolbox
-    setEraser={setEraser}
-    toggleColorPicker={toggleColorPicker}
-    handleFill={handleFill}
-    handleDescribeDrawing={handleDescribeDrawing}
-    mode={mode}
-    setMode={setMode}
-  />
-  {showFillPopup && (
-  <div className="popup">
-    <ColorPicker
-      colors={colors}
-      selectedColor={selectedColor}
-      setColor={setColor}
-      showColorPopup={showFillPopup}
-      generateRandomColors={generateRandomColors}
-      floodFill={floodFill}
-      canvasRef={canvasRef}
-    />
-  </div>
-)}
-  {showColorPopup && (
-  <div className="popup">
-    <div className="color-picker-wrapper">
-      <ColorPicker
-        colors={colors}
-        selectedColor={selectedColor}
-        setColor={setColor}
-        showColorPopup={showColorPopup}
-        generateRandomColors={generateRandomColors}
-        canvasRef={canvasRef}
-      />
-      <div className="divider"></div>
-      <LineWidthPicker
-        setWidth={setWidth}
-        lineWidth={lineWidth}
-        showLineWidthPopup={showColorPopup}
-      />
-    </div>
-  </div>
-)}
+        <Toolbox
+          setEraser={setEraser}
+          toggleColorPicker={toggleColorPicker}
+          handleFill={handleFill}
+          handleDescribeDrawing={handleDescribeDrawing}
+          mode={mode}
+          setMode={setMode}
+        />
+        {showFillPopup && (
+          <div className="popup">
+            <ColorPicker
+              colors={colors}
+              selectedColor={selectedColor}
+              setColor={setColor}
+              showColorPopup={showFillPopup}
+              generateRandomColors={generateRandomColors}
+              floodFill={floodFill}
+              canvasRef={canvasRef}
+            />
+          </div>
+        )}
+        {showColorPopup && (
+          <div className="popup">
+            <div className="color-picker-wrapper">
+              <ColorPicker
+                colors={colors}
+                selectedColor={selectedColor}
+                setColor={setColor}
+                showColorPopup={showColorPopup}
+                generateRandomColors={generateRandomColors}
+                canvasRef={canvasRef}
+              />
+              <div className="divider"></div>
+              <LineWidthPicker
+                setWidth={setWidth}
+                lineWidth={lineWidth}
+                showLineWidthPopup={showColorPopup}
+              />
+            </div>
+          </div>
+        )}
 
- {showEraserPopup && (
-  <div className="popup">
-    <LineWidthPicker
-      setWidth={setWidth}
-      lineWidth={lineWidth}
-      showLineWidthPopup={showEraserPopup}
-    />
-  </div>
-)}
-  <TextInput
-    showTextInput={showTextInput}
-    inputText={inputText}
-    setInputText={setInputText}
-    handleTextSubmit={handleTextSubmit}
-    buttonLabel="Enhance"
-  />
-</div>
+        {showEraserPopup && (
+          <div className="popup">
+            <LineWidthPicker
+              setWidth={setWidth}
+              lineWidth={lineWidth}
+              showLineWidthPopup={showEraserPopup}
+            />
+          </div>
+        )}
+      </div>
+
+      {showTextInput && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "white",
+              padding: "20px",
+              borderRadius: "10px",
+              width: "90%",
+              maxWidth: "500px",
+              textAlign: "center",
+            }}
+          >
+            <h2 style={{ marginBottom: "20px" }}>What did you draw?</h2>
+            <div
+              className="text-input"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "10px",
+              }}
+            >
+              <input
+                type="text"
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  borderRadius: "5px",
+                  border: "1px solid #ccc",
+                  fontSize: "16px",
+                }}
+              />
+              <button
+                onClick={handleTextSubmit}
+                disabled={isUploading}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  borderRadius: "5px",
+                  backgroundColor: isUploading ? "#ccc" : "#007bff",
+                  color: "white",
+                  border: "none",
+                  fontSize: "16px",
+                  cursor: isUploading ? "not-allowed" : "pointer",
+                }}
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -48,7 +48,7 @@ function DisplayPage() {
           const drawingsRef = collection(db, "Drawings");
           const q = query(
             drawingsRef,
-            where("user_id", "==", doc(db, "Users", currentUser.email)),
+            // where("user_id", "==", doc(db, "Users", currentUser.email)),
             where("theme_id", "==", doc(db, "Themes", selectedScene))
           );
 
