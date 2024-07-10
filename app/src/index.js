@@ -1,9 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import DrawingPage from "./pages/DrawingPage";
 import ReviewPage from "./pages/ReviewPage";
@@ -20,7 +20,7 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <AuthProvider>
-      <BrowserRouter>
+      <Router>
         <Routes>
           <Route path="/" element={<App />} />
           <Route path="login" element={<LoginPage />} />
@@ -34,7 +34,7 @@ root.render(
           <Route path="selection" element={<DrawOrGalleryPage />} />
           <Route path="display" element={<DisplayPage />} />
         </Routes>
-      </BrowserRouter>
+      </Router>
     </AuthProvider>
   </React.StrictMode>
 );

@@ -1,4 +1,12 @@
 {
+  "name": "my-project",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "echo 'No start script specified at the root'",
+    "start:app": "npm start --prefix app",
+    "start:backend": "npm start --prefix backend"
+  },
   "dependencies": {
     "react-router-dom": "^6.23.1",
     "roughjs": "^4.6.6"

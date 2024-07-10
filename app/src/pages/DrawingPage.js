@@ -81,49 +81,25 @@ function DrawingPage() {
 
     originalUrl = await uploadImage(`drawing/original-${Date.now()}.png`, blob);
 
-    const sendToBaseten = async (base64Img, prompt) => {
-      const url = "/model_versions/q48rmd3/predict"; // Replace with your Baseten endpoint
-      const headers = {
-        Authorization: "Api-Key 13235osK.AVglR2jVhzMHR1txMuFJCD49TEmV6FXY",
-        "Content-Type": "application/json",
-      };
+    const sendToBackend = async (base64Img, prompt) => {
+      const response = await fetch("/api/enhance", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ base64Img, prompt }),
+      });
 
-      const imageData = base64Img.split(",")[1];
-      const data = {
-        prompt: prompt || "a polarbear", // Use the prompt passed to this function
-        images_data: imageData,
-        guidance_scale: 8,
-        lcm_steps: 50,
-        seed: 2159232,
-        num_inference_steps: 4,
-        strength: 0.7,
-        width: 512,
-        height: 512,
-      };
-
-      console.log("Data being sent to Baseten:", data);
-
-      try {
-        const response = await fetch(url, {
-          method: "POST",
-          headers: headers,
-          body: JSON.stringify(data),
-        });
-
-        if (response.ok) {
-          const jsonResponse = await response.json();
-          return `data:image/png;base64,${jsonResponse.model_output.image}`;
-        } else {
-          console.error("Server returned an error", response.statusText);
-          return null;
-        }
-      } catch (error) {
-        console.error("Error sending image to server:", error);
+      if (response.ok) {
+        const data = await response.json();
+        return data.enhancedImage;
+      } else {
+        console.error("Server returned an error", response.statusText);
         return null;
       }
     };
 
-    const enhancedBase64 = await sendToBaseten(base64Image, prompt);
+    const enhancedBase64 = await sendToBackend(base64Image, prompt);
     if (!enhancedBase64) return;
 
     const enhancedBlob = await fetch(enhancedBase64)
