@@ -18,7 +18,6 @@ export default function LoginPage() {
       setIsSigningIn(true);
       try {
         await doSignInWithEmailAndPassword(email, password);
-        // Update LastActivity on successful login
         const userRef = doc(db, "Users", email);
         await updateDoc(userRef, {
           LastActivity: serverTimestamp()
@@ -34,21 +33,21 @@ export default function LoginPage() {
 
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-      <h1>ArtSpark</h1>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', background:"#F8F8F8" }}>
+      <h2>Welcome! Glad to see you</h2>
       <input
         type="email"
         placeholder="Email*"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        style={{ margin: '10px', padding: '10px', width: '300px' }}
+        style={{ margin: '10px', padding: '10px', width: '300px',borderRadius:"5px", border:'solid 1px', background:"white" }}
       />
       <input
         type="password"
         placeholder="Enter your password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        style={{ margin: '10px', padding: '10px', width: '300px' }}
+        style={{ margin: '10px', padding: '10px', width: '300px',borderRadius:"5px", border:'solid 1px' }}
       />
       {errorMessage && (
         <div style={{ color: 'red', margin: '10px' }}>

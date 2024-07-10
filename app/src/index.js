@@ -15,6 +15,7 @@ import SceneSelectorPage from "./pages/SceneSelectorPage";
 import SceneAreaSelector from "./pages/SceneAreaSelectorPage";
 import DrawOrGalleryPage from "./pages/DrawOrGalleryPage";
 import DisplayPage from "./pages/DisplayPage";
+import EmailVerification from "./pages/EmailVerificationPage";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -33,6 +34,7 @@ root.render(
           <Route path="SceneAreaSelect" element={<SceneAreaSelector />} />
           <Route path="selection" element={<DrawOrGalleryPage />} />
           <Route path="display" element={<DisplayPage />} />
+          <Route path="verification" element={<EmailVerification />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
