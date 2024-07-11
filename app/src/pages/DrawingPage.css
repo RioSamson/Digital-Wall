@@ -89,7 +89,7 @@
 
 @media (max-width: 768px) {
   .top-toolbar {
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
   }
 
@@ -104,12 +104,24 @@
 
   .completeButton {
     margin-bottom: 10px;
+    padding: 12px 20px;
+    font-size: 1rem;   
+    background-color: black;
+    color: white;     
+    border: none;      
+    border-radius: 5px; 
+    display: flex;
+    align-items: center;
+  }
+  .buttonIcon {
+    margin-right: 8px;
+    vertical-align: middle;
   }
 }
 
 @media (max-width: 480px) {
   .top-toolbar {
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
   }
 

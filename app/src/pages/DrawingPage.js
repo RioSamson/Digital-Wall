@@ -38,7 +38,13 @@ function DrawingPage() {
     "blue",
     "purple",
   ]);
-  const [isUploading, setIsUploading] = useState(false); // State to manage the uploading process
+  const [isUploading, setIsUploading] = useState(false); 
+  const [scale, setScale] = useState(1);
+  const [origin, setOrigin] = useState({ x: 0, y: 0 });
+  const [isPinching, setIsPinching] = useState(false);
+  const lastTouchDistanceRef = useRef(null);
+  const [isZooming, setIsZooming] = useState(false);
+
 
   const handleUploadClick = () => {
     setShowTextInput(true);
@@ -233,8 +239,9 @@ function DrawingPage() {
   };
 
   const updateDraw = (e) => {
-    if (!isPressed) return;
 
+    if (!isPressed) return;
+    // if (!isPressed || isZooming) return;
     setShowColorPopup(false);
     setShowEraserPopup(false);
     setShowFillPopup(false);
@@ -257,13 +264,32 @@ function DrawingPage() {
       context.globalCompositeOperation = "source-over";
       context.strokeStyle = selectedColor;
     }
-
+  
     context.lineWidth = lineWidth;
     context.lineCap = "round";
     context.lineJoin = "round";
-
+  
     context.lineTo(offsetX, offsetY);
     context.stroke();
+    context.beginPath();
+    context.moveTo(offsetX, offsetY);
+  };
+
+  const handleTouchStart = (e) => {
+    e.preventDefault();
+    setIsPressed(true);
+    updateDraw(e);
+  };
+  
+  const handleTouchMove = (e) => {
+    e.preventDefault();
+    updateDraw(e);
+  };
+  
+  const handleTouchEnd = (e) => {
+    e.preventDefault();
+    setIsPressed(false);
+    saveHistory();
   };
 
   const setColor = (color) => {
@@ -473,6 +499,63 @@ function DrawingPage() {
     }
   };
 
+  // useEffect(() => {
+  //   const canvas = canvasRef.current;
+  //   const preventDefault = (e) => e.preventDefault();
+
+  //   const handleWheel = (e) => {
+  //     e.preventDefault();
+  //     setIsZooming(true);
+  //     const scaleAmount = -e.deltaY * 0.01;
+  //     setScale((prevScale) => Math.min(Math.max(0.5, prevScale + scaleAmount), 3));
+  //     setTimeout(() => setIsZooming(false), 4000);
+  //   };
+
+  //   const handlePinchStart = (e) => {
+  //     if (e.touches.length === 2) {
+  //       const touchDistance = getTouchDistance(e.touches);
+  //       lastTouchDistanceRef.current = touchDistance;
+  //       setIsPinching(true);
+  //       setIsZooming(true);
+  //     }
+  //   };
+
+  //   const handlePinchMove = (e) => {
+  //     if (e.touches.length === 2) {
+  //       const touchDistance = getTouchDistance(e.touches);
+  //       if (lastTouchDistanceRef.current) {
+  //         const scaleAmount = touchDistance / lastTouchDistanceRef.current;
+  //         setScale((prevScale) => Math.min(Math.max(0.5, prevScale * scaleAmount), 3));
+  //         lastTouchDistanceRef.current = touchDistance;
+  //         setIsZooming(true);
+  //         setTimeout(() => setIsZooming(false), 4000);
+  //       }
+  //     }
+  //   };
+
+  //   const getTouchDistance = (touches) => {
+  //     const dx = touches[0].clientX - touches[1].clientX;
+  //     const dy = touches[0].clientY - touches[1].clientY;
+  //     return Math.sqrt(dx * dx + dy * dy);
+  //   };
+
+  //   canvas.addEventListener("wheel", handleWheel);
+  //   canvas.addEventListener("touchstart", handlePinchStart, { passive: false });
+  //   canvas.addEventListener("touchmove", handlePinchMove, { passive: false });
+  //   canvas.addEventListener("touchstart", preventDefault, { passive: false });
+  //   canvas.addEventListener("touchmove", preventDefault, { passive: false });
+  //   canvas.addEventListener("touchend", preventDefault, { passive: false });
+
+  //   return () => {
+  //     canvas.removeEventListener("wheel", handleWheel);
+  //     canvas.removeEventListener("touchstart", handlePinchStart);
+  //     canvas.removeEventListener("touchmove", handlePinchMove);
+  //     canvas.removeEventListener("touchstart", preventDefault);
+  //     canvas.removeEventListener("touchmove", preventDefault);
+  //     canvas.removeEventListener("touchend", preventDefault);
+  //   };
+  // }, [scale]);
+
   return (
     <div className="DrawingPage">
       <div className="top-toolbar">
@@ -492,7 +575,17 @@ function DrawingPage() {
           Upload
         </button>
       </div>
-      <div className="canvas-container" onClick={handleCanvasClick}>
+      <div
+      className="canvas-container"
+      onMouseDown={() => setIsPressed(true)}
+      onMouseUp={() => setIsPressed(false)}
+      onMouseMove={updateDraw}
+      onMouseLeave={() => setIsPressed(false)}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onClick={handleCanvasClick}
+    >
         <Canvas
           ref={canvasRef}
           colors={colors}
@@ -501,6 +594,9 @@ function DrawingPage() {
           mode={mode}
           setIsPressed={setIsPressed}
           updateDraw={updateDraw}
+          scale={scale}
+          origin={origin}
+          isZooming={isZooming}
         />
       </div>
       <div className="bottom-toolbar">
@@ -582,7 +678,7 @@ function DrawingPage() {
               textAlign: "center",
             }}
           >
-            <h2 style={{ marginBottom: "20px" }}>What did you draw?</h2>
+            <h2 style={{ marginBottom: "20px" , fontWeight:"normal" }}>Enter a prompt for AI to enhance your drawing:</h2>
             <div
               className="text-input"
               style={{
@@ -602,23 +698,20 @@ function DrawingPage() {
                   borderRadius: "5px",
                   border: "1px solid #ccc",
                   fontSize: "16px",
+                  marginBottom: "10px",
+                  margin:"5px",
                 }}
               />
               <button
+              className="completeButton"
                 onClick={handleTextSubmit}
                 disabled={isUploading}
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  borderRadius: "5px",
-                  backgroundColor: isUploading ? "#ccc" : "#007bff",
-                  color: "white",
-                  border: "none",
-                  fontSize: "16px",
-                  cursor: isUploading ? "not-allowed" : "pointer",
-                }}
+                
               >
-                Done
+                <svg width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg" className="buttonIcon">
+                  <path d="M1 21L14.8462 7.15385M17.9231 4.07692L19.4615 2.53846M14.0769 3.30769V1M18.6923 7.92308H21M17.1538 11L18.6923 12.5385M9.46154 3.30769L11 4.84615" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                AI Enhance
               </button>
             </div>
           </div>

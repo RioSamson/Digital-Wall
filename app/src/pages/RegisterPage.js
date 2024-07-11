@@ -87,7 +87,7 @@ export default function RegisterPage() {
         </button>
         <div style={{ marginTop: '20px' }}>
           <span>already have an account?</span>
-          <Link to="/login" style={{ marginLeft: '5px', color: 'blue' }}>Login now</Link>
+          <Link to="/login" style={{ marginLeft: '5px', color: 'orange',textDecoration: 'none'  }}>Login now</Link>
         </div>
         
       </div>
