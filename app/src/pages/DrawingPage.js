@@ -45,7 +45,6 @@ function DrawingPage() {
   const lastTouchDistanceRef = useRef(null);
   const [isZooming, setIsZooming] = useState(false);
 
-
   const handleUploadClick = () => {
     setShowTextInput(true);
   };
@@ -273,23 +272,6 @@ function DrawingPage() {
     context.stroke();
     context.beginPath();
     context.moveTo(offsetX, offsetY);
-  };
-
-  const handleTouchStart = (e) => {
-    e.preventDefault();
-    setIsPressed(true);
-    updateDraw(e);
-  };
-  
-  const handleTouchMove = (e) => {
-    e.preventDefault();
-    updateDraw(e);
-  };
-  
-  const handleTouchEnd = (e) => {
-    e.preventDefault();
-    setIsPressed(false);
-    saveHistory();
   };
 
   const setColor = (color) => {
@@ -581,9 +563,6 @@ function DrawingPage() {
       onMouseUp={() => setIsPressed(false)}
       onMouseMove={updateDraw}
       onMouseLeave={() => setIsPressed(false)}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
       onClick={handleCanvasClick}
     >
         <Canvas
@@ -709,7 +688,7 @@ function DrawingPage() {
                 
               >
                 <svg width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg" className="buttonIcon">
-                  <path d="M1 21L14.8462 7.15385M17.9231 4.07692L19.4615 2.53846M14.0769 3.30769V1M18.6923 7.92308H21M17.1538 11L18.6923 12.5385M9.46154 3.30769L11 4.84615" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M1 21L14.8462 7.15385M17.9231 4.07692L19.4615 2.53846M14.0769 3.30769V1M18.6923 7.92308H21M17.1538 11L18.6923 12.5385M9.46154 3.30769L11 4.84615" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
                 AI Enhance
               </button>
@@ -717,6 +696,33 @@ function DrawingPage() {
           </div>
         </div>
       )}
+
+{isUploading && (
+  <div
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 1000,
+      color: "white",
+      fontSize: "24px",
+    }}
+  >
+    <div>Loading...</div>
+    <div className="loading-dots">
+      <div className="dot"></div>
+      <div className="dot"></div>
+      <div className="dot"></div>
+    </div>
+  </div>
+)}
     </div>
   );
 }
