@@ -9,7 +9,6 @@ import DrawingPage from "./pages/DrawingPage";
 import ReviewPage from "./pages/ReviewPage";
 import GalleryPage from "./pages/GalleryPage";
 import RegisterPage from "./pages/RegisterPage";
-import LandingPage from "./pages/LandingPage";
 import { AuthProvider } from "./contexts/authContext";
 import SceneSelectorPage from "./pages/SceneSelectorPage";
 import SceneAreaSelector from "./pages/SceneAreaSelectorPage";
@@ -31,7 +30,6 @@ root.render(
           <Route path="review" element={<ReviewPage />} />
           <Route path="gallery" element={<GalleryPage />} />
           <Route path="register" element={<RegisterPage />} />
-          <Route path="landing" element={<LandingPage />} />
           <Route path="SceneSelect" element={<SceneSelectorPage />} />
           <Route path="SceneAreaSelect" element={<SceneAreaSelector />} />
           <Route path="selection" element={<DrawOrGalleryPage />} />
