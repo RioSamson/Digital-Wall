@@ -1,9 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import "./index.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import App from "./App";
-import reportWebVitals from "./reportWebVitals";
+import BackendTest from "./components/BackendTest";
 import LoginPage from "./pages/LoginPage";
 import DrawingPage from "./pages/DrawingPage";
 import ReviewPage from "./pages/ReviewPage";
@@ -15,12 +14,13 @@ import SceneSelectorPage from "./pages/SceneSelectorPage";
 import SceneAreaSelector from "./pages/SceneAreaSelectorPage";
 import DrawOrGalleryPage from "./pages/DrawOrGalleryPage";
 import DisplayPage from "./pages/DisplayPage";
+import reportWebVitals from "./reportWebVitals";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <AuthProvider>
-      <Router>
+      <BrowserRouter>
         <Routes>
           <Route path="/" element={<App />} />
           <Route path="login" element={<LoginPage />} />
@@ -33,8 +33,9 @@ root.render(
           <Route path="SceneAreaSelect" element={<SceneAreaSelector />} />
           <Route path="selection" element={<DrawOrGalleryPage />} />
           <Route path="display" element={<DisplayPage />} />
+          <Route path="backend-test" element={<BackendTest />} />
         </Routes>
-      </Router>
+      </BrowserRouter>
     </AuthProvider>
   </React.StrictMode>
 );
@@ -42,4 +43,5 @@ root.render(
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+
 reportWebVitals();

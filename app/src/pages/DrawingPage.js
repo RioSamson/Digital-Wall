@@ -82,19 +82,28 @@ function DrawingPage() {
     originalUrl = await uploadImage(`drawing/original-${Date.now()}.png`, blob);
 
     const sendToBackend = async (base64Img, prompt) => {
-      const response = await fetch("/api/enhance", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ base64Img, prompt }),
-      });
+      try {
+        const response = await fetch("/api/enhance", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ base64Img, prompt }),
+        });
 
-      if (response.ok) {
-        const data = await response.json();
-        return data.enhancedImage;
-      } else {
-        console.error("Server returned an error", response.statusText);
+        if (response.ok) {
+          const data = await response.json();
+          console.log(
+            "Enhanced image received from backend:",
+            data.enhancedImage
+          );
+          return data.enhancedImage; // Ensure this matches the backend's return key
+        } else {
+          console.error("Server returned an error", response.statusText);
+          return null;
+        }
+      } catch (error) {
+        console.error("Error sending image to backend:", error);
         return null;
       }
     };
@@ -104,9 +113,12 @@ function DrawingPage() {
 
     const enhancedBlob = await fetch(enhancedBase64)
       .then((res) => res.blob())
-      .catch((error) =>
-        console.error("Error converting base64 to Blob:", error)
-      );
+      .catch((error) => {
+        console.error("Error converting base64 to Blob:", error);
+        return null;
+      });
+
+    if (!enhancedBlob) return;
 
     const enhancedUrl = await uploadImage(
       `drawing/enhanced-${Date.now()}.png`,
