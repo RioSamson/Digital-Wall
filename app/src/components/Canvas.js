@@ -48,6 +48,8 @@ const Canvas = React.forwardRef(({ colors, selectedColor, lineWidth, mode, setIs
     const offsetX = e.nativeEvent.offsetX !== undefined ? e.nativeEvent.offsetX : e.touches[0].clientX - canvas.getBoundingClientRect().left;
     const offsetY = e.nativeEvent.offsetY !== undefined ? e.nativeEvent.offsetY : e.touches[0].clientY - canvas.getBoundingClientRect().top;
     context.moveTo(offsetX, offsetY);
+    context.lineTo(offsetX, offsetY); 
+    context.stroke(); 
     setIsPressed(true);
   };
 
