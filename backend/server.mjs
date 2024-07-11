@@ -7,7 +7,7 @@ import { config } from "dotenv";
 config();
 
 const app = express();
-const PORT = process.env.PORT || 4000; // Ensure it uses the port from .env
+const PORT = process.env.PORT || 8080; // Ensure it uses the port from .env
 
 app.use(cors());
 app.use(express.json());
@@ -54,7 +54,7 @@ app.post("/api/enhance", async (req, res) => {
       });
     } else {
       console.error("Server returned an error", response.statusText);
-      res.status(500).json({ error: "Baseten API error" });
+      res.status(response.status).json({ error: response.statusText });
     }
   } catch (error) {
     console.error("Error sending image to server:", error);
