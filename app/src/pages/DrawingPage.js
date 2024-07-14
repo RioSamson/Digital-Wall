@@ -6,12 +6,11 @@ import {
   uploadBytes,
   getDownloadURL,
 } from "firebase/storage";
-import { collection, addDoc, doc } from "firebase/firestore";
+import { collection, addDoc, doc, getDoc } from "firebase/firestore";
 import Canvas from "../components/Canvas";
-import Toolbox from "../components/Toolbox";
-import ColorPicker from "../components/ColorPicker";
-import LineWidthPicker from "../components/LineWidthPicker";
-import ActionButtons from "../components/ActionButton";
+import PromptModal from "../components/PromptModal";
+import TopToolbar from "../components/TopToolBar";
+import BottomToolbar from "../components/BottomToolBar";
 import "./DrawingPage.css";
 
 function DrawingPage() {
@@ -44,18 +43,33 @@ function DrawingPage() {
   const [isPinching, setIsPinching] = useState(false);
   const lastTouchDistanceRef = useRef(null);
   const [isZooming, setIsZooming] = useState(false);
+  const [enhancedImage, setEnhancedImage] = useState(null); // Store enhanced image
+  const [docId, setDocId] = useState(null); // Store document ID
 
   const handleUploadClick = () => {
     setShowTextInput(true);
   };
 
+  const fetchAdminPrompt = async (themeId) => {
+    const themeDocRef = doc(db, "Themes", themeId);
+    const themeDoc = await getDoc(themeDocRef);
+    if (themeDoc.exists()) {
+      return themeDoc.data().aiPrompts;
+    } else {
+      console.error("No such theme document!");
+      return "";
+    }
+  };
+
   const handleTextSubmit = async () => {
     setIsUploading(true); // Set uploading state to true
-    setShowTextInput(false);
 
     console.log("User's input:", inputText);
 
-    await uploadDrawing(inputText); // Pass the user input directly to uploadDrawing
+    const adminPrompt = await fetchAdminPrompt(selectedScene); // Fetch the admin's prompt
+    const combinedPrompt = `${inputText}, ${adminPrompt}`; // Concatenate user's prompt with admin's prompt
+
+    await uploadDrawing(combinedPrompt); // Pass the combined prompt to uploadDrawing
     setIsUploading(false); // Set uploading state to false after upload completes
   };
 
@@ -153,10 +167,12 @@ function DrawingPage() {
     };
 
     const docRef = await addDoc(drawingsCollection, drawingData);
+    setDocId(docRef.id); // Store the document ID
+    setEnhancedImage(enhancedBase64); // Store the enhanced image
 
-    navigate("/review", {
-      state: { docId: docRef.id },
-    });
+    // navigate("/review", {
+    //   state: { docId: docRef.id },
+    // });
   };
 
   const generateRandomColors = () => {
@@ -404,11 +420,6 @@ function DrawingPage() {
         continue;
       }
 
-      const currentIndex = (cy * canvas.width + cx) * 4;
-      if (!colorsMatch(getColorAtPixel(data, cx, cy), targetColor)) {
-        continue;
-      }
-
       setColorAtPixel(data, cx, cy, fillColor);
       stack.push([cx + 1, cy]);
       stack.push([cx - 1, cy]);
@@ -442,19 +453,6 @@ function DrawingPage() {
     );
   };
 
-  const hexToRGBA = (hex) => {
-    let r = 0,
-      g = 0,
-      b = 0,
-      a = 255;
-    if (hex.length === 7) {
-      r = parseInt(hex.slice(1), 16);
-      g = parseInt(hex.slice(3), 16);
-      b = parseInt(hex.slice(5, 7), 16);
-    }
-    return [r, g, b, a];
-  };
-
   const handleCanvasClick = (event) => {
     console.log("canvas is clicked");
     if (mode === "fill") {
@@ -467,6 +465,17 @@ function DrawingPage() {
 
       // floodFill(x, y, fillColor);
     }
+  };
+
+  const handleCancel = () => {
+    setShowTextInput(false);
+    setEnhancedImage(null); // Hide the enhanced image
+  };
+
+  const handleNext = () => {
+    navigate("/review", {
+      state: { docId: docId },
+    });
   };
 
   // useEffect(() => {
@@ -528,31 +537,20 @@ function DrawingPage() {
 
   return (
     <div className="DrawingPage">
-      <div className="top-toolbar">
-        <ActionButtons
-          onClear={() => {
-            const canvas = canvasRef.current;
-            const context = canvas.getContext("2d");
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            saveHistory();
-          }}
-          onUndo={undo}
-          onRedo={redo}
-          undoDisabled={historyIndex <= 0}
-          redoDisabled={historyIndex >= history.length - 1}
-        />
-        <button className="completeButton" onClick={handleUploadClick}>
-          Upload
-        </button>
-      </div>
-      <div
-      className="canvas-container"
-      onMouseDown={() => setIsPressed(true)}
-      onMouseUp={() => setIsPressed(false)}
-      onMouseMove={updateDraw}
-      onMouseLeave={() => setIsPressed(false)}
-      onClick={handleCanvasClick}
-    >
+      <TopToolbar
+        onClear={() => {
+          const canvas = canvasRef.current;
+          const context = canvas.getContext("2d");
+          context.clearRect(0, 0, canvas.width, canvas.height);
+          saveHistory();
+        }}
+        onUndo={undo}
+        onRedo={redo}
+        undoDisabled={historyIndex <= 0}
+        redoDisabled={historyIndex >= history.length - 1}
+        handleUploadClick={handleUploadClick}
+      />
+      <div className="canvas-container" onClick={handleCanvasClick}>
         <Canvas
           ref={canvasRef}
           colors={colors}
@@ -566,151 +564,35 @@ function DrawingPage() {
           isZooming={isZooming}
         />
       </div>
-      <div className="bottom-toolbar">
-        <Toolbox
-          setEraser={setEraser}
-          toggleColorPicker={toggleColorPicker}
-          handleFill={handleFill}
-          handleDescribeDrawing={handleDescribeDrawing}
-          mode={mode}
-          setMode={setMode}
-        />
-        {showFillPopup && (
-          <div className="popup">
-            <ColorPicker
-              colors={colors}
-              selectedColor={selectedColor}
-              setColor={setColor}
-              showColorPopup={showFillPopup}
-              generateRandomColors={generateRandomColors}
-              floodFill={floodFill}
-              canvasRef={canvasRef}
-            />
-          </div>
-        )}
-        {showColorPopup && (
-          <div className="popup">
-            <div className="color-picker-wrapper">
-              <ColorPicker
-                colors={colors}
-                selectedColor={selectedColor}
-                setColor={setColor}
-                showColorPopup={showColorPopup}
-                generateRandomColors={generateRandomColors}
-                canvasRef={canvasRef}
-              />
-              <div className="divider"></div>
-              <LineWidthPicker
-                setWidth={setWidth}
-                lineWidth={lineWidth}
-                showLineWidthPopup={showColorPopup}
-              />
-            </div>
-          </div>
-        )}
-
-        {showEraserPopup && (
-          <div className="popup">
-            <LineWidthPicker
-              setWidth={setWidth}
-              lineWidth={lineWidth}
-              showLineWidthPopup={showEraserPopup}
-            />
-          </div>
-        )}
-      </div>
-
-      {showTextInput && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 1000,
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: "white",
-              padding: "20px",
-              borderRadius: "10px",
-              width: "90%",
-              maxWidth: "500px",
-              textAlign: "center",
-            }}
-          >
-            <h2 style={{ marginBottom: "20px" , fontWeight:"normal" }}>Enter a prompt for AI to enhance your drawing:</h2>
-            <div
-              className="text-input"
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: "10px",
-              }}
-            >
-              <input
-                type="text"
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  borderRadius: "5px",
-                  border: "1px solid #ccc",
-                  fontSize: "16px",
-                  marginBottom: "10px",
-                  margin:"5px",
-                }}
-              />
-              <button
-              className="completeButton"
-                onClick={handleTextSubmit}
-                disabled={isUploading}
-                
-              >
-                <svg width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg" className="buttonIcon">
-                  <path d="M1 21L14.8462 7.15385M17.9231 4.07692L19.4615 2.53846M14.0769 3.30769V1M18.6923 7.92308H21M17.1538 11L18.6923 12.5385M9.46154 3.30769L11 4.84615" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                AI Enhance
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-{isUploading && (
-  <div
-    style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      width: "100%",
-      height: "100%",
-      backgroundColor: "rgba(0, 0, 0, 0.5)",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-      alignItems: "center",
-      zIndex: 1000,
-      color: "white",
-      fontSize: "24px",
-    }}
-  >
-    <div>Loading...</div>
-    <div className="loading-dots">
-      <div className="dot"></div>
-      <div className="dot"></div>
-      <div className="dot"></div>
-    </div>
-  </div>
-)}
+      <BottomToolbar
+        setEraser={setEraser}
+        toggleColorPicker={toggleColorPicker}
+        handleFill={handleFill}
+        handleDescribeDrawing={handleDescribeDrawing}
+        mode={mode}
+        setMode={setMode}
+        showFillPopup={showFillPopup}
+        showColorPopup={showColorPopup}
+        showEraserPopup={showEraserPopup}
+        colors={colors}
+        selectedColor={selectedColor}
+        setColor={setColor}
+        generateRandomColors={generateRandomColors}
+        floodFill={floodFill}
+        canvasRef={canvasRef}
+        lineWidth={lineWidth}
+        setWidth={setWidth}
+      />
+      <PromptModal
+        showTextInput={showTextInput}
+        enhancedImage={enhancedImage}
+        inputText={inputText}
+        setInputText={setInputText}
+        isUploading={isUploading}
+        handleTextSubmit={handleTextSubmit}
+        handleCancel={handleCancel}
+        handleNext={handleNext}
+      />
     </div>
   );
 }
