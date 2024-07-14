@@ -6,7 +6,7 @@ import {
   uploadBytes,
   getDownloadURL,
 } from "firebase/storage";
-import { collection, addDoc, doc } from "firebase/firestore";
+import { collection, addDoc, doc, getDoc } from "firebase/firestore";
 import Canvas from "../components/Canvas";
 import Toolbox from "../components/Toolbox";
 import ColorPicker from "../components/ColorPicker";
@@ -46,13 +46,26 @@ function DrawingPage() {
     setShowTextInput(true);
   };
 
+  const fetchAdminPrompt = async (themeId) => {
+    const themeDocRef = doc(db, "Themes", themeId);
+    const themeDoc = await getDoc(themeDocRef);
+    if (themeDoc.exists()) {
+      return themeDoc.data().aiPrompts;
+    } else {
+      console.error("No such theme document!");
+      return "";
+    }
+  };
+
   const handleTextSubmit = async () => {
     setIsUploading(true); // Set uploading state to true
-    // setShowTextInput(false);
 
     console.log("User's input:", inputText);
 
-    await uploadDrawing(inputText); // Pass the user input directly to uploadDrawing
+    const adminPrompt = await fetchAdminPrompt(selectedScene); // Fetch the admin's prompt
+    const combinedPrompt = `${inputText}, ${adminPrompt}`; // Concatenate user's prompt with admin's prompt
+
+    await uploadDrawing(combinedPrompt); // Pass the combined prompt to uploadDrawing
     setIsUploading(false); // Set uploading state to false after upload completes
   };
 
