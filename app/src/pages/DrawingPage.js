@@ -39,6 +39,8 @@ function DrawingPage() {
     "purple",
   ]);
   const [isUploading, setIsUploading] = useState(false); // State to manage the uploading process
+  const [enhancedImage, setEnhancedImage] = useState(null); // Store enhanced image
+  const [docId, setDocId] = useState(null); // Store document ID
 
   const handleUploadClick = () => {
     setShowTextInput(true);
@@ -46,7 +48,7 @@ function DrawingPage() {
 
   const handleTextSubmit = async () => {
     setIsUploading(true); // Set uploading state to true
-    setShowTextInput(false);
+    // setShowTextInput(false);
 
     console.log("User's input:", inputText);
 
@@ -148,10 +150,12 @@ function DrawingPage() {
     };
 
     const docRef = await addDoc(drawingsCollection, drawingData);
+    setDocId(docRef.id); // Store the document ID
+    setEnhancedImage(enhancedBase64); // Store the enhanced image
 
-    navigate("/review", {
-      state: { docId: docRef.id },
-    });
+    // navigate("/review", {
+    //   state: { docId: docRef.id },
+    // });
   };
 
   const generateRandomColors = () => {
@@ -396,11 +400,6 @@ function DrawingPage() {
         continue;
       }
 
-      const currentIndex = (cy * canvas.width + cx) * 4;
-      if (!colorsMatch(getColorAtPixel(data, cx, cy), targetColor)) {
-        continue;
-      }
-
       setColorAtPixel(data, cx, cy, fillColor);
       stack.push([cx + 1, cy]);
       stack.push([cx - 1, cy]);
@@ -434,19 +433,6 @@ function DrawingPage() {
     );
   };
 
-  const hexToRGBA = (hex) => {
-    let r = 0,
-      g = 0,
-      b = 0,
-      a = 255;
-    if (hex.length === 7) {
-      r = parseInt(hex.slice(1), 16);
-      g = parseInt(hex.slice(3), 16);
-      b = parseInt(hex.slice(5, 7), 16);
-    }
-    return [r, g, b, a];
-  };
-
   const handleCanvasClick = (event) => {
     console.log("canvas is clicked");
     if (mode === "fill") {
@@ -459,6 +445,17 @@ function DrawingPage() {
 
       // floodFill(x, y, fillColor);
     }
+  };
+
+  const handleCancel = () => {
+    setShowTextInput(false);
+    setEnhancedImage(null); // Hide the enhanced image
+  };
+
+  const handleNext = () => {
+    navigate("/review", {
+      state: { docId: docId },
+    });
   };
 
   return (
@@ -570,45 +567,91 @@ function DrawingPage() {
               textAlign: "center",
             }}
           >
-            <h2 style={{ marginBottom: "20px" }}>What did you draw?</h2>
-            <div
-              className="text-input"
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: "10px",
-              }}
-            >
-              <input
-                type="text"
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  borderRadius: "5px",
-                  border: "1px solid #ccc",
-                  fontSize: "16px",
-                }}
-              />
-              <button
-                onClick={handleTextSubmit}
-                disabled={isUploading}
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  borderRadius: "5px",
-                  backgroundColor: isUploading ? "#ccc" : "#007bff",
-                  color: "white",
-                  border: "none",
-                  fontSize: "16px",
-                  cursor: isUploading ? "not-allowed" : "pointer",
-                }}
-              >
-                Done
-              </button>
-            </div>
+            {enhancedImage ? (
+              <>
+                <img
+                  src={enhancedImage}
+                  alt="Enhanced Drawing"
+                  style={{ maxWidth: "100%", marginBottom: "20px" }}
+                />
+                <div>
+                  <button
+                    onClick={handleCancel}
+                    style={{
+                      padding: "10px 20px",
+                      margin: "10px",
+                      borderRadius: "5px",
+                      backgroundColor: "#f44336",
+                      color: "white",
+                      border: "none",
+                      fontSize: "16px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Redo / Keep Drawing
+                  </button>
+                  <button
+                    onClick={handleNext}
+                    style={{
+                      padding: "10px 20px",
+                      margin: "10px",
+                      borderRadius: "5px",
+                      backgroundColor: "#4caf50",
+                      color: "white",
+                      border: "none",
+                      fontSize: "16px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Next
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <h2 style={{ marginBottom: "20px" }}>
+                  Describe in detail what you drew
+                </h2>
+                <div
+                  className="text-input"
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: "10px",
+                  }}
+                >
+                  <input
+                    type="text"
+                    value={inputText}
+                    onChange={(e) => setInputText(e.target.value)}
+                    style={{
+                      width: "100%",
+                      padding: "10px",
+                      borderRadius: "5px",
+                      border: "1px solid #ccc",
+                      fontSize: "16px",
+                    }}
+                  />
+                  <button
+                    onClick={handleTextSubmit}
+                    disabled={isUploading}
+                    style={{
+                      width: "100%",
+                      padding: "10px",
+                      borderRadius: "5px",
+                      backgroundColor: isUploading ? "#ccc" : "#007bff",
+                      color: "white",
+                      border: "none",
+                      fontSize: "16px",
+                      cursor: isUploading ? "not-allowed" : "pointer",
+                    }}
+                  >
+                    Done
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
