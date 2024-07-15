@@ -15,17 +15,29 @@
   border: none;
   border-radius: 10px;
 }
+.top-toolbar-container {
+  width: 100%;
+  background-color: white;
+  position: fixed;
+  top: 0;
+  z-index: 1; 
+  text-align: center;
+}
 
 .top-toolbar {
   display: flex;
   justify-content: space-between;
   padding: 10px;
-  background-color: white;
-  width: 100%;
-  position: fixed;
-  top: 0;
-  z-index: 1; 
+  background: rgba(255, 255, 255, 0.7); 
 }
+.centered-text {
+  position: absolute;
+  top: 50px; 
+  width: 100%;
+  text-align: center;
+  pointer-events: none; 
+}
+
 
 .bottom-toolbar {
   display: flex;

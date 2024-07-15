@@ -4,10 +4,10 @@ import { useNavigate, useLocation } from "react-router-dom";
 function SceneAreaSelector() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { selectedScene, imageUrl } = location.state || {};
+  const { selectedScene, imageUrl, themeName } = location.state || {};
 
   const handleAreaSelect = (area) => {
-    navigate("/drawing", { state: { selectedScene, area } });
+    navigate("/drawing", { state: { selectedScene, area, themeName } });
   };
 
   const handleBackClick = () => {

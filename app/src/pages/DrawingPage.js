@@ -23,7 +23,7 @@ function DrawingPage() {
   const [mode, setMode] = useState("pencil");
   const [showTextInput, setShowTextInput] = useState(false);
   const [inputText, setInputText] = useState("");
-  const { selectedScene, area } = location.state || {};
+  const { selectedScene, area, themeName} = location.state || {};
   const [showColorPopup, setShowColorPopup] = useState(false);
   const [lineWidth, setLineWidth] = useState(5);
   const [showEraserPopup, setShowEraserPopup] = useState(false);
@@ -500,6 +500,7 @@ const saveHistory = useCallback(() => {
         undoDisabled={historyIndex <= 0}
         redoDisabled={historyIndex >= history.length - 1}
         handleUploadClick={handleUploadClick}
+        themeName={themeName} 
       />
       <div className="canvas-container" onClick={handleCanvasClick}>
         <Canvas

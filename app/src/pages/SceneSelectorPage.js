@@ -41,11 +41,11 @@ function SceneSelector() {
     if (scene.clickable) {
       if (mode === "drawing") {
         navigate("/SceneAreaSelect", {
-          state: { selectedScene: scene.id, imageUrl: scene.imageUrl },
+          state: { selectedScene: scene.id, imageUrl: scene.imageUrl, themeName : scene.name },
         });
       } else if (mode === "gallery") {
         navigate("/gallery", {
-          state: { selectedScene: scene.id, imageUrl: scene.imageUrl },
+          state: { selectedScene: scene.id, imageUrl: scene.imageUrl},
         });
       }
     }
