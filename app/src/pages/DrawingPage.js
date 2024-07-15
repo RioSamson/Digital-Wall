@@ -366,6 +366,8 @@ const saveHistory = useCallback(() => {
       img.src = history[newIndex];
       img.onload = () => {
         context.clearRect(0, 0, canvas.width, canvas.height);
+        context.fillStyle = "white"; 
+      context.fillRect(0, 0, canvas.width, canvas.height);
         context.globalCompositeOperation = "source-over";
         context.drawImage(img, 0, 0);
       };
@@ -382,6 +384,8 @@ const saveHistory = useCallback(() => {
       img.src = history[newIndex];
       img.onload = () => {
         context.clearRect(0, 0, canvas.width, canvas.height);
+        context.fillStyle = "white"; 
+        context.fillRect(0, 0, canvas.width, canvas.height);
         context.globalCompositeOperation = "source-over";
         context.drawImage(img, 0, 0);
       };
@@ -487,6 +491,8 @@ const saveHistory = useCallback(() => {
           const canvas = canvasRef.current;
           const context = canvas.getContext("2d");
           context.clearRect(0, 0, canvas.width, canvas.height);
+          context.fillStyle = "white"; // Set the background to white
+          context.fillRect(0, 0, canvas.width, canvas.height);
           saveHistory();
         }}
         onUndo={undo}
