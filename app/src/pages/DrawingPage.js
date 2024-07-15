@@ -11,6 +11,7 @@ import Canvas from "../components/Canvas";
 import PromptModal from "../components/PromptModal";
 import TopToolbar from "../components/TopToolBar";
 import BottomToolbar from "../components/BottomToolBar";
+import LoadingScreen from "../components/Loading";
 import "./DrawingPage.css";
 
 function DrawingPage() {
@@ -593,7 +594,8 @@ function DrawingPage() {
         handleCancel={handleCancel}
         handleNext={handleNext}
       />
-    </div>
+      {isUploading && <LoadingScreen />}
+    </div> 
   );
 }
 
