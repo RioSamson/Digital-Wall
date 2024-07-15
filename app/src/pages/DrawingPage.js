@@ -367,6 +367,7 @@ function DrawingPage() {
       img.src = history[newIndex];
       img.onload = () => {
         context.clearRect(0, 0, canvas.width, canvas.height);
+        context.globalCompositeOperation = "source-over";
         context.drawImage(img, 0, 0);
       };
     }
@@ -382,6 +383,7 @@ function DrawingPage() {
       img.src = history[newIndex];
       img.onload = () => {
         context.clearRect(0, 0, canvas.width, canvas.height);
+        context.globalCompositeOperation = "source-over";
         context.drawImage(img, 0, 0);
       };
     }
