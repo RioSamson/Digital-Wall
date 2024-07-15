@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 function MyDrawingPage() {
@@ -6,13 +6,6 @@ function MyDrawingPage() {
   const navigate = useNavigate();
   const { drawings = [], selectedScene, imageUrl } = location.state || {};
   const [selectedImage, setSelectedImage] = useState(null);
-
-  useEffect(() => {
-    console.log("Number of drawings:", drawings.length);
-    console.log("selected scene is:", selectedScene);
-    console.log("Drawings:", drawings);
-
-  }, [drawings]);
 
   const handleImageClick = (url) => {
     setSelectedImage(url);

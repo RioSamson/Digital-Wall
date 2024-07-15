@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback  } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { storage, db, auth } from "../firebase/firebase";
 import {
@@ -39,11 +39,6 @@ function DrawingPage() {
     "purple",
   ]);
   const [isUploading, setIsUploading] = useState(false); 
-  const [scale, setScale] = useState(1);
-  const [origin, setOrigin] = useState({ x: 0, y: 0 });
-  const [isPinching, setIsPinching] = useState(false);
-  const lastTouchDistanceRef = useRef(null);
-  const [isZooming, setIsZooming] = useState(false);
   const [enhancedImage, setEnhancedImage] = useState(null); // Store enhanced image
   const [docId, setDocId] = useState(null); // Store document ID
 
@@ -245,7 +240,6 @@ function DrawingPage() {
   const updateDraw = (e) => {
 
     if (!isPressed) return;
-    // if (!isPressed || isZooming) return;
     setShowColorPopup(false);
     setShowEraserPopup(false);
     setShowFillPopup(false);
@@ -349,13 +343,18 @@ function DrawingPage() {
     };
   }, []);
 
-  const saveHistory = () => {
-    const canvas = canvasRef.current;
-    const newHistory = history.slice(0, historyIndex + 1);
-    newHistory.push(canvas.toDataURL());
-    setHistory(newHistory);
-    setHistoryIndex(newHistory.length - 1);
-  };
+  const historyRef = useRef([]);
+const historyIndexRef = useRef(-1);
+
+const saveHistory = useCallback(() => {
+  const canvas = canvasRef.current;
+  const newHistory = historyRef.current.slice(0, historyIndexRef.current + 1);
+  newHistory.push(canvas.toDataURL());
+  historyRef.current = newHistory;
+  historyIndexRef.current = newHistory.length - 1;
+  setHistory(newHistory);
+  setHistoryIndex(newHistory.length - 1);
+}, []);
 
   const undo = () => {
     if (historyIndex > 0) {
@@ -393,13 +392,13 @@ function DrawingPage() {
     if (canvasRef.current) {
       saveHistory();
     }
-  }, []);
+  }, [saveHistory]);
 
   useEffect(() => {
     if (!isPressed) {
       saveHistory();
     }
-  }, [isPressed]);
+  }, [isPressed, saveHistory]);
 
   //fill functionality
   const floodFill = (x, y, fillColor) => {
@@ -481,63 +480,6 @@ function DrawingPage() {
     });
   };
 
-  // useEffect(() => {
-  //   const canvas = canvasRef.current;
-  //   const preventDefault = (e) => e.preventDefault();
-
-  //   const handleWheel = (e) => {
-  //     e.preventDefault();
-  //     setIsZooming(true);
-  //     const scaleAmount = -e.deltaY * 0.01;
-  //     setScale((prevScale) => Math.min(Math.max(0.5, prevScale + scaleAmount), 3));
-  //     setTimeout(() => setIsZooming(false), 4000);
-  //   };
-
-  //   const handlePinchStart = (e) => {
-  //     if (e.touches.length === 2) {
-  //       const touchDistance = getTouchDistance(e.touches);
-  //       lastTouchDistanceRef.current = touchDistance;
-  //       setIsPinching(true);
-  //       setIsZooming(true);
-  //     }
-  //   };
-
-  //   const handlePinchMove = (e) => {
-  //     if (e.touches.length === 2) {
-  //       const touchDistance = getTouchDistance(e.touches);
-  //       if (lastTouchDistanceRef.current) {
-  //         const scaleAmount = touchDistance / lastTouchDistanceRef.current;
-  //         setScale((prevScale) => Math.min(Math.max(0.5, prevScale * scaleAmount), 3));
-  //         lastTouchDistanceRef.current = touchDistance;
-  //         setIsZooming(true);
-  //         setTimeout(() => setIsZooming(false), 4000);
-  //       }
-  //     }
-  //   };
-
-  //   const getTouchDistance = (touches) => {
-  //     const dx = touches[0].clientX - touches[1].clientX;
-  //     const dy = touches[0].clientY - touches[1].clientY;
-  //     return Math.sqrt(dx * dx + dy * dy);
-  //   };
-
-  //   canvas.addEventListener("wheel", handleWheel);
-  //   canvas.addEventListener("touchstart", handlePinchStart, { passive: false });
-  //   canvas.addEventListener("touchmove", handlePinchMove, { passive: false });
-  //   canvas.addEventListener("touchstart", preventDefault, { passive: false });
-  //   canvas.addEventListener("touchmove", preventDefault, { passive: false });
-  //   canvas.addEventListener("touchend", preventDefault, { passive: false });
-
-  //   return () => {
-  //     canvas.removeEventListener("wheel", handleWheel);
-  //     canvas.removeEventListener("touchstart", handlePinchStart);
-  //     canvas.removeEventListener("touchmove", handlePinchMove);
-  //     canvas.removeEventListener("touchstart", preventDefault);
-  //     canvas.removeEventListener("touchmove", preventDefault);
-  //     canvas.removeEventListener("touchend", preventDefault);
-  //   };
-  // }, [scale]);
-
   return (
     <div className="DrawingPage">
       <TopToolbar
@@ -562,9 +504,6 @@ function DrawingPage() {
           mode={mode}
           setIsPressed={setIsPressed}
           updateDraw={updateDraw}
-          scale={scale}
-          origin={origin}
-          isZooming={isZooming}
         />
       </div>
       <BottomToolbar

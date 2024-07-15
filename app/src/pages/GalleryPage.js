@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/authContext";
 import { db } from "../firebase/firebase";
 import { collection, getDocs } from "firebase/firestore";
@@ -20,7 +20,7 @@ function GalleryPage() {
     navigate("/myDrawing", { state: { drawings: prevDrawing, selectedScene, imageUrl } });
   };
 
-  const getDrawings = async (selectedScene) => {
+  const getDrawings = useCallback(async (selectedScene) => {
     try {
       const querySnapshot = await getDocs(collection(db, "Drawings"));
       if (querySnapshot.empty) {
@@ -51,11 +51,11 @@ function GalleryPage() {
     } catch (error) {
       console.error("Error getting drawings:", error);
     }
-  };
+  }, [currentUser.email]);
 
   useEffect(() => {
     getDrawings(selectedScene);
-  }, []);
+  }, [getDrawings, selectedScene]);
 
   const handleImageClick = (url) => {
     setSelectedImage(url);
@@ -64,6 +64,7 @@ function GalleryPage() {
   const closeModal = () => {
     setSelectedImage(null);
   };
+  
   const handleBackClick = () => {
     navigate(-1);
   };
