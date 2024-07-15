@@ -32,6 +32,7 @@ const ActionButtons = ({ onClear, onUndo, onRedo, undoDisabled, redoDisabled }) 
           border: "none",
           cursor: "pointer",
           margin: "3px",
+          marginRight: "25px",
           opacity: redoDisabled ? 0.5 : 1,
         }}
         aria-label="Redo"
