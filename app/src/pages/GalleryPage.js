@@ -64,6 +64,18 @@ function GalleryPage() {
   const closeModal = () => {
     setSelectedImage(null);
   };
+  const handleBackClick = () => {
+    navigate(-1);
+  };
+
+  const backButtonStyle = {
+    position: "absolute",
+    top: "10px",
+    left: "20px",
+    cursor: "pointer",
+    margin: "5px",
+    padding:"5px"
+  };
 
   return (
     <div
@@ -81,13 +93,27 @@ function GalleryPage() {
           padding: "10px",
         }}
       >
+        <svg
+          onClick={handleBackClick}
+          style={backButtonStyle}
+          width="20"
+          height="25"
+          viewBox="0 0 25 30"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M0.5309 17.1421L16.8658 31.5276C17.5826 32.1575 18.7439 32.1575 19.4624 31.5276C20.1792 30.8978 20.1792 29.8747 19.4624 29.2449L4.42318 16.0008L19.4606 2.75669C20.1774 2.12685 20.1774 1.10382 19.4606 0.472382C18.7438 -0.157461 17.5808 -0.157461 16.864 0.472382L0.529089 14.8578C-0.176665 15.4811 -0.176664 16.5202 0.5309 17.1421Z"
+            fill="black"
+          />
+        </svg>
       </div>
-      <h1>Gallery</h1>
-      <div style={{ display: "flex", alignItems: "center", marginTop: "10px", justifyContent: "space-between", width: "100%" }}>
-      <h5 style={{ fontSize: "1.2rem", marginLeft:"20px" }}>My drawings on the display</h5>
+      <h1 style={{ fontWeight: "normal", margin: "0 auto", flexGrow: 1, textAlign: "center" }}>Gallery</h1>     
+       <div style={{ display: "flex", alignItems: "center", marginTop: "10px", justifyContent: "space-between", width: "100%" }}>
+      <h2 style={{ fontWeight: "normal", marginLeft:"20px" }}>My drawings on the display</h2>
       </div>
       <div style={{ display: "flex", alignItems: "center", marginTop: "10px", justifyContent: "space-between", width: "100%" }}>
-      <h5 style={{ fontSize: "1.2rem", marginLeft:"20px" }}>My drawings</h5>
+      <h2 style={{ fontWeight: "normal", marginLeft:"20px" }}>My drawings</h2>
       <button onClick={viewAllHandler} style={{ marginRight: '20px', color: 'black', textDecoration: 'underline', fontSize: '1rem', border: "none", background:"white" }}>
           View All
         </button>
