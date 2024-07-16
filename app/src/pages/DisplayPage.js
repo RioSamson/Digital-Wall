@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { useAuth } from "../contexts/authContext";
 import { db } from "../firebase/firebase";
 import {
@@ -13,7 +13,9 @@ import {
 
 function DisplayPage() {
   const location = useLocation();
-  const { selectedScene, imageUrl } = location.state || {};
+  const [searchParams] = useSearchParams();
+  const selectedScene = searchParams.get("theme");
+  const { imageUrl } = location.state || {};
   const { currentUser } = useAuth();
   const [backgroundImage, setBackgroundImage] = useState(imageUrl);
   const [drawings, setDrawings] = useState([]);
