@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback  } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { storage, db, auth } from "../firebase/firebase";
 import {
@@ -11,6 +11,7 @@ import Canvas from "../components/Canvas";
 import PromptModal from "../components/PromptModal";
 import TopToolbar from "../components/TopToolBar";
 import BottomToolbar from "../components/BottomToolBar";
+import LoadingScreen from "../components/Loading";
 import "./DrawingPage.css";
 
 function DrawingPage() {
@@ -37,7 +38,7 @@ function DrawingPage() {
     "blue",
     "purple",
   ]);
-  const [isUploading, setIsUploading] = useState(false); // State to manage the uploading process
+  const [isUploading, setIsUploading] = useState(false); 
   const [enhancedImage, setEnhancedImage] = useState(null); // Store enhanced image
   const [docId, setDocId] = useState(null); // Store document ID
 
@@ -237,8 +238,8 @@ function DrawingPage() {
   };
 
   const updateDraw = (e) => {
-    if (!isPressed) return;
 
+    if (!isPressed) return;
     setShowColorPopup(false);
     setShowEraserPopup(false);
     setShowFillPopup(false);
@@ -261,13 +262,15 @@ function DrawingPage() {
       context.globalCompositeOperation = "source-over";
       context.strokeStyle = selectedColor;
     }
-
+  
     context.lineWidth = lineWidth;
     context.lineCap = "round";
     context.lineJoin = "round";
-
+  
     context.lineTo(offsetX, offsetY);
     context.stroke();
+    context.beginPath();
+    context.moveTo(offsetX, offsetY);
   };
 
   const setColor = (color) => {
@@ -340,13 +343,18 @@ function DrawingPage() {
     };
   }, []);
 
-  const saveHistory = () => {
-    const canvas = canvasRef.current;
-    const newHistory = history.slice(0, historyIndex + 1);
-    newHistory.push(canvas.toDataURL());
-    setHistory(newHistory);
-    setHistoryIndex(newHistory.length - 1);
-  };
+  const historyRef = useRef([]);
+const historyIndexRef = useRef(-1);
+
+const saveHistory = useCallback(() => {
+  const canvas = canvasRef.current;
+  const newHistory = historyRef.current.slice(0, historyIndexRef.current + 1);
+  newHistory.push(canvas.toDataURL());
+  historyRef.current = newHistory;
+  historyIndexRef.current = newHistory.length - 1;
+  setHistory(newHistory);
+  setHistoryIndex(newHistory.length - 1);
+}, []);
 
   const undo = () => {
     if (historyIndex > 0) {
@@ -358,6 +366,9 @@ function DrawingPage() {
       img.src = history[newIndex];
       img.onload = () => {
         context.clearRect(0, 0, canvas.width, canvas.height);
+        context.fillStyle = "white"; 
+      context.fillRect(0, 0, canvas.width, canvas.height);
+        context.globalCompositeOperation = "source-over";
         context.drawImage(img, 0, 0);
       };
     }
@@ -373,6 +384,9 @@ function DrawingPage() {
       img.src = history[newIndex];
       img.onload = () => {
         context.clearRect(0, 0, canvas.width, canvas.height);
+        context.fillStyle = "white"; 
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.globalCompositeOperation = "source-over";
         context.drawImage(img, 0, 0);
       };
     }
@@ -382,13 +396,13 @@ function DrawingPage() {
     if (canvasRef.current) {
       saveHistory();
     }
-  }, []);
+  }, [saveHistory]);
 
   useEffect(() => {
     if (!isPressed) {
       saveHistory();
     }
-  }, [isPressed]);
+  }, [isPressed, saveHistory]);
 
   //fill functionality
   const floodFill = (x, y, fillColor) => {
@@ -477,6 +491,8 @@ function DrawingPage() {
           const canvas = canvasRef.current;
           const context = canvas.getContext("2d");
           context.clearRect(0, 0, canvas.width, canvas.height);
+          context.fillStyle = "white"; // Set the background to white
+          context.fillRect(0, 0, canvas.width, canvas.height);
           saveHistory();
         }}
         onUndo={undo}
@@ -525,7 +541,8 @@ function DrawingPage() {
         handleCancel={handleCancel}
         handleNext={handleNext}
       />
-    </div>
+      {isUploading && <LoadingScreen />}
+    </div> 
   );
 }
 

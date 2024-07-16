@@ -33,6 +33,10 @@ function SceneSelector() {
     }
   };
 
+  const handleBackClick = () => {
+    navigate(-1);
+  };
+
   const handleSceneSelect = (scene) => {
     if (scene.clickable) {
       if (mode === "drawing") {
@@ -50,27 +54,33 @@ function SceneSelector() {
   const sceneGridStyle = {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
-    gap: "20px",
+    gap: "20px 0px",
     width: "100%",
     maxWidth: "800px",
-    margin: "0 auto",
+    margin: "0  auto",
+    justifyContent: "space-round",
+    padding: "0 20px",
   };
 
   const sceneItemStyle = {
     position: "relative",
     display: "flex",
-    flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    border: "1px solid #ccc",
-    padding: "10px",
     cursor: "pointer",
     transition: "transform 0.3s ease",
+    overflow: "hidden",
+    borderRadius: "10px",
+    width: "150px",
+    height: "150px",
   };
 
   const sceneImageStyle = {
+    position: "absolute",
+    top: 0,
+    left: 0,
     width: "100%",
-    height: "auto",
+    height: "100%",
     objectFit: "cover",
   };
 
@@ -86,6 +96,34 @@ function SceneSelector() {
     setHovered(null);
   };
 
+  const sceneNameStyle = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    color: "white",
+    fontSize: "1.2rem",
+    fontWeight: "normal",
+    textShadow: "2px 2px 4px rgba(0, 0, 0, 0.7)",
+    zIndex: 2,
+    pointerEvents: "none",
+  };
+
+  const overlayStyle = {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    zIndex: 1,
+  };
+  const backButtonStyle = {
+    cursor: "pointer",
+    margin: "5px",
+    padding: "5px",
+  };
+
   return (
     <div
       style={{
@@ -95,8 +133,27 @@ function SceneSelector() {
         padding: "20px",
       }}
     >
-    <h1>{mode === 'drawing' ? 'Pick a theme to draw on!' : 'View your previous drawings'}</h1>
-    <div style={sceneGridStyle}>
+  <div style={{ display: "flex", alignItems: "center", width: "100%", justifyContent: "space-between", marginBottom: "20px" }}>
+  <svg
+          onClick={handleBackClick}
+          style={backButtonStyle}
+          width="20"
+          height="25"
+          viewBox="0 0 25 30"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M0.5309 17.1421L16.8658 31.5276C17.5826 32.1575 18.7439 32.1575 19.4624 31.5276C20.1792 30.8978 20.1792 29.8747 19.4624 29.2449L4.42318 16.0008L19.4606 2.75669C20.1774 2.12685 20.1774 1.10382 19.4606 0.472382C18.7438 -0.157461 17.5808 -0.157461 16.864 0.472382L0.529089 14.8578C-0.176665 15.4811 -0.176664 16.5202 0.5309 17.1421Z"
+            fill="black"
+          />
+        </svg>
+        {mode !== 'drawing' && <h1 style={{ fontWeight: "normal", margin: "0 auto", flexGrow: 1, textAlign: "center" }}>Gallery</h1>}
+        </div>
+      <h2 style={{ fontWeight: "normal", marginTop: "10px", marginLeft: "5px"}}>
+        {mode === 'drawing' ? 'Pick a theme to draw on!' : 'View your previous drawings'}
+      </h2>
+      <div style={sceneGridStyle}>
         {scenes.map((scene) => (
           <div
             key={scene.id}
@@ -108,12 +165,13 @@ function SceneSelector() {
             onMouseOver={() => handleMouseOver(scene.id)}
             onMouseOut={handleMouseOut}
           >
+            <div style={overlayStyle}></div>
             <img
               src={scene.imageUrl}
               alt={scene.name}
               style={sceneImageStyle}
             />
-            <p>{scene.name}</p>
+            <div style={sceneNameStyle}>{scene.name}</div>
           </div>
         ))}
       </div>

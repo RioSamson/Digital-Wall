@@ -42,6 +42,7 @@ const Canvas = React.forwardRef(({ colors, selectedColor, lineWidth, mode, setIs
   }, [ref]);
 
   const beginDraw = (e) => {
+    // if (isZooming) return;
     const canvas = ref.current;
     const context = canvas.getContext("2d");
     context.beginPath();
@@ -54,6 +55,7 @@ const Canvas = React.forwardRef(({ colors, selectedColor, lineWidth, mode, setIs
   };
 
   const endDraw = () => {
+    // if (isZooming) return;
     const canvas = ref.current;
     const context = canvas.getContext("2d");
     context.closePath();
