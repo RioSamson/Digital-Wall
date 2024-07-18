@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
-// import { useAuth } from "../contexts/authContext";
 import { db } from "../firebase/firebase";
 import {
   collection,
@@ -18,7 +17,6 @@ function DisplayPage() {
   const [searchParams] = useSearchParams();
   const selectedScene = searchParams.get("theme");
   const { imageUrl } = location.state || {};
-  // const { currentUser } = useAuth();
   const [backgroundImage, setBackgroundImage] = useState(imageUrl);
   const [topDrawings, setTopDrawings] = useState([]);
   const [centerDrawings, setCenterDrawings] = useState([]);
@@ -79,18 +77,21 @@ function DisplayPage() {
         const topDrawingsQuery = query(
           collection(db, "Drawings"),
           where("displayArea", "==", "top"),
+          where("theme_id", "==", doc(db, "Themes", selectedScene)),
           orderBy("created_at", "desc"),
           limit(topCoords.length)
         );
         const centerDrawingsQuery = query(
           collection(db, "Drawings"),
           where("displayArea", "==", "center"),
+          where("theme_id", "==", doc(db, "Themes", selectedScene)),
           orderBy("created_at", "desc"),
           limit(centerCoords.length)
         );
         const bottomDrawingsQuery = query(
           collection(db, "Drawings"),
           where("displayArea", "==", "bottom"),
+          where("theme_id", "==", doc(db, "Themes", selectedScene)),
           orderBy("created_at", "desc"),
           limit(bottomCoords.length)
         );
@@ -131,7 +132,7 @@ function DisplayPage() {
     };
 
     fetchDrawings();
-  }, [coordinates]);
+  }, [coordinates, selectedScene]);
 
   useEffect(() => {
     const handleResize = () => {
