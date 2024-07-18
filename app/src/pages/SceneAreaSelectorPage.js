@@ -4,10 +4,10 @@ import { useNavigate, useLocation } from "react-router-dom";
 function SceneAreaSelector() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { selectedScene, imageUrl } = location.state || {};
+  const { selectedScene, imageUrl, themeName, topAreaName, centerAreaName, bottomAreaName } = location.state || {};
 
   const handleAreaSelect = (area) => {
-    navigate("/drawing", { state: { selectedScene, area } });
+    navigate("/drawing", { state: { selectedScene, area, themeName, topAreaName, centerAreaName, bottomAreaName } });
   };
 
   const handleBackClick = () => {
@@ -121,12 +121,12 @@ function SceneAreaSelector() {
             backgroundImage: `url(${imageUrl})`,
             backgroundPosition: "top",
           }}
-          onClick={() => handleAreaSelect("air")}
+          onClick={() => handleAreaSelect("top")}
           onMouseOver={handleMouseOver}
           onMouseOut={handleMouseOut}
         >
           <div style={buttonOverlayStyle}></div>
-          <span style={buttonTextStyle}>Sky</span>
+          <span style={buttonTextStyle}>{topAreaName}</span>
         </button>
         <button
           style={{
@@ -134,12 +134,12 @@ function SceneAreaSelector() {
             backgroundImage: `url(${imageUrl})`,
             backgroundPosition: "center",
           }}
-          onClick={() => handleAreaSelect("land")}
+          onClick={() => handleAreaSelect("center")}
           onMouseOver={handleMouseOver}
           onMouseOut={handleMouseOut}
         >
           <div style={buttonOverlayStyle}></div>
-          <span style={buttonTextStyle}>Land</span>
+          <span style={buttonTextStyle}>{centerAreaName}</span>
         </button>
         <button
           style={{
@@ -147,12 +147,12 @@ function SceneAreaSelector() {
             backgroundImage: `url(${imageUrl})`,
             backgroundPosition: "bottom",
           }}
-          onClick={() => handleAreaSelect("water")}
+          onClick={() => handleAreaSelect("bottom")}
           onMouseOver={handleMouseOver}
           onMouseOut={handleMouseOut}
         >
           <div style={buttonOverlayStyle}></div>
-          <span style={buttonTextStyle}>Water</span>
+          <span style={buttonTextStyle}>{bottomAreaName}</span>
         </button>
       </div>
     </div>

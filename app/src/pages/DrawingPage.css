@@ -15,28 +15,27 @@
   border: none;
   border-radius: 10px;
 }
+.top-toolbar-container {
+  width: 100%;
+  background-color: white;
+  position: fixed;
+  top: 0;
+  z-index: 1; 
+  text-align: center;
+}
 
 .top-toolbar {
   display: flex;
   justify-content: space-between;
   padding: 10px;
-  background-color: white;
-  width: 100%;
-  position: fixed;
-  top: 0;
-  z-index: 1; 
+  background: rgba(255, 255, 255, 0.7); 
 }
-
-.bottom-toolbar {
-  display: flex;
-  justify-content: center;
-  padding: 10px;
-  background-color: white;
-  position: fixed;
-  bottom: 0;
+.centered-text {
+  position: absolute;
+  top: 50px; 
   width: 100%;
-  z-index: 10;
-  margin-top: 5px;
+  text-align: center;
+  pointer-events: none; 
 }
 
 .popup {
@@ -87,15 +86,73 @@
 }
 
 
+.bottom-toolbar-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  background-color: white;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 10;
+}
+
+.svg-container {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+}
+.bottom-toolbar {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.popup-message {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #FFD5A6;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 11;
+}
+
+.popup-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.popup-content p {
+  margin: 0;
+  font-size: 1.2em;
+}
+
 @media (max-width: 768px) {
   .top-toolbar {
     flex-direction: row;
-    align-items: center;
   }
 
-  .bottom-toolbar {
-    flex-direction: column;
+  .bottom-toolbar-container {
+    flex-direction: row;
+  }
+  .svg-container {
+    margin-left: 10px;
+    display: flex;
     align-items: center;
+    justify-content: center; 
+    padding: 5px; 
+    background-color: white;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .bottom-toolbar {
+    flex-direction: row;
+    justify-content: center;
   }
 
   .popup {

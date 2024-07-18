@@ -23,7 +23,7 @@ function DrawingPage() {
   const [mode, setMode] = useState("pencil");
   const [showTextInput, setShowTextInput] = useState(false);
   const [inputText, setInputText] = useState("");
-  const { selectedScene, area } = location.state || {};
+  const { selectedScene, area, themeName} = location.state || {};
   const [showColorPopup, setShowColorPopup] = useState(false);
   const [lineWidth, setLineWidth] = useState(5);
   const [showEraserPopup, setShowEraserPopup] = useState(false);
@@ -39,8 +39,8 @@ function DrawingPage() {
     "purple",
   ]);
   const [isUploading, setIsUploading] = useState(false); 
-  const [enhancedImage, setEnhancedImage] = useState(null); // Store enhanced image
-  const [docId, setDocId] = useState(null); // Store document ID
+  const [enhancedImage, setEnhancedImage] = useState(null); 
+  const [docId, setDocId] = useState(null); 
 
   const handleUploadClick = () => {
     setShowTextInput(true);
@@ -460,7 +460,6 @@ const saveHistory = useCallback(() => {
   };
 
   const handleCanvasClick = (event) => {
-    console.log("canvas is clicked");
     if (mode === "fill") {
       console.log("mode is fill");
       // const canvas = canvasRef.current;
@@ -500,6 +499,7 @@ const saveHistory = useCallback(() => {
         undoDisabled={historyIndex <= 0}
         redoDisabled={historyIndex >= history.length - 1}
         handleUploadClick={handleUploadClick}
+        themeName={themeName} 
       />
       <div className="canvas-container" onClick={handleCanvasClick}>
         <Canvas
@@ -530,6 +530,7 @@ const saveHistory = useCallback(() => {
         canvasRef={canvasRef}
         lineWidth={lineWidth}
         setWidth={setWidth}
+        area={area}
       />
       <PromptModal
         showTextInput={showTextInput}
