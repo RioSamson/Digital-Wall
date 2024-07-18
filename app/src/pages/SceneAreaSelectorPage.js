@@ -7,7 +7,7 @@ function SceneAreaSelector() {
   const { selectedScene, imageUrl, themeName, topAreaName, centerAreaName, bottomAreaName } = location.state || {};
 
   const handleAreaSelect = (area) => {
-    navigate("/drawing", { state: { selectedScene, area, themeName, topAreaName, centerAreaName, bottomAreaName } });
+    navigate("/drawing", { state: { selectedScene, area, themeName, topAreaName, centerAreaName, bottomAreaName, } });
   };
 
   const handleBackClick = () => {

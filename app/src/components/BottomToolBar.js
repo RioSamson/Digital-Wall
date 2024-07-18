@@ -22,6 +22,9 @@ const BottomToolbar = ({
   lineWidth,
   setWidth,
   area,
+  topAreaName,
+  centerAreaName,
+  bottomAreaName,
 }) => {
   const [svgBgColor, setSvgBgColor] = useState("white");
   const [showPopup, setShowPopup] = useState(true);
@@ -71,6 +74,9 @@ const BottomToolbar = ({
       </div>
       {showPopup && <PopupMessage
       area={area}
+      topAreaName={topAreaName}
+      centerAreaName={centerAreaName}
+      bottomAreaName={bottomAreaName}
       />}
     </div>
   );
