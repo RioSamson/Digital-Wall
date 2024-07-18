@@ -13,45 +13,50 @@ function GalleryPage() {
   const [selectedImage, setSelectedImage] = useState(null);
 
   const handleDisplay = () => {
-    navigate("/display", { state: { selectedScene, imageUrl } });
+    navigate(`/display?theme=${selectedScene}`, { state: { imageUrl } });
   };
 
   const viewAllHandler = () => {
-    navigate("/myDrawing", { state: { drawings: prevDrawing, selectedScene, imageUrl } });
+    navigate("/myDrawing", {
+      state: { drawings: prevDrawing, selectedScene, imageUrl },
+    });
   };
 
-  const getDrawings = useCallback(async (selectedScene) => {
-    try {
-      const querySnapshot = await getDocs(collection(db, "Drawings"));
-      if (querySnapshot.empty) {
-        console.log("No matching documents.");
-      } else {
-        const drawings = querySnapshot.docs
-          .map((doc) => {
-            const data = doc.data();
-            const enhancedDrawings = data.enhanced_drawings;
-            const email = data?.user_id?.id;
-            const themeId = data?.theme_id?.id;
+  const getDrawings = useCallback(
+    async (selectedScene) => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "Drawings"));
+        if (querySnapshot.empty) {
+          console.log("No matching documents.");
+        } else {
+          const drawings = querySnapshot.docs
+            .map((doc) => {
+              const data = doc.data();
+              const enhancedDrawings = data.enhanced_drawings;
+              const email = data?.user_id?.id;
+              const themeId = data?.theme_id?.id;
 
-            if (currentUser.email === email && themeId === selectedScene) {
-              if (enhancedDrawings && enhancedDrawings.length > 0) {
-                return enhancedDrawings[enhancedDrawings.length - 1];
+              if (currentUser.email === email && themeId === selectedScene) {
+                if (enhancedDrawings && enhancedDrawings.length > 0) {
+                  return enhancedDrawings[enhancedDrawings.length - 1];
+                } else {
+                  console.log("Nothing found");
+                  return null;
+                }
               } else {
-                console.log("Nothing found");
                 return null;
               }
-            } else {
-              return null;
-            }
-          })
-          .filter((url) => url !== null)
-          .sort((a, b) => b.timestamp - a.timestamp); 
-        setPrevDrawing(drawings);
+            })
+            .filter((url) => url !== null)
+            .sort((a, b) => b.timestamp - a.timestamp);
+          setPrevDrawing(drawings);
+        }
+      } catch (error) {
+        console.error("Error getting drawings:", error);
       }
-    } catch (error) {
-      console.error("Error getting drawings:", error);
-    }
-  }, [currentUser.email]);
+    },
+    [currentUser.email]
+  );
 
   useEffect(() => {
     getDrawings(selectedScene);
@@ -64,7 +69,7 @@ function GalleryPage() {
   const closeModal = () => {
     setSelectedImage(null);
   };
-  
+
   const handleBackClick = () => {
     navigate(-1);
   };
@@ -75,7 +80,7 @@ function GalleryPage() {
     left: "20px",
     cursor: "pointer",
     margin: "5px",
-    padding:"5px"
+    padding: "5px",
   };
 
   return (
@@ -109,13 +114,52 @@ function GalleryPage() {
           />
         </svg>
       </div>
-      <h1 style={{ fontWeight: "normal", margin: "0 auto", flexGrow: 1, textAlign: "center" }}>Gallery</h1>     
-       <div style={{ display: "flex", alignItems: "center", marginTop: "10px", justifyContent: "space-between", width: "100%" }}>
-      <h2 style={{ fontWeight: "normal", marginLeft:"20px" }}>My drawings on the display</h2>
+      <h1
+        style={{
+          fontWeight: "normal",
+          margin: "0 auto",
+          flexGrow: 1,
+          textAlign: "center",
+        }}
+      >
+        Gallery
+      </h1>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          marginTop: "10px",
+          justifyContent: "space-between",
+          width: "100%",
+        }}
+      >
+        <h2 style={{ fontWeight: "normal", marginLeft: "20px" }}>
+          My drawings on the display
+        </h2>
       </div>
-      <div style={{ display: "flex", alignItems: "center", marginTop: "10px", justifyContent: "space-between", width: "100%" }}>
-      <h2 style={{ fontWeight: "normal", marginLeft:"20px" }}>My drawings</h2>
-      <button onClick={viewAllHandler} style={{ marginRight: '20px', color: 'black', textDecoration: 'underline', fontSize: '1rem', border: "none", background:"white" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          marginTop: "10px",
+          justifyContent: "space-between",
+          width: "100%",
+        }}
+      >
+        <h2 style={{ fontWeight: "normal", marginLeft: "20px" }}>
+          My drawings
+        </h2>
+        <button
+          onClick={viewAllHandler}
+          style={{
+            marginRight: "20px",
+            color: "black",
+            textDecoration: "underline",
+            fontSize: "1rem",
+            border: "none",
+            background: "white",
+          }}
+        >
           View All
         </button>
       </div>
@@ -128,7 +172,7 @@ function GalleryPage() {
         }}
       >
         {prevDrawing.length > 0 ? (
-          prevDrawing.slice(0,4).map((url, index) => (
+          prevDrawing.slice(0, 4).map((url, index) => (
             <div
               key={index}
               style={{
@@ -157,7 +201,15 @@ function GalleryPage() {
       </div>
       <button
         onClick={handleDisplay}
-        style={{ margin: '20px', padding: '10px 45px',backgroundColor: 'black', color:'white', border:'none', borderRadius:'5px', fontSize: '1rem'  }}
+        style={{
+          margin: "20px",
+          padding: "10px 45px",
+          backgroundColor: "black",
+          color: "white",
+          border: "none",
+          borderRadius: "5px",
+          fontSize: "1rem",
+        }}
       >
         View Live Display
       </button>

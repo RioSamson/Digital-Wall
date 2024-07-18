@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { db } from "../firebase/firebase";
 import { doc, getDoc } from "firebase/firestore";
+import Lottie from "lottie-react";
+import animationData from "../assets/paper-plane.json";
 
 function ReviewPage() {
   const location = useLocation();
@@ -38,62 +40,108 @@ function ReviewPage() {
   };
 
   return (
-    <div style={{ textAlign: "center", padding: "20px" }}>
-      <h1>Your Drawings</h1>
-      <div>
-        <h2>Original Drawing</h2>
-        {originalImage ? (
-          <img
-            src={originalImage}
-            alt="Original Drawing"
-            style={{ maxWidth: "50%", maxHeight: "50%" }}
-          />
-        ) : (
-          <p>No original drawing found.</p>
-        )}
-      </div>
-      <div>
-        <h2>Enhanced Drawing</h2>
-        {enhancedImage ? (
-          <img
-            src={enhancedImage}
-            alt="Enhanced Drawing"
-            style={{ maxWidth: "100%", height: "auto" }}
-          />
-        ) : (
-          <p>No enhanced drawing found.</p>
-        )}
-      </div>
-      <button
-        onClick={handleNavigate}
+    <div
+      style={{
+        textAlign: "center",
+        padding: "10px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center", // Center content vertically
+        overflow: "hidden",
+      }}
+    >
+      <h1>Your Drawing Has Been Sent!</h1>
+      <div
         style={{
-          marginTop: "20px",
-          padding: "10px 20px",
-          fontSize: "16px",
-          color: "white",
-          backgroundColor: "#007bff",
-          border: "none",
-          borderRadius: "5px",
-          cursor: "pointer",
+          display: "flex",
+          justifyContent: "center",
+          flex: 1,
+          maxWidth: "100%",
         }}
       >
-        Go to Home Page
-      </button>
-      <button
+        <Lottie
+          animationData={animationData}
+          style={{ maxWidth: "65%", height: "auto" }}
+        />
+      </div>
+      <div
         style={{
-          marginTop: "10px", // Smaller margin to differentiate spacing
-          marginRight: "10px",
-          padding: "10px 20px",
-          fontSize: "16px",
-          color: "white",
-          backgroundColor: "#6c757d", // Different color to indicate inactive state
-          border: "none",
-          borderRadius: "5px",
-          cursor: "not-allowed", // Cursor to indicate non-interactive button
+          display: "flex",
+          justifyContent: "center",
+          gap: "20px",
+          flexWrap: "wrap",
+          maxWidth: "100%",
+          flex: 1,
+          marginTop: "2%",
+          marginBottom: "2%", // Adjust the spacing here
         }}
       >
-        View Display
-      </button>
+        <div>
+          {originalImage ? (
+            <img
+              src={originalImage}
+              alt="Original Drawing"
+              style={{ maxWidth: "80%", maxHeight: "200px" }}
+            />
+          ) : (
+            <p>--</p>
+          )}
+        </div>
+        <div>
+          {enhancedImage ? (
+            <img
+              src={enhancedImage}
+              alt="Enhanced Drawing"
+              style={{ maxWidth: "80%", maxHeight: "200px" }}
+            />
+          ) : (
+            <p>--</p>
+          )}
+        </div>
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <button
+          style={{
+            margin: "10px",
+            width: "100%",
+            height: "50px",
+            fontSize: "1.125rem",
+            backgroundColor: "black",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
+          disabled
+        >
+          View Display
+        </button>
+        <button
+          onClick={handleNavigate}
+          style={{
+            margin: "10px",
+            width: "100%",
+            height: "50px",
+            fontSize: "1.125rem",
+            backgroundColor: "white",
+            color: "black",
+            border: "2px solid black",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
+        >
+          Go to Home Page
+        </button>
+      </div>
     </div>
   );
 }

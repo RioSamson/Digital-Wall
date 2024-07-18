@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
-import { useAuth } from "../contexts/authContext";
 import { db } from "../firebase/firebase";
 import {
   collection,
   query,
   where,
+  orderBy,
+  limit,
   getDocs,
   doc,
   getDoc,
@@ -16,22 +17,30 @@ function DisplayPage() {
   const [searchParams] = useSearchParams();
   const selectedScene = searchParams.get("theme");
   const { imageUrl } = location.state || {};
-  const { currentUser } = useAuth();
   const [backgroundImage, setBackgroundImage] = useState(imageUrl);
-  const [drawings, setDrawings] = useState([]);
+  const [topDrawings, setTopDrawings] = useState([]);
+  const [centerDrawings, setCenterDrawings] = useState([]);
+  const [bottomDrawings, setBottomDrawings] = useState([]);
   const [coordinates, setCoordinates] = useState([]);
+  const [readCount, setReadCount] = useState(0);
   const containerRef = useRef(null);
+
+  const incrementReadCount = (count) => {
+    setReadCount((prevCount) => prevCount + count);
+  };
 
   useEffect(() => {
     const fetchScene = async () => {
       if (selectedScene) {
         try {
+          console.log("Fetching scene for selected scene:", selectedScene);
           const docRef = doc(db, "Themes", selectedScene);
           const docSnap = await getDoc(docRef);
 
           if (docSnap.exists()) {
             const data = docSnap.data();
             setCoordinates(data.coordinates || []);
+            incrementReadCount(1); // Counting the read for the scene document
             if (!backgroundImage) {
               setBackgroundImage(data.background_img);
             }
@@ -44,32 +53,86 @@ function DisplayPage() {
       }
     };
 
+    fetchScene();
+  }, [selectedScene, backgroundImage]);
+
+  useEffect(() => {
     const fetchDrawings = async () => {
-      if (currentUser) {
-        try {
-          const drawingsRef = collection(db, "Drawings");
-          const q = query(
-            drawingsRef,
-            // where("user_id", "==", doc(db, "Users", currentUser.email)),
-            where("theme_id", "==", doc(db, "Themes", selectedScene))
-          );
+      if (coordinates.length === 0) return;
 
-          const querySnapshot = await getDocs(q);
-          const drawingsList = querySnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
+      try {
+        // Fetch drawings based on the fetched coordinates
+        const topCoords = coordinates.filter((coord) => coord.area === "top");
+        const centerCoords = coordinates.filter(
+          (coord) => coord.area === "center"
+        );
+        const bottomCoords = coordinates.filter(
+          (coord) => coord.area === "bottom"
+        );
 
-          setDrawings(drawingsList);
-        } catch (error) {
-          console.error("Error fetching drawings:", error);
-        }
+        console.log("Top coordinates: ", topCoords);
+        console.log("Center coordinates: ", centerCoords);
+        console.log("Bottom coordinates: ", bottomCoords);
+
+        const topDrawingsQuery = query(
+          collection(db, "Drawings"),
+          where("displayArea", "==", "top"),
+          where("theme_id", "==", doc(db, "Themes", selectedScene)),
+          orderBy("created_at", "desc"),
+          limit(topCoords.length)
+        );
+        const centerDrawingsQuery = query(
+          collection(db, "Drawings"),
+          where("displayArea", "==", "center"),
+          where("theme_id", "==", doc(db, "Themes", selectedScene)),
+          orderBy("created_at", "desc"),
+          limit(centerCoords.length)
+        );
+        const bottomDrawingsQuery = query(
+          collection(db, "Drawings"),
+          where("displayArea", "==", "bottom"),
+          where("theme_id", "==", doc(db, "Themes", selectedScene)),
+          orderBy("created_at", "desc"),
+          limit(bottomCoords.length)
+        );
+
+        const [
+          topDrawingsSnapshot,
+          centerDrawingsSnapshot,
+          bottomDrawingsSnapshot,
+        ] = await Promise.all([
+          getDocs(topDrawingsQuery),
+          getDocs(centerDrawingsQuery),
+          getDocs(bottomDrawingsQuery),
+        ]);
+
+        setTopDrawings(topDrawingsSnapshot.docs.map((doc) => doc.data()));
+        setCenterDrawings(centerDrawingsSnapshot.docs.map((doc) => doc.data()));
+        setBottomDrawings(bottomDrawingsSnapshot.docs.map((doc) => doc.data()));
+
+        incrementReadCount(topDrawingsSnapshot.docs.length);
+        incrementReadCount(centerDrawingsSnapshot.docs.length);
+        incrementReadCount(bottomDrawingsSnapshot.docs.length);
+
+        console.log(
+          "Top drawings: ",
+          topDrawingsSnapshot.docs.map((doc) => doc.data())
+        );
+        console.log(
+          "Center drawings: ",
+          centerDrawingsSnapshot.docs.map((doc) => doc.data())
+        );
+        console.log(
+          "Bottom drawings: ",
+          bottomDrawingsSnapshot.docs.map((doc) => doc.data())
+        );
+      } catch (error) {
+        console.error("Error fetching drawings:", error);
       }
     };
 
-    fetchScene();
     fetchDrawings();
-  }, [selectedScene, currentUser, backgroundImage]);
+  }, [coordinates, selectedScene]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -94,28 +157,31 @@ function DisplayPage() {
     };
   }, []);
 
-  const getRandomDrawings = (drawingsList, area, numCoordinates) => {
-    const filteredDrawings = drawingsList.filter(
-      (drawing) => drawing.displayArea === area
-    );
-    const shuffledDrawings = filteredDrawings.sort(() => 0.5 - Math.random());
-    return shuffledDrawings.slice(0, numCoordinates);
+  useEffect(() => {
+    console.log(`Total database reads: ${readCount}`);
+  }, [readCount]);
+
+  const renderDrawings = (drawings, areaCoords) => {
+    console.log(`Rendering drawings for area: ${drawings.length}`);
+    return drawings.map((drawing, index) => {
+      const coord = areaCoords[index];
+      return (
+        <img
+          key={index}
+          src={drawing.enhanced_drawings[0]}
+          alt={`Drawing ${index}`}
+          style={{
+            position: "absolute",
+            width: "13%",
+            height: "13%",
+            top: `${coord.y}%`,
+            left: `${coord.x}%`,
+            objectFit: "contain",
+          }}
+        />
+      );
+    });
   };
-
-  const groupedCoordinates = coordinates.reduce((acc, coord) => {
-    if (!acc[coord.area]) acc[coord.area] = [];
-    acc[coord.area].push(coord);
-    return acc;
-  }, {});
-
-  const selectedDrawings = {};
-  Object.keys(groupedCoordinates).forEach((area) => {
-    selectedDrawings[area] = getRandomDrawings(
-      drawings,
-      area,
-      groupedCoordinates[area].length
-    );
-  });
 
   return (
     <div
@@ -158,43 +224,23 @@ function DisplayPage() {
         <div
           style={{
             position: "absolute",
-            top: "0",
-            left: "0",
+            top: 0,
+            left: 0,
             width: "100%",
             height: "100%",
-            boxSizing: "border-box",
           }}
         >
-          {Object.keys(groupedCoordinates).map((area) =>
-            groupedCoordinates[area].map((coord, index) => {
-              const drawing = selectedDrawings[area][index];
-              if (drawing) {
-                return (
-                  <div
-                    key={`${area}-${index}`}
-                    style={{
-                      position: "absolute",
-                      width: "13%",
-                      height: "13%",
-                      top: `${coord.y}%`,
-                      left: `${coord.x}%`,
-                      boxSizing: "border-box",
-                    }}
-                  >
-                    <img
-                      src={drawing.enhanced_drawings}
-                      alt={`Drawing ${index}`}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "contain",
-                      }}
-                    />
-                  </div>
-                );
-              }
-              return null;
-            })
+          {renderDrawings(
+            topDrawings,
+            coordinates.filter((coord) => coord.area === "top")
+          )}
+          {renderDrawings(
+            centerDrawings,
+            coordinates.filter((coord) => coord.area === "center")
+          )}
+          {renderDrawings(
+            bottomDrawings,
+            coordinates.filter((coord) => coord.area === "bottom")
           )}
         </div>
       </div>
