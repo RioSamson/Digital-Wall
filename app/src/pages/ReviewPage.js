@@ -43,7 +43,7 @@ function ReviewPage() {
     <div
       style={{
         textAlign: "center",
-        padding: "20px",
+        padding: "10px",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -51,11 +51,18 @@ function ReviewPage() {
         overflow: "hidden",
       }}
     >
-      <h1>Your drawing has been submitted!</h1>
-      <div style={{ flex: 1, maxWidth: "100%" }}>
+      <h1>Your Drawing Has Been Sent!</h1>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          flex: 1,
+          maxWidth: "100%",
+        }}
+      >
         <Lottie
           animationData={animationData}
-          style={{ maxWidth: "100%", height: "auto" }}
+          style={{ maxWidth: "65%", height: "auto" }}
         />
       </div>
       <div
@@ -75,7 +82,7 @@ function ReviewPage() {
             <img
               src={originalImage}
               alt="Original Drawing"
-              style={{ maxWidth: "100%", maxHeight: "200px" }}
+              style={{ maxWidth: "80%", maxHeight: "200px" }}
             />
           ) : (
             <p>--</p>
@@ -86,7 +93,7 @@ function ReviewPage() {
             <img
               src={enhancedImage}
               alt="Enhanced Drawing"
-              style={{ maxWidth: "100%", maxHeight: "200px" }}
+              style={{ maxWidth: "80%", maxHeight: "200px" }}
             />
           ) : (
             <p>--</p>
