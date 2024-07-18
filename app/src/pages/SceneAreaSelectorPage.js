@@ -4,10 +4,10 @@ import { useNavigate, useLocation } from "react-router-dom";
 function SceneAreaSelector() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { selectedScene, imageUrl, themeName } = location.state || {};
+  const { selectedScene, imageUrl, themeName, topAreaName, centerAreaName, bottomAreaName } = location.state || {};
 
   const handleAreaSelect = (area) => {
-    navigate("/drawing", { state: { selectedScene, area, themeName } });
+    navigate("/drawing", { state: { selectedScene, area, themeName, topAreaName, centerAreaName, bottomAreaName } });
   };
 
   const handleBackClick = () => {
@@ -126,7 +126,7 @@ function SceneAreaSelector() {
           onMouseOut={handleMouseOut}
         >
           <div style={buttonOverlayStyle}></div>
-          <span style={buttonTextStyle}>Sky</span>
+          <span style={buttonTextStyle}>{topAreaName}</span>
         </button>
         <button
           style={{
@@ -139,7 +139,7 @@ function SceneAreaSelector() {
           onMouseOut={handleMouseOut}
         >
           <div style={buttonOverlayStyle}></div>
-          <span style={buttonTextStyle}>Land</span>
+          <span style={buttonTextStyle}>{centerAreaName}</span>
         </button>
         <button
           style={{
@@ -152,7 +152,7 @@ function SceneAreaSelector() {
           onMouseOut={handleMouseOut}
         >
           <div style={buttonOverlayStyle}></div>
-          <span style={buttonTextStyle}>Water</span>
+          <span style={buttonTextStyle}>{bottomAreaName}</span>
         </button>
       </div>
     </div>
