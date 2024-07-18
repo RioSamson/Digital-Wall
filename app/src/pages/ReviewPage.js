@@ -11,6 +11,8 @@ function ReviewPage() {
   const { docId } = location.state || {};
   const [originalImage, setOriginalImage] = useState(null);
   const [enhancedImage, setEnhancedImage] = useState(null);
+  const [themeId, setThemeId] = useState(null);
+  const [themeBackgroundImage, setThemeBackgroundImage] = useState(null);
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -23,6 +25,18 @@ function ReviewPage() {
             const drawingData = drawingDoc.data();
             setOriginalImage(drawingData.original_drawing);
             setEnhancedImage(drawingData.enhanced_drawings[0]);
+            const themeId = drawingData.theme_id.id;
+            setThemeId(themeId);
+
+            // Fetch theme background image
+            const themeDocRef = doc(db, "Themes", themeId);
+            const themeDoc = await getDoc(themeDocRef);
+            if (themeDoc.exists()) {
+              const themeData = themeDoc.data();
+              setThemeBackgroundImage(themeData.background_img);
+            } else {
+              console.error("No such theme document!");
+            }
           } else {
             console.error("No such document!");
           }
@@ -37,6 +51,14 @@ function ReviewPage() {
 
   const handleNavigate = () => {
     navigate("/selection");
+  };
+
+  const handleViewDisplay = () => {
+    if (themeId) {
+      navigate(`/display?theme=${themeId}`, {
+        state: { imageUrl: themeBackgroundImage },
+      });
+    }
   };
 
   return (
@@ -110,6 +132,7 @@ function ReviewPage() {
         }}
       >
         <button
+          onClick={handleViewDisplay}
           style={{
             margin: "10px",
             width: "100%",
@@ -121,7 +144,7 @@ function ReviewPage() {
             borderRadius: "5px",
             cursor: "pointer",
           }}
-          disabled
+          disabled={!themeId || !themeBackgroundImage}
         >
           View Display
         </button>
