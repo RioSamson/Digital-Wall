@@ -78,15 +78,6 @@ function DrawingPage() {
     );
     if (!blob) return;
 
-    // const displayArea =
-    //   area === "air"
-    //     ? "top"
-    //     : area === "land"
-    //     ? "center"
-    //     : area === "water"
-    //     ? "bottom"
-    //     : "undefined";
-
     let originalUrl = "";
     const uploadImage = async (path, imageBlob) => {
       const storageReference = storageRef(storage, path);
