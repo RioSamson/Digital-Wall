@@ -20,12 +20,19 @@ function SceneSelector() {
       if (querySnapshot.empty) {
         console.log("No matching documents.");
       } else {
-        const themes = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          name: doc.data().Name,
-          imageUrl: doc.data().background_img,
-          clickable: true,
-        }));
+        const themes = querySnapshot.docs.map((doc) => {
+          const data = doc.data();
+          console.log(`Theme ID: ${doc.id}, Name: ${data.Name}, topAreaName: ${data.topAreaName}, centerAreaName: ${data.centerAreaName}, bottomAreaName: ${data.bottomAreaName}`);
+          return {
+            id: doc.id,
+            name: data.Name,
+            imageUrl: data.background_img,
+            topAreaName: data.topAreaName,
+            centerAreaName: data.centerAreaName,
+            bottomAreaName: data.bottomAreaName,
+            clickable: true,
+          };
+        });
         setScenes(themes);
       }
     } catch (error) {
@@ -41,11 +48,17 @@ function SceneSelector() {
     if (scene.clickable) {
       if (mode === "drawing") {
         navigate("/SceneAreaSelect", {
-          state: { selectedScene: scene.id, imageUrl: scene.imageUrl },
+          state: { selectedScene: scene.id, 
+            imageUrl: scene.imageUrl,
+            themeName : scene.name,
+            topAreaName: scene.topAreaName,
+            centerAreaName: scene.centerAreaName,
+            bottomAreaName: scene.bottomAreaName, },
         });
       } else if (mode === "gallery") {
         navigate("/gallery", {
-          state: { selectedScene: scene.id, imageUrl: scene.imageUrl },
+          state: { selectedScene: scene.id, 
+            imageUrl: scene.imageUrl},
         });
       }
     }
