@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Toolbox from "./Toolbox";
 import ColorPickerPopup from "./ColorPickerPopup";
 import PopupMessage from "./PopupMessage";
@@ -21,9 +21,17 @@ const BottomToolbar = ({
   canvasRef,
   lineWidth,
   setWidth,
+  area,
 }) => {
   const [svgBgColor, setSvgBgColor] = useState("white");
-  const [showPopup, setShowPopup] = useState(false);
+  const [showPopup, setShowPopup] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowPopup(false);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleQuestionMarkClick = () => {
     setSvgBgColor((prevColor) => (prevColor === "white" ? "#FFD5A6" : "white"));
@@ -61,7 +69,9 @@ const BottomToolbar = ({
           <path d="M12.7998 20.75C13.4902 20.75 14.0498 20.1904 14.0498 19.5C14.0498 18.8096 13.4902 18.25 12.7998 18.25C12.1094 18.25 11.5498 18.8096 11.5498 19.5C11.5498 20.1904 12.1094 20.75 12.7998 20.75Z" fill="black" />
         </svg>
       </div>
-      {showPopup && <PopupMessage />}
+      {showPopup && <PopupMessage
+      area={area}
+      />}
     </div>
   );
 };

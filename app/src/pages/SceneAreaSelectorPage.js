@@ -121,7 +121,7 @@ function SceneAreaSelector() {
             backgroundImage: `url(${imageUrl})`,
             backgroundPosition: "top",
           }}
-          onClick={() => handleAreaSelect("air")}
+          onClick={() => handleAreaSelect("top")}
           onMouseOver={handleMouseOver}
           onMouseOut={handleMouseOut}
         >
@@ -134,7 +134,7 @@ function SceneAreaSelector() {
             backgroundImage: `url(${imageUrl})`,
             backgroundPosition: "center",
           }}
-          onClick={() => handleAreaSelect("land")}
+          onClick={() => handleAreaSelect("center")}
           onMouseOver={handleMouseOver}
           onMouseOut={handleMouseOut}
         >
@@ -147,7 +147,7 @@ function SceneAreaSelector() {
             backgroundImage: `url(${imageUrl})`,
             backgroundPosition: "bottom",
           }}
-          onClick={() => handleAreaSelect("water")}
+          onClick={() => handleAreaSelect("bottom")}
           onMouseOver={handleMouseOver}
           onMouseOut={handleMouseOut}
         >
