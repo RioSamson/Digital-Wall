@@ -23,7 +23,7 @@ function DrawingPage() {
   const [mode, setMode] = useState("pencil");
   const [showTextInput, setShowTextInput] = useState(false);
   const [inputText, setInputText] = useState("");
-  const { selectedScene, area, themeName} = location.state || {};
+  const { selectedScene, area, themeName, topAreaName, centerAreaName, bottomAreaName} = location.state || {};
   const [showColorPopup, setShowColorPopup] = useState(false);
   const [lineWidth, setLineWidth] = useState(5);
   const [showEraserPopup, setShowEraserPopup] = useState(false);
@@ -77,15 +77,6 @@ function DrawingPage() {
       canvas.toBlob(resolve, "image/png")
     );
     if (!blob) return;
-
-    const displayArea =
-      area === "air"
-        ? "top"
-        : area === "land"
-        ? "center"
-        : area === "water"
-        ? "bottom"
-        : "undefined";
 
     let originalUrl = "";
     const uploadImage = async (path, imageBlob) => {
@@ -158,7 +149,7 @@ function DrawingPage() {
       user_id: userRef,
       theme_id: themeRef,
       email: currentUser ? currentUser.email : "guest",
-      displayArea: displayArea,
+      displayArea: area,
       isReviewed: false,
     };
 
@@ -531,6 +522,9 @@ const saveHistory = useCallback(() => {
         lineWidth={lineWidth}
         setWidth={setWidth}
         area={area}
+        topAreaName={topAreaName}
+        centerAreaName={centerAreaName}
+        bottomAreaName={bottomAreaName}
       />
       <PromptModal
         showTextInput={showTextInput}

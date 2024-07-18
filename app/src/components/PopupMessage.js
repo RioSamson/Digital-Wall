@@ -1,13 +1,13 @@
 import React from "react";
 
-const PopupMessage = ({ area }) => {
+const PopupMessage = ({ area, topAreaName, centerAreaName, bottomAreaName, }) => {
   let message;
   if (area === "top") {
-    message = "Draw a single object in the sky!";
+    message = `Draw a single object in the ${topAreaName}!`;
   } else if (area === "center") {
-    message = "Draw a single object on the land!";
+    message = `Draw a single object in the ${centerAreaName}!`;
   } else if (area === "bottom") {
-    message = "Draw a single object in the water!";
+    message = `Draw a single object in the ${bottomAreaName}!`;
   } else {
     message = "Specify a valid area!";
   }
@@ -15,7 +15,7 @@ const PopupMessage = ({ area }) => {
   return (
     <div className="popup-message">
       <div className="popup-content">
-        <p style={{ padding: "10px" }}>{message}</p>
+      <p style={{ padding: "10px" }}>{message}</p>
       </div>
     </div>
   );
