@@ -55,7 +55,7 @@ function DisplayPage() {
     };
 
     fetchScene();
-  }, [selectedScene, backgroundImage]);
+  }, []);
 
   useEffect(() => {
     const fetchDrawings = async () => {
