@@ -31,15 +31,16 @@ function SceneAreaSelector() {
     alignItems: "center",
     justifyContent: "center",
     gap: "10px",
-    width: "80%",
+    width: "90%",
+    maxWidth: "600px",
     marginTop: "20px",
     overflow: "hidden",
-    borderRadius: "10px"
+    borderRadius: "10px",
   };
 
   const buttonStyle = {
     position: "relative",
-    backgroundSize: "100% 300%", 
+    backgroundSize: "100% 300%",
     border: "none",
     cursor: "pointer",
     width: "100%",
@@ -63,15 +64,15 @@ function SceneAreaSelector() {
     bottom: 0,
     backgroundColor: "rgba(0, 0, 0, 0.4)", // Dark overlay
     zIndex: 1,
-    borderRadius: "10px"
+    borderRadius: "10px",
   };
-   const backButtonStyle = {
+  const backButtonStyle = {
     position: "absolute",
     top: "10px",
     left: "20px",
     cursor: "pointer",
     margin: "5px",
-    padding:"5px"
+    padding: "5px",
   };
 
   const buttonTextStyle = {
