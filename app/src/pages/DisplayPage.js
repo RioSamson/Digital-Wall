@@ -24,6 +24,7 @@ function DisplayPage() {
   const [coordinates, setCoordinates] = useState([]);
   const [readCount, setReadCount] = useState(0);
   const containerRef = useRef(null);
+  const drawingSize = 15;
 
   const incrementReadCount = (count) => {
     setReadCount((prevCount) => prevCount + count);
@@ -172,10 +173,10 @@ function DisplayPage() {
           alt={`Drawing ${index}`}
           style={{
             position: "absolute",
-            width: "13%",
-            height: "13%",
-            top: `${coord.y}%`,
-            left: `${coord.x}%`,
+            width: `${drawingSize}%`,
+            height: `${drawingSize}%`,
+            top: `${coord.y - drawingSize / 2.3}%`,
+            left: `${coord.x - drawingSize / 2}%`,
             objectFit: "contain",
           }}
         />
