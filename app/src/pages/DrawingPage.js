@@ -501,6 +501,7 @@ const saveHistory = useCallback(() => {
           mode={mode}
           setIsPressed={setIsPressed}
           updateDraw={updateDraw}
+          setMode={setMode}
         />
       </div>
       <BottomToolbar
