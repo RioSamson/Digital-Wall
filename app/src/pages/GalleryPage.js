@@ -2,7 +2,15 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/authContext";
 import { db } from "../firebase/firebase";
-import { collection, getDocs } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  limit,
+  getDocs,
+  doc,
+} from "firebase/firestore";
 
 function GalleryPage() {
   const navigate = useNavigate();
@@ -11,6 +19,7 @@ function GalleryPage() {
   const { currentUser } = useAuth();
   const [prevDrawing, setPrevDrawing] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [readCount, setReadCount] = useState(0);
 
   const handleDisplay = () => {
     navigate(`/display?theme=${selectedScene}`, { state: { imageUrl } });
@@ -18,39 +27,33 @@ function GalleryPage() {
 
   const viewAllHandler = () => {
     navigate("/myDrawing", {
-      state: { drawings: prevDrawing, selectedScene, imageUrl },
+      state: { selectedScene, userId: currentUser.email },
     });
   };
 
   const getDrawings = useCallback(
     async (selectedScene) => {
       try {
-        const querySnapshot = await getDocs(collection(db, "Drawings"));
-        if (querySnapshot.empty) {
-          console.log("No matching documents.");
-        } else {
-          const drawings = querySnapshot.docs
-            .map((doc) => {
-              const data = doc.data();
-              const enhancedDrawings = data.enhanced_drawings;
-              const email = data?.user_id?.id;
-              const themeId = data?.theme_id?.id;
+        const drawingsQuery = query(
+          collection(db, "Drawings"),
+          where("user_id", "==", doc(db, "Users", currentUser.email)),
+          where("theme_id", "==", doc(db, "Themes", selectedScene)),
+          orderBy("created_at", "desc"),
+          limit(4)
+        );
 
-              if (currentUser.email === email && themeId === selectedScene) {
-                if (enhancedDrawings && enhancedDrawings.length > 0) {
-                  return enhancedDrawings[enhancedDrawings.length - 1];
-                } else {
-                  console.log("Nothing found");
-                  return null;
-                }
-              } else {
-                return null;
-              }
-            })
-            .filter((url) => url !== null)
-            .sort((a, b) => b.timestamp - a.timestamp);
-          setPrevDrawing(drawings);
-        }
+        const querySnapshot = await getDocs(drawingsQuery);
+        const drawings = querySnapshot.docs
+          .map((doc) => {
+            const data = doc.data();
+            return data.enhanced_drawings
+              ? data.enhanced_drawings[data.enhanced_drawings.length - 1]
+              : null;
+          })
+          .filter((url) => url !== null);
+
+        setPrevDrawing(drawings);
+        setReadCount(querySnapshot.size); // Log the number of documents read
       } catch (error) {
         console.error("Error getting drawings:", error);
       }
@@ -82,6 +85,10 @@ function GalleryPage() {
     margin: "5px",
     padding: "5px",
   };
+
+  useEffect(() => {
+    console.log(`Total documents read: ${readCount}`);
+  }, [readCount]);
 
   return (
     <div
@@ -172,7 +179,7 @@ function GalleryPage() {
         }}
       >
         {prevDrawing.length > 0 ? (
-          prevDrawing.slice(0, 4).map((url, index) => (
+          prevDrawing.map((url, index) => (
             <div
               key={index}
               style={{
