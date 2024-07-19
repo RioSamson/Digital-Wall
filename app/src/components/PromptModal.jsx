@@ -9,6 +9,7 @@ const PromptModal = ({
   handleTextSubmit,
   handleCancel,
   handleNext,
+  handleClose,
 }) => {
   return (
     showTextInput && (
@@ -26,49 +27,50 @@ const PromptModal = ({
           zIndex: 1000,
         }}
       >
-          {enhancedImage ? (
-            
+          {enhancedImage ? ( 
             <div
-          style={{
-            backgroundColor: "white",
-            padding: "20px",
-            borderRadius: "10px",
-            width: "90%",
-            maxWidth: "500px",
-            textAlign: "center",
-          }}
-        >
+              style={{
+                backgroundColor: "white",
+                padding: "20px",
+                borderRadius: "10px",
+                width: "90%",
+                maxWidth: "500px",
+                textAlign: "center",
+              }}
+            >
               <img
                 src={enhancedImage}
                 alt="Enhanced Drawing"
-                style={{ maxWidth: "100%", marginBottom: "20px" }}
+                style={{ maxWidth: "90%", marginBottom: "20px" }}
               />
               <div>
                 <button
                   onClick={handleCancel}
                   style={{
+                    width: "40%",
                     padding: "10px 20px",
                     margin: "10px",
                     borderRadius: "5px",
-                    backgroundColor: "#f44336",
-                    color: "white",
-                    border: "none",
-                    fontSize: "16px",
+                    backgroundColor: "white",
+                    color: "black",
+                    border: "solid grey 2px",
+                    fontSize: "18px",
                     cursor: "pointer",
                   }}
                 >
-                  Redo / Keep Drawing
+                  Redo
                 </button>
                 <button
                   onClick={handleNext}
                   style={{
+                    width: "40%",
                     padding: "10px 20px",
                     margin: "10px",
                     borderRadius: "5px",
-                    backgroundColor: "#4caf50",
+                    backgroundColor: "black",
                     color: "white",
                     border: "none",
-                    fontSize: "16px",
+                    fontSize: "18px",
                     cursor: "pointer",
                   }}
                 >
@@ -79,6 +81,27 @@ const PromptModal = ({
             </div>
           ) : (
 <>
+<div
+          style={{
+            position: "absolute",
+            top: "10px",
+            right: "10px",
+            cursor: "pointer",
+            fontSize: "24px",
+            color: "white",
+          }}
+          onClick={handleClose}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            width="24"
+            height="24"
+            fill="white"
+          >
+            <path d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11l4.89 4.89-4.89 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.41z" />
+          </svg>
+        </div>
   <div style={{ width: "90%", maxWidth: "500px", margin: "auto auto", textAlign: "left" }}>
     <h2 style={{ marginBottom: "20px", fontWeight: "normal", color:"white"}}>
       Enter a prompt for AI to enhance your drawing:

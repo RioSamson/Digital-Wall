@@ -1,53 +1,53 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-// import { db } from "../firebase/firebase";
-// import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase/firebase";
+import { doc, getDoc } from "firebase/firestore";
 import Lottie from "lottie-react";
 import animationData from "../assets/paper-plane.json";
 
 function ReviewPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  // const { docId } = location.state || {};
-  // const [originalImage, setOriginalImage] = useState(null);
-  // const [enhancedImage, setEnhancedImage] = useState(null);
+  const { docId } = location.state || {};
+  const [originalImage, setOriginalImage] = useState(null);
+  const [enhancedImage, setEnhancedImage] = useState(null);
   const [themeId, setThemeId] = useState(null);
   const [themeBackgroundImage, setThemeBackgroundImage] = useState(null);
 
-  // useEffect(() => {
-  //   const fetchImages = async () => {
-  //     if (docId) {
-  //       try {
-  //         const drawingDocRef = doc(db, "Drawings", docId);
-  //         const drawingDoc = await getDoc(drawingDocRef);
+  useEffect(() => {
+    const fetchImages = async () => {
+      if (docId) {
+        try {
+          const drawingDocRef = doc(db, "Drawings", docId);
+          const drawingDoc = await getDoc(drawingDocRef);
 
-  //         if (drawingDoc.exists()) {
-  //           const drawingData = drawingDoc.data();
-  //           setOriginalImage(drawingData.original_drawing);
-  //           setEnhancedImage(drawingData.enhanced_drawings[0]);
-  //           const themeId = drawingData.theme_id.id;
-  //           setThemeId(themeId);
+          if (drawingDoc.exists()) {
+            const drawingData = drawingDoc.data();
+            setOriginalImage(drawingData.original_drawing);
+            setEnhancedImage(drawingData.enhanced_drawings[0]);
+            const themeId = drawingData.theme_id.id;
+            setThemeId(themeId);
 
-  //           // Fetch theme background image
-  //           const themeDocRef = doc(db, "Themes", themeId);
-  //           const themeDoc = await getDoc(themeDocRef);
-  //           if (themeDoc.exists()) {
-  //             const themeData = themeDoc.data();
-  //             setThemeBackgroundImage(themeData.background_img);
-  //           } else {
-  //             console.error("No such theme document!");
-  //           }
-  //         } else {
-  //           console.error("No such document!");
-  //         }
-  //       } catch (error) {
-  //         console.error("Error fetching document:", error);
-  //       }
-  //     }
-  //   };
+            // Fetch theme background image
+            const themeDocRef = doc(db, "Themes", themeId);
+            const themeDoc = await getDoc(themeDocRef);
+            if (themeDoc.exists()) {
+              const themeData = themeDoc.data();
+              setThemeBackgroundImage(themeData.background_img);
+            } else {
+              console.error("No such theme document!");
+            }
+          } else {
+            console.error("No such document!");
+          }
+        } catch (error) {
+          console.error("Error fetching document:", error);
+        }
+      }
+    };
 
-  //   fetchImages();
-  // }, [docId]);
+    fetchImages();
+  }, [docId]);
 
   const handleNavigate = () => {
     navigate("/selection");
