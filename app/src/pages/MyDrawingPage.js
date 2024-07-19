@@ -1,11 +1,44 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { db } from "../firebase/firebase";
+import { collection, query, where, getDocs, doc } from "firebase/firestore";
 
 function MyDrawingPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { drawings = [], selectedScene, imageUrl } = location.state || {};
+  const { selectedScene, userId } = location.state || {};
+  const [drawings, setDrawings] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [readCount, setReadCount] = useState(0);
+
+  const getDrawings = useCallback(async () => {
+    try {
+      const drawingsQuery = query(
+        collection(db, "Drawings"),
+        where("user_id", "==", doc(db, "Users", userId)),
+        where("theme_id", "==", doc(db, "Themes", selectedScene))
+      );
+
+      const querySnapshot = await getDocs(drawingsQuery);
+      const drawings = querySnapshot.docs
+        .map((doc) => {
+          const data = doc.data();
+          return data.enhanced_drawings
+            ? data.enhanced_drawings[data.enhanced_drawings.length - 1]
+            : null;
+        })
+        .filter((url) => url !== null);
+
+      setDrawings(drawings);
+      setReadCount(querySnapshot.size); // Log the number of documents read
+    } catch (error) {
+      console.error("Error getting drawings:", error);
+    }
+  }, [userId, selectedScene]);
+
+  useEffect(() => {
+    getDrawings();
+  }, [getDrawings]);
 
   const handleImageClick = (url) => {
     setSelectedImage(url);
@@ -14,9 +47,11 @@ function MyDrawingPage() {
   const closeModal = () => {
     setSelectedImage(null);
   };
+
   const handleDisplay = () => {
-    navigate("/display", { state: { selectedScene, imageUrl } });
+    navigate(`/display?theme=${selectedScene}`);
   };
+
   const handleBackClick = () => {
     navigate(-1);
   };
@@ -27,12 +62,18 @@ function MyDrawingPage() {
     left: "20px",
     cursor: "pointer",
     margin: "5px",
-    padding:"5px"
+    padding: "5px",
   };
 
+  useEffect(() => {
+    console.log(`Total documents read: ${readCount}`);
+  }, [readCount]);
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <div
+    <div
+      style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+    >
+      <div
         style={{
           width: "100%",
           display: "flex",
@@ -55,7 +96,16 @@ function MyDrawingPage() {
           />
         </svg>
       </div>
-      <h1 style={{ fontWeight: "normal", margin: "auto", flexGrow: 1, textAlign: "center" }}>My Drawings</h1>     
+      <h1
+        style={{
+          fontWeight: "normal",
+          margin: "auto",
+          flexGrow: 1,
+          textAlign: "center",
+        }}
+      >
+        My Drawings
+      </h1>
       <div
         style={{
           display: "flex",
@@ -143,7 +193,15 @@ function MyDrawingPage() {
 
       <button
         onClick={handleDisplay}
-        style={{ margin: '20px', padding: '10px 45px', backgroundColor: 'black', color: 'white', border: 'none', borderRadius: '5px', fontSize: '1rem' }}
+        style={{
+          margin: "20px",
+          padding: "10px 45px",
+          backgroundColor: "black",
+          color: "white",
+          border: "none",
+          borderRadius: "5px",
+          fontSize: "1rem",
+        }}
       >
         View Live Display
       </button>
