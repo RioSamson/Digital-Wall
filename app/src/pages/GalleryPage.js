@@ -124,7 +124,7 @@ function GalleryPage() {
       >
         Gallery
       </h1>
-      <div
+      {/* <div
         style={{
           display: "flex",
           alignItems: "center",
@@ -136,7 +136,7 @@ function GalleryPage() {
         <h2 style={{ fontWeight: "normal", marginLeft: "20px" }}>
           My drawings on the display
         </h2>
-      </div>
+      </div> */}
       <div
         style={{
           display: "flex",
