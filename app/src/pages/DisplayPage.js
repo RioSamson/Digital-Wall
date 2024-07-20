@@ -10,6 +10,7 @@ import {
   getDocs,
   doc,
   getDoc,
+  onSnapshot,
 } from "firebase/firestore";
 
 function DisplayPage() {
@@ -162,8 +163,42 @@ function DisplayPage() {
     console.log(`Total database reads: ${readCount}`);
   }, [readCount]);
 
+  useEffect(() => {
+    if (!selectedScene) return;
+
+    const newDrawingsQuery = query(
+      collection(db, "Drawings"),
+      where("theme_id", "==", doc(db, "Themes", selectedScene)),
+      orderBy("created_at", "desc"),
+      limit(1)
+    );
+
+    const unsubscribe = onSnapshot(newDrawingsQuery, (snapshot) => {
+      if (!snapshot.empty) {
+        const newDrawing = snapshot.docs[0].data();
+        const { displayArea } = newDrawing;
+
+        switch (displayArea) {
+          case "top":
+            setTopDrawings((prev) => [newDrawing, ...prev.slice(0, -1)]);
+            break;
+          case "center":
+            setCenterDrawings((prev) => [newDrawing, ...prev.slice(0, -1)]);
+            break;
+          case "bottom":
+            setBottomDrawings((prev) => [newDrawing, ...prev.slice(0, -1)]);
+            break;
+          default:
+            break;
+        }
+        incrementReadCount(snapshot.docs.length);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [selectedScene]);
+
   const renderDrawings = (drawings, areaCoords) => {
-    console.log(`Rendering drawings for area: ${drawings.length}`);
     return drawings.map((drawing, index) => {
       const coord = areaCoords[index];
       return (
