@@ -180,13 +180,40 @@ function DisplayPage() {
 
         switch (displayArea) {
           case "top":
-            setTopDrawings((prev) => [newDrawing, ...prev.slice(0, -1)]);
+            setTopDrawings((prev) => {
+              if (
+                prev.length <
+                coordinates.filter((coord) => coord.area === "top").length
+              ) {
+                return [newDrawing, ...prev];
+              } else {
+                return [newDrawing, ...prev.slice(0, -1)];
+              }
+            });
             break;
           case "center":
-            setCenterDrawings((prev) => [newDrawing, ...prev.slice(0, -1)]);
+            setCenterDrawings((prev) => {
+              if (
+                prev.length <
+                coordinates.filter((coord) => coord.area === "center").length
+              ) {
+                return [newDrawing, ...prev];
+              } else {
+                return [newDrawing, ...prev.slice(0, -1)];
+              }
+            });
             break;
           case "bottom":
-            setBottomDrawings((prev) => [newDrawing, ...prev.slice(0, -1)]);
+            setBottomDrawings((prev) => {
+              if (
+                prev.length <
+                coordinates.filter((coord) => coord.area === "bottom").length
+              ) {
+                return [newDrawing, ...prev];
+              } else {
+                return [newDrawing, ...prev.slice(0, -1)];
+              }
+            });
             break;
           default:
             break;
@@ -196,7 +223,7 @@ function DisplayPage() {
     });
 
     return () => unsubscribe();
-  }, [selectedScene]);
+  }, [selectedScene, coordinates]);
 
   const renderDrawings = (drawings, areaCoords) => {
     return drawings.map((drawing, index) => {
