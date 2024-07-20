@@ -49,7 +49,6 @@ export default function RegisterPage() {
         alignItems: 'center',
         justifyContent: 'center',
         height: '100%',
-        background: 'white',
         marginTop: ' 80px',
         gap: '32px'
       },

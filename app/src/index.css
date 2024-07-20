@@ -10,4 +10,9 @@ code {
     monospace;
 }
 
+html, body, #root {
+
+  background-color: #F8F8F8;
+}
+
 
