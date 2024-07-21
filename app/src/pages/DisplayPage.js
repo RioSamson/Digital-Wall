@@ -108,9 +108,21 @@ function DisplayPage() {
           getDocs(bottomDrawingsQuery),
         ]);
 
-        setTopDrawings(topDrawingsSnapshot.docs.map((doc) => doc.data()));
-        setCenterDrawings(centerDrawingsSnapshot.docs.map((doc) => doc.data()));
-        setBottomDrawings(bottomDrawingsSnapshot.docs.map((doc) => doc.data()));
+        setTopDrawings(
+          topDrawingsSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+        );
+        setCenterDrawings(
+          centerDrawingsSnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }))
+        );
+        setBottomDrawings(
+          bottomDrawingsSnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }))
+        );
 
         incrementReadCount(topDrawingsSnapshot.docs.length);
         incrementReadCount(centerDrawingsSnapshot.docs.length);
@@ -169,57 +181,80 @@ function DisplayPage() {
     const newDrawingsQuery = query(
       collection(db, "Drawings"),
       where("theme_id", "==", doc(db, "Themes", selectedScene)),
-      orderBy("created_at", "desc"),
-      limit(1)
+      orderBy("created_at", "desc")
     );
 
     const unsubscribe = onSnapshot(newDrawingsQuery, (snapshot) => {
-      if (!snapshot.empty) {
-        const newDrawing = snapshot.docs[0].data();
-        const { displayArea } = newDrawing;
+      snapshot.docChanges().forEach((change) => {
+        const drawing = { id: change.doc.id, ...change.doc.data() };
+        const { displayArea } = drawing;
 
-        switch (displayArea) {
-          case "top":
-            setTopDrawings((prev) => {
-              if (
-                prev.length <
-                coordinates.filter((coord) => coord.area === "top").length
-              ) {
-                return [newDrawing, ...prev];
-              } else {
-                return [newDrawing, ...prev.slice(0, -1)];
-              }
-            });
-            break;
-          case "center":
-            setCenterDrawings((prev) => {
-              if (
-                prev.length <
-                coordinates.filter((coord) => coord.area === "center").length
-              ) {
-                return [newDrawing, ...prev];
-              } else {
-                return [newDrawing, ...prev.slice(0, -1)];
-              }
-            });
-            break;
-          case "bottom":
-            setBottomDrawings((prev) => {
-              if (
-                prev.length <
-                coordinates.filter((coord) => coord.area === "bottom").length
-              ) {
-                return [newDrawing, ...prev];
-              } else {
-                return [newDrawing, ...prev.slice(0, -1)];
-              }
-            });
-            break;
-          default:
-            break;
+        if (change.type === "added") {
+          switch (displayArea) {
+            case "top":
+              setTopDrawings((prev) => {
+                if (prev.find((d) => d.id === drawing.id)) return prev;
+                if (
+                  prev.length <
+                  coordinates.filter((coord) => coord.area === "top").length
+                ) {
+                  return [drawing, ...prev];
+                } else {
+                  return [drawing, ...prev.slice(0, -1)];
+                }
+              });
+              break;
+            case "center":
+              setCenterDrawings((prev) => {
+                if (prev.find((d) => d.id === drawing.id)) return prev;
+                if (
+                  prev.length <
+                  coordinates.filter((coord) => coord.area === "center").length
+                ) {
+                  return [drawing, ...prev];
+                } else {
+                  return [drawing, ...prev.slice(0, -1)];
+                }
+              });
+              break;
+            case "bottom":
+              setBottomDrawings((prev) => {
+                if (prev.find((d) => d.id === drawing.id)) return prev;
+                if (
+                  prev.length <
+                  coordinates.filter((coord) => coord.area === "bottom").length
+                ) {
+                  return [drawing, ...prev];
+                } else {
+                  return [drawing, ...prev.slice(0, -1)];
+                }
+              });
+              break;
+            default:
+              break;
+          }
+        } else if (change.type === "removed") {
+          switch (displayArea) {
+            case "top":
+              setTopDrawings((prev) =>
+                prev.filter((drawing) => drawing.id !== change.doc.id)
+              );
+              break;
+            case "center":
+              setCenterDrawings((prev) =>
+                prev.filter((drawing) => drawing.id !== change.doc.id)
+              );
+              break;
+            case "bottom":
+              setBottomDrawings((prev) =>
+                prev.filter((drawing) => drawing.id !== change.doc.id)
+              );
+              break;
+            default:
+              break;
+          }
         }
-        incrementReadCount(snapshot.docs.length);
-      }
+      });
     });
 
     return () => unsubscribe();
@@ -228,11 +263,12 @@ function DisplayPage() {
   const renderDrawings = (drawings, areaCoords) => {
     return drawings.map((drawing, index) => {
       const coord = areaCoords[index];
+      if (!coord) return null; // Ensure coord exists
       return (
         <img
-          key={index}
+          key={drawing.id}
           src={drawing.enhanced_drawings[0]}
-          alt={`Drawing ${index}`}
+          alt={`Drawing ${drawing.id}`}
           style={{
             position: "absolute",
             width: `${drawingSize}%`,
