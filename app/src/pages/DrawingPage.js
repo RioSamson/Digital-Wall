@@ -53,6 +53,9 @@ function DrawingPage() {
     setShowTextInput(true);
   };
 
+  const handleClose = () => {
+    setShowTextInput(false);
+  }
   const fetchAdminPrompt = async (themeId) => {
     const themeDocRef = doc(db, "Themes", themeId);
     const themeDoc = await getDoc(themeDocRef);
@@ -541,6 +544,7 @@ function DrawingPage() {
         handleTextSubmit={handleTextSubmit}
         handleCancel={handleCancel}
         handleNext={handleNext}
+        handleClose={handleClose}
       />
       {isUploading && <LoadingScreen />}
     </div>

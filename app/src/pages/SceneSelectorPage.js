@@ -70,7 +70,7 @@ function SceneSelector() {
   const sceneGridStyle = {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
-    gap: "20px 0px",
+    gap: "12px",
     width: "100%",
     maxWidth: "800px",
     margin: "0  auto",
@@ -118,11 +118,12 @@ function SceneSelector() {
     left: "50%",
     transform: "translate(-50%, -50%)",
     color: "white",
-    fontSize: "1.2rem",
-    fontWeight: "normal",
-    textShadow: "2px 2px 4px rgba(0, 0, 0, 0.7)",
+    fontSize: "24px",
+    fontWeight: 600,
+    // textShadow: "2px 2px 4px rgba(0, 0, 0, 0.7)",
     zIndex: 2,
     pointerEvents: "none",
+    textAlign: "center",
   };
 
   const overlayStyle = {
@@ -162,8 +163,8 @@ function SceneSelector() {
           onClick={handleBackClick}
           style={backButtonStyle}
           width="20"
-          height="25"
-          viewBox="0 0 25 30"
+          height="32"
+          viewBox="0 0 25 32"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
@@ -175,7 +176,8 @@ function SceneSelector() {
         {mode !== "drawing" && (
           <h1
             style={{
-              fontWeight: "normal",
+              fontWeight: 600,
+              fontSize: "32px",
               margin: "0 auto",
               flexGrow: 1,
               textAlign: "center",
@@ -185,13 +187,19 @@ function SceneSelector() {
           </h1>
         )}
       </div>
-      <h2
-        style={{ fontWeight: "normal", marginTop: "10px", marginLeft: "5px" }}
+      <h3
+        style={{
+          fontWeight: 500,
+          fontSize: "24px",
+          marginTop: "10px",
+          marginLeft: "5px",
+          textAlign: "center",
+        }}
       >
         {mode === "drawing"
           ? "Pick a theme to draw on!"
           : "View your previous drawings"}
-      </h2>
+      </h3>
       <div style={sceneGridStyle}>
         {scenes.map((scene) => (
           <div
