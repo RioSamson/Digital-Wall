@@ -9,8 +9,6 @@ function ReviewPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { docId } = location.state || {};
-  const [originalImage, setOriginalImage] = useState(null);
-  const [enhancedImage, setEnhancedImage] = useState(null);
   const [themeId, setThemeId] = useState(null);
   const [themeBackgroundImage, setThemeBackgroundImage] = useState(null);
 
@@ -23,8 +21,8 @@ function ReviewPage() {
 
           if (drawingDoc.exists()) {
             const drawingData = drawingDoc.data();
-            setOriginalImage(drawingData.original_drawing);
-            setEnhancedImage(drawingData.enhanced_drawings[0]);
+            // setOriginalImage(drawingData.original_drawing);
+            // setEnhancedImage(drawingData.enhanced_drawings[0]);
             const themeId = drawingData.theme_id.id;
             setThemeId(themeId);
 
@@ -69,7 +67,7 @@ function ReviewPage() {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        justifyContent: "center", // Center content vertically
+        justifyContent: "center", 
         overflow: "hidden",
         paddingTop: "15%"
       }}
@@ -140,7 +138,7 @@ function ReviewPage() {
             width: "100%",
             height: "50px",
             fontSize: "1.4rem",
-            backgroundColor: "white",
+            backgroundColor: "#F8F8F8",
             color: "black",
             border: "none",
             borderRadius: "5px",
