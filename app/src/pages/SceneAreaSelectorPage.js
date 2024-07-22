@@ -31,15 +31,16 @@ function SceneAreaSelector() {
     alignItems: "center",
     justifyContent: "center",
     gap: "10px",
-    width: "80%",
+    width: "90%",
+    maxWidth: "600px",
     marginTop: "20px",
     overflow: "hidden",
-    borderRadius: "10px"
+    borderRadius: "10px",
   };
 
   const buttonStyle = {
     position: "relative",
-    backgroundSize: "100% 300%", 
+    backgroundSize: "100% 300%",
     border: "none",
     cursor: "pointer",
     width: "100%",
@@ -47,12 +48,10 @@ function SceneAreaSelector() {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    fontSize: "2rem",
     color: "white",
-    fontWeight: "bold",
     transition: "transform 0.3s ease, background-color 0.3s ease",
     boxSizing: "border-box",
-    borderRadius: "10px",
+    borderRadius: "20px",
   };
 
   const buttonOverlayStyle = {
@@ -63,21 +62,22 @@ function SceneAreaSelector() {
     bottom: 0,
     backgroundColor: "rgba(0, 0, 0, 0.4)", // Dark overlay
     zIndex: 1,
-    borderRadius: "10px"
+    borderRadius: "20px",
   };
-   const backButtonStyle = {
+  const backButtonStyle = {
     position: "absolute",
     top: "10px",
     left: "20px",
     cursor: "pointer",
     margin: "5px",
-    padding:"5px"
+    padding: "5px",
   };
 
   const buttonTextStyle = {
     position: "relative",
     zIndex: 2,
-    fontWeight: "normal",
+    fontWeight: 600,
+    fontSize: "32px",
   };
 
   const buttonHoverStyle = {
@@ -98,22 +98,24 @@ function SceneAreaSelector() {
 
   return (
     <div style={sceneContainerStyle}>
-      <svg
-        onClick={handleBackClick}
-        style={backButtonStyle}
-        width="20"
-        height="25"
-        viewBox="0 0 25 30"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M0.5309 17.1421L16.8658 31.5276C17.5826 32.1575 18.7439 32.1575 19.4624 31.5276C20.1792 30.8978 20.1792 29.8747 19.4624 29.2449L4.42318 16.0008L19.4606 2.75669C20.1774 2.12685 20.1774 1.10382 19.4606 0.472382C18.7438 -0.157461 17.5808 -0.157461 16.864 0.472382L0.529089 14.8578C-0.176665 15.4811 -0.176664 16.5202 0.5309 17.1421Z"
-          fill="black"
-        />
-      </svg>
-
-      <h2 style={{fontWeight:"normal", marginTop: "10px", marginLeft: "10px"}}>Choose a spot to place your drawing!</h2>
+<div style={{ display: "flex", alignItems: "center", width: "100%", marginBottom: "10px" }}>
+  <svg
+          onClick={handleBackClick}
+          style={backButtonStyle}
+          width="20"
+          height="32"
+          viewBox="0 0 20 32"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M0.5309 17.1421L16.8658 31.5276C17.5826 32.1575 18.7439 32.1575 19.4624 31.5276C20.1792 30.8978 20.1792 29.8747 19.4624 29.2449L4.42318 16.0008L19.4606 2.75669C20.1774 2.12685 20.1774 1.10382 19.4606 0.472382C18.7438 -0.157461 17.5808 -0.157461 16.864 0.472382L0.529089 14.8578C-0.176665 15.4811 -0.176664 16.5202 0.5309 17.1421Z"
+            fill="black"
+          />
+        </svg>
+        {/* <button style={{marginLeft: 'auto', fontSize:"22px", fontWeight:500, background: "black", color: "white", padding:"14px 22px", borderRadius: "10px"}}>start</button> */}
+        </div>
+      <h2 style={{fontWeight:500, fontSize: "24px", marginTop: "10px", marginLeft: "10px"}}>Choose a spot to place your drawing!</h2>
       <div style={buttonContainerStyle}>
         <button
           style={{
@@ -126,7 +128,7 @@ function SceneAreaSelector() {
           onMouseOut={handleMouseOut}
         >
           <div style={buttonOverlayStyle}></div>
-          <span style={buttonTextStyle}>{topAreaName}</span>
+          <h2 style={buttonTextStyle}>{topAreaName}</h2>
         </button>
         <button
           style={{
@@ -139,7 +141,7 @@ function SceneAreaSelector() {
           onMouseOut={handleMouseOut}
         >
           <div style={buttonOverlayStyle}></div>
-          <span style={buttonTextStyle}>{centerAreaName}</span>
+          <h2 style={buttonTextStyle}>{centerAreaName}</h2>
         </button>
         <button
           style={{
@@ -152,7 +154,7 @@ function SceneAreaSelector() {
           onMouseOut={handleMouseOut}
         >
           <div style={buttonOverlayStyle}></div>
-          <span style={buttonTextStyle}>{bottomAreaName}</span>
+          <h2 style={buttonTextStyle}>{bottomAreaName}</h2>
         </button>
       </div>
     </div>
