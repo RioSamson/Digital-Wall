@@ -10,6 +10,7 @@ import {
   getDocs,
   doc,
   getDoc,
+  onSnapshot,
 } from "firebase/firestore";
 
 function DisplayPage() {
@@ -24,6 +25,7 @@ function DisplayPage() {
   const [coordinates, setCoordinates] = useState([]);
   const [readCount, setReadCount] = useState(0);
   const containerRef = useRef(null);
+  const drawingSize = 15;
 
   const incrementReadCount = (count) => {
     setReadCount((prevCount) => prevCount + count);
@@ -54,7 +56,7 @@ function DisplayPage() {
     };
 
     fetchScene();
-  }, [selectedScene, backgroundImage]);
+  }, []);
 
   useEffect(() => {
     const fetchDrawings = async () => {
@@ -106,9 +108,21 @@ function DisplayPage() {
           getDocs(bottomDrawingsQuery),
         ]);
 
-        setTopDrawings(topDrawingsSnapshot.docs.map((doc) => doc.data()));
-        setCenterDrawings(centerDrawingsSnapshot.docs.map((doc) => doc.data()));
-        setBottomDrawings(bottomDrawingsSnapshot.docs.map((doc) => doc.data()));
+        setTopDrawings(
+          topDrawingsSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+        );
+        setCenterDrawings(
+          centerDrawingsSnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }))
+        );
+        setBottomDrawings(
+          bottomDrawingsSnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }))
+        );
 
         incrementReadCount(topDrawingsSnapshot.docs.length);
         incrementReadCount(centerDrawingsSnapshot.docs.length);
@@ -161,21 +175,106 @@ function DisplayPage() {
     console.log(`Total database reads: ${readCount}`);
   }, [readCount]);
 
+  useEffect(() => {
+    if (!selectedScene) return;
+
+    const newDrawingsQuery = query(
+      collection(db, "Drawings"),
+      where("theme_id", "==", doc(db, "Themes", selectedScene)),
+      orderBy("created_at", "desc")
+    );
+
+    const unsubscribe = onSnapshot(newDrawingsQuery, (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        const drawing = { id: change.doc.id, ...change.doc.data() };
+        const { displayArea } = drawing;
+
+        if (change.type === "added") {
+          switch (displayArea) {
+            case "top":
+              setTopDrawings((prev) => {
+                if (prev.find((d) => d.id === drawing.id)) return prev;
+                if (
+                  prev.length <
+                  coordinates.filter((coord) => coord.area === "top").length
+                ) {
+                  return [drawing, ...prev];
+                } else {
+                  return [drawing, ...prev.slice(0, -1)];
+                }
+              });
+              break;
+            case "center":
+              setCenterDrawings((prev) => {
+                if (prev.find((d) => d.id === drawing.id)) return prev;
+                if (
+                  prev.length <
+                  coordinates.filter((coord) => coord.area === "center").length
+                ) {
+                  return [drawing, ...prev];
+                } else {
+                  return [drawing, ...prev.slice(0, -1)];
+                }
+              });
+              break;
+            case "bottom":
+              setBottomDrawings((prev) => {
+                if (prev.find((d) => d.id === drawing.id)) return prev;
+                if (
+                  prev.length <
+                  coordinates.filter((coord) => coord.area === "bottom").length
+                ) {
+                  return [drawing, ...prev];
+                } else {
+                  return [drawing, ...prev.slice(0, -1)];
+                }
+              });
+              break;
+            default:
+              break;
+          }
+        } else if (change.type === "removed") {
+          switch (displayArea) {
+            case "top":
+              setTopDrawings((prev) =>
+                prev.filter((drawing) => drawing.id !== change.doc.id)
+              );
+              break;
+            case "center":
+              setCenterDrawings((prev) =>
+                prev.filter((drawing) => drawing.id !== change.doc.id)
+              );
+              break;
+            case "bottom":
+              setBottomDrawings((prev) =>
+                prev.filter((drawing) => drawing.id !== change.doc.id)
+              );
+              break;
+            default:
+              break;
+          }
+        }
+      });
+    });
+
+    return () => unsubscribe();
+  }, [selectedScene, coordinates]);
+
   const renderDrawings = (drawings, areaCoords) => {
-    console.log(`Rendering drawings for area: ${drawings.length}`);
     return drawings.map((drawing, index) => {
       const coord = areaCoords[index];
+      if (!coord) return null; // Ensure coord exists
       return (
         <img
-          key={index}
+          key={drawing.id}
           src={drawing.enhanced_drawings[0]}
-          alt={`Drawing ${index}`}
+          alt={`Drawing ${drawing.id}`}
           style={{
             position: "absolute",
-            width: "13%",
-            height: "13%",
-            top: `${coord.y}%`,
-            left: `${coord.x}%`,
+            width: `${drawingSize}%`,
+            height: `${drawingSize}%`,
+            top: `${coord.y - drawingSize / 2.3}%`,
+            left: `${coord.x - drawingSize / 2}%`,
             objectFit: "contain",
           }}
         />
