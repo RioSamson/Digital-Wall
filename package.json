@@ -8,6 +8,8 @@
     "start:backend": "npm start --prefix backend"
   },
   "dependencies": {
+    "firebase": "^10.12.4",
+    "react-firebase-hooks": "^5.1.1",
     "react-router-dom": "^6.23.1",
     "roughjs": "^4.6.6"
   }
