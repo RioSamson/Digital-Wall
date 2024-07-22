@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useCallback  } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { storage, db, auth } from "../firebase/firebase";
 import {
@@ -23,7 +23,14 @@ function DrawingPage() {
   const [mode, setMode] = useState("pencil");
   const [showTextInput, setShowTextInput] = useState(false);
   const [inputText, setInputText] = useState("");
-  const { selectedScene, area, themeName, topAreaName, centerAreaName, bottomAreaName} = location.state || {};
+  const {
+    selectedScene,
+    area,
+    themeName,
+    topAreaName,
+    centerAreaName,
+    bottomAreaName,
+  } = location.state || {};
   const [showColorPopup, setShowColorPopup] = useState(false);
   const [lineWidth, setLineWidth] = useState(5);
   const [showEraserPopup, setShowEraserPopup] = useState(false);
@@ -38,9 +45,9 @@ function DrawingPage() {
     "blue",
     "purple",
   ]);
-  const [isUploading, setIsUploading] = useState(false); 
-  const [enhancedImage, setEnhancedImage] = useState(null); 
-  const [docId, setDocId] = useState(null); 
+  const [isUploading, setIsUploading] = useState(false);
+  const [enhancedImage, setEnhancedImage] = useState(null);
+  const [docId, setDocId] = useState(null);
 
   const handleUploadClick = () => {
     setShowTextInput(true);
@@ -229,7 +236,6 @@ function DrawingPage() {
   };
 
   const updateDraw = (e) => {
-
     if (!isPressed) return;
     setShowColorPopup(false);
     setShowEraserPopup(false);
@@ -253,11 +259,11 @@ function DrawingPage() {
       context.globalCompositeOperation = "source-over";
       context.strokeStyle = selectedColor;
     }
-  
+
     context.lineWidth = lineWidth;
     context.lineCap = "round";
     context.lineJoin = "round";
-  
+
     context.lineTo(offsetX, offsetY);
     context.stroke();
     context.beginPath();
@@ -335,17 +341,17 @@ function DrawingPage() {
   }, []);
 
   const historyRef = useRef([]);
-const historyIndexRef = useRef(-1);
+  const historyIndexRef = useRef(-1);
 
-const saveHistory = useCallback(() => {
-  const canvas = canvasRef.current;
-  const newHistory = historyRef.current.slice(0, historyIndexRef.current + 1);
-  newHistory.push(canvas.toDataURL());
-  historyRef.current = newHistory;
-  historyIndexRef.current = newHistory.length - 1;
-  setHistory(newHistory);
-  setHistoryIndex(newHistory.length - 1);
-}, []);
+  const saveHistory = useCallback(() => {
+    const canvas = canvasRef.current;
+    const newHistory = historyRef.current.slice(0, historyIndexRef.current + 1);
+    newHistory.push(canvas.toDataURL());
+    historyRef.current = newHistory;
+    historyIndexRef.current = newHistory.length - 1;
+    setHistory(newHistory);
+    setHistoryIndex(newHistory.length - 1);
+  }, []);
 
   const undo = () => {
     if (historyIndex > 0) {
@@ -357,8 +363,8 @@ const saveHistory = useCallback(() => {
       img.src = history[newIndex];
       img.onload = () => {
         context.clearRect(0, 0, canvas.width, canvas.height);
-        context.fillStyle = "white"; 
-      context.fillRect(0, 0, canvas.width, canvas.height);
+        context.fillStyle = "white";
+        context.fillRect(0, 0, canvas.width, canvas.height);
         context.globalCompositeOperation = "source-over";
         context.drawImage(img, 0, 0);
       };
@@ -375,7 +381,7 @@ const saveHistory = useCallback(() => {
       img.src = history[newIndex];
       img.onload = () => {
         context.clearRect(0, 0, canvas.width, canvas.height);
-        context.fillStyle = "white"; 
+        context.fillStyle = "white";
         context.fillRect(0, 0, canvas.width, canvas.height);
         context.globalCompositeOperation = "source-over";
         context.drawImage(img, 0, 0);
@@ -490,7 +496,7 @@ const saveHistory = useCallback(() => {
         undoDisabled={historyIndex <= 0}
         redoDisabled={historyIndex >= history.length - 1}
         handleUploadClick={handleUploadClick}
-        themeName={themeName} 
+        themeName={themeName}
       />
       <div className="canvas-container" onClick={handleCanvasClick}>
         <Canvas
@@ -537,7 +543,7 @@ const saveHistory = useCallback(() => {
         handleNext={handleNext}
       />
       {isUploading && <LoadingScreen />}
-    </div> 
+    </div>
   );
 }
 

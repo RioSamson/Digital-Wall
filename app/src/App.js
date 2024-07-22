@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-// import videoSource from "./assets/Animation-Digitallab.mp4";
-import videoSource from "./assets/jellyfish.mp4";
+import videoSource from "./assets/Animation-Digitallab.mp4";
+// import videoSource from "./assets/jellyfish.mp4";
 
 const App = () => {
   const navigate = useNavigate();
@@ -57,10 +57,14 @@ const App = () => {
       >
         <div
           style={{
+            position: "absolute",
+            top: "75%", // Position the buttons at 75% from the top
+            transform: "translateY(-50%)", // Center the buttons vertically
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
             alignItems: "center",
+            width: "100%",
           }}
         >
           <button
