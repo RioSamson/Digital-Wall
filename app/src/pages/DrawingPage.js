@@ -328,10 +328,7 @@ function DrawingPage() {
     };
 
     window.addEventListener("resize", handleResize);
-
-    // Initial resize
     handleResize();
-
     return () => {
       window.removeEventListener("resize", handleResize);
     };
@@ -417,7 +414,7 @@ const saveHistory = useCallback(() => {
           const canvas = canvasRef.current;
           const context = canvas.getContext("2d");
           context.clearRect(0, 0, canvas.width, canvas.height);
-          context.fillStyle = "#F8F8F8"; // Set the background to white
+          context.fillStyle = "#F8F8F8"; 
           context.fillRect(0, 0, canvas.width, canvas.height);
           saveHistory();
         }}
@@ -428,7 +425,7 @@ const saveHistory = useCallback(() => {
         handleUploadClick={handleUploadClick}
         themeName={themeName} 
       />
-      <div className="canvas-container"> {/*onClick={handleCanvasClick} */}
+      <div className="canvas-container">
         <Canvas
           ref={canvasRef}
           colors={colors}
