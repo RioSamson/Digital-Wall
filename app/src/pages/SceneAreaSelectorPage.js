@@ -113,7 +113,7 @@ function SceneAreaSelector() {
             fill="black"
           />
         </svg>
-        <button style={{marginLeft: 'auto', fontSize:"22px", fontWeight:500, background: "black", color: "white", padding:"14px 22px", borderRadius: "10px"}}>start</button>
+        {/* <button style={{marginLeft: 'auto', fontSize:"22px", fontWeight:500, background: "black", color: "white", padding:"14px 22px", borderRadius: "10px"}}>start</button> */}
         </div>
       <h2 style={{fontWeight:500, fontSize: "24px", marginTop: "10px", marginLeft: "10px"}}>Choose a spot to place your drawing!</h2>
       <div style={buttonContainerStyle}>
