@@ -17,7 +17,7 @@
 }
 .top-toolbar-container {
   width: 100%;
-  background-color: white;
+  background: "#F8F8F8";
   position: fixed;
   top: 0;
   z-index: 1; 
@@ -28,7 +28,7 @@
   display: flex;
   justify-content: space-between;
   padding: 10px;
-  background: rgba(255, 255, 255, 0.7); 
+  background: "#F8F8F8";
 }
 .centered-text {
   position: absolute;
@@ -91,22 +91,25 @@
   justify-content: center;
   align-items: center;
   padding: 10px;
-  background-color: white;
   position: fixed;
   bottom: 0;
   width: 100%;
   z-index: 10;
+  background: "#F8F8F8";
 }
 
 .svg-container {
   display: flex;
   align-items: center;
   margin-left: 10px;
+  background: "#F8F8F8";
+
 }
 .bottom-toolbar {
   display: flex;
   align-items: center;
   position: relative;
+  background-color: "#F8F8F8";
 }
 
 .popup-message {
@@ -139,6 +142,8 @@
 
   .bottom-toolbar-container {
     flex-direction: row;
+    background: "#F8F8F8";
+
   }
   .svg-container {
     margin-left: 10px;
@@ -146,13 +151,14 @@
     align-items: center;
     justify-content: center; 
     padding: 5px; 
-    background-color: white;
+    background: "#F8F8F8";
     border-radius: 50%;
     cursor: pointer;
   }
   .bottom-toolbar {
     flex-direction: row;
     justify-content: center;
+    background: "#F8F8F8";
   }
 
   .popup {
@@ -180,11 +186,13 @@
   .top-toolbar {
     flex-direction: row;
     align-items: center;
+    background: "#F8F8F8";
   }
 
   .bottom-toolbar {
     flex-direction: column;
     align-items: center;
+    background: "#F8F8F8";
   }
 
   .popup {

@@ -361,7 +361,7 @@ const saveHistory = useCallback(() => {
       img.onload = () => {
         context.clearRect(0, 0, canvas.width, canvas.height);
         context.fillStyle = "white"; 
-      context.fillRect(0, 0, canvas.width, canvas.height);
+        context.fillRect(0, 0, canvas.width, canvas.height);
         context.globalCompositeOperation = "source-over";
         context.drawImage(img, 0, 0);
       };
@@ -484,7 +484,7 @@ const saveHistory = useCallback(() => {
           const canvas = canvasRef.current;
           const context = canvas.getContext("2d");
           context.clearRect(0, 0, canvas.width, canvas.height);
-          context.fillStyle = "white"; // Set the background to white
+          context.fillStyle = "#F8F8F8"; // Set the background to white
           context.fillRect(0, 0, canvas.width, canvas.height);
           saveHistory();
         }}

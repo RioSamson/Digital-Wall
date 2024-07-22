@@ -11,19 +11,12 @@ const Canvas = React.forwardRef(({ colors, selectedColor, lineWidth, mode, setIs
     context.strokeStyle = colors[0];
     context.lineWidth = 5;
 
-    const fillWhiteBackground = () => {
-      context.fillStyle = 'white';
-      context.fillRect(0, 0, canvas.width, canvas.height);
-    };
+    // const clearCanvas = () => {
+    //   context.fillStyle = "red";
+    //   context.fillRect(0, 0, canvas.width, canvas.height);
+    // };
 
-    fillWhiteBackground();
-
-    const clearCanvas = () => {
-      context.fillStyle = "white";
-      context.fillRect(0, 0, canvas.width, canvas.height);
-    };
-
-    clearCanvas();
+    // clearCanvas();
   }, [colors, ref]);
 
   useEffect(() => {
