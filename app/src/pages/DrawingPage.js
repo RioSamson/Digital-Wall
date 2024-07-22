@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useCallback  } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { storage, db, auth } from "../firebase/firebase";
 import {
@@ -23,7 +23,14 @@ function DrawingPage() {
   const [mode, setMode] = useState("pencil");
   const [showTextInput, setShowTextInput] = useState(false);
   const [inputText, setInputText] = useState("");
-  const { selectedScene, area, themeName, topAreaName, centerAreaName, bottomAreaName} = location.state || {};
+  const {
+    selectedScene,
+    area,
+    themeName,
+    topAreaName,
+    centerAreaName,
+    bottomAreaName,
+  } = location.state || {};
   const [showColorPopup, setShowColorPopup] = useState(false);
   const [lineWidth, setLineWidth] = useState(5);
   const [showEraserPopup, setShowEraserPopup] = useState(false);
@@ -38,9 +45,9 @@ function DrawingPage() {
     "blue",
     "purple",
   ]);
-  const [isUploading, setIsUploading] = useState(false); 
-  const [enhancedImage, setEnhancedImage] = useState(null); 
-  const [docId, setDocId] = useState(null); 
+  const [isUploading, setIsUploading] = useState(false);
+  const [enhancedImage, setEnhancedImage] = useState(null);
+  const [docId, setDocId] = useState(null);
 
   const handleUploadClick = () => {
     setShowTextInput(true);
@@ -48,7 +55,7 @@ function DrawingPage() {
 
   const handleClose = () => {
     setShowTextInput(false);
-  }
+  };
   const fetchAdminPrompt = async (themeId) => {
     const themeDocRef = doc(db, "Themes", themeId);
     const themeDoc = await getDoc(themeDocRef);
@@ -232,7 +239,6 @@ function DrawingPage() {
   };
 
   const updateDraw = (e) => {
-
     if (!isPressed) return;
     setShowColorPopup(false);
     setShowEraserPopup(false);
@@ -250,17 +256,17 @@ function DrawingPage() {
 
     const context = canvas.getContext("2d");
     if (mode === "eraser") {
-      context.globalCompositeOperation = "destination-out";
-      context.strokeStyle = "rgba(0,0,0,1)";
+      context.globalCompositeOperation = "source-over";
+      context.strokeStyle = "#F8F8F8";
     } else {
       context.globalCompositeOperation = "source-over";
       context.strokeStyle = selectedColor;
     }
-  
+
     context.lineWidth = lineWidth;
     context.lineCap = "round";
     context.lineJoin = "round";
-  
+
     context.lineTo(offsetX, offsetY);
     context.stroke();
     context.beginPath();
@@ -335,17 +341,17 @@ function DrawingPage() {
   }, []);
 
   const historyRef = useRef([]);
-const historyIndexRef = useRef(-1);
+  const historyIndexRef = useRef(-1);
 
-const saveHistory = useCallback(() => {
-  const canvas = canvasRef.current;
-  const newHistory = historyRef.current.slice(0, historyIndexRef.current + 1);
-  newHistory.push(canvas.toDataURL());
-  historyRef.current = newHistory;
-  historyIndexRef.current = newHistory.length - 1;
-  setHistory(newHistory);
-  setHistoryIndex(newHistory.length - 1);
-}, []);
+  const saveHistory = useCallback(() => {
+    const canvas = canvasRef.current;
+    const newHistory = historyRef.current.slice(0, historyIndexRef.current + 1);
+    newHistory.push(canvas.toDataURL());
+    historyRef.current = newHistory;
+    historyIndexRef.current = newHistory.length - 1;
+    setHistory(newHistory);
+    setHistoryIndex(newHistory.length - 1);
+  }, []);
 
   const undo = () => {
     if (historyIndex > 0) {
@@ -357,7 +363,7 @@ const saveHistory = useCallback(() => {
       img.src = history[newIndex];
       img.onload = () => {
         context.clearRect(0, 0, canvas.width, canvas.height);
-        context.fillStyle = "#F8F8F8"; 
+        context.fillStyle = "#F8F8F8";
         context.fillRect(0, 0, canvas.width, canvas.height);
         context.globalCompositeOperation = "source-over";
         context.drawImage(img, 0, 0);
@@ -375,7 +381,7 @@ const saveHistory = useCallback(() => {
       img.src = history[newIndex];
       img.onload = () => {
         context.clearRect(0, 0, canvas.width, canvas.height);
-        context.fillStyle = "#F8F8F8"; 
+        context.fillStyle = "#F8F8F8";
         context.fillRect(0, 0, canvas.width, canvas.height);
         context.globalCompositeOperation = "source-over";
         context.drawImage(img, 0, 0);
@@ -395,7 +401,6 @@ const saveHistory = useCallback(() => {
     }
   }, [isPressed, saveHistory]);
 
-
   const handleCancel = () => {
     setShowTextInput(false);
     setEnhancedImage(null);
@@ -408,13 +413,13 @@ const saveHistory = useCallback(() => {
   };
 
   return (
-    <div className="DrawingPage">
+    <div className="DrawingPage" style={{ height: "100svh" }}>
       <TopToolbar
         onClear={() => {
           const canvas = canvasRef.current;
           const context = canvas.getContext("2d");
           context.clearRect(0, 0, canvas.width, canvas.height);
-          context.fillStyle = "#F8F8F8"; 
+          context.fillStyle = "#F8F8F8";
           context.fillRect(0, 0, canvas.width, canvas.height);
           saveHistory();
         }}
@@ -423,7 +428,7 @@ const saveHistory = useCallback(() => {
         undoDisabled={historyIndex <= 0}
         redoDisabled={historyIndex >= history.length - 1}
         handleUploadClick={handleUploadClick}
-        themeName={themeName} 
+        themeName={themeName}
       />
       <div className="canvas-container">
         <Canvas
@@ -470,7 +475,7 @@ const saveHistory = useCallback(() => {
         handleClose={handleClose}
       />
       {isUploading && <LoadingScreen />}
-    </div> 
+    </div>
   );
 }
 

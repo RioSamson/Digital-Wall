@@ -22,7 +22,9 @@ function SceneSelector() {
       } else {
         const themes = querySnapshot.docs.map((doc) => {
           const data = doc.data();
-          console.log(`Theme ID: ${doc.id}, Name: ${data.Name}, topAreaName: ${data.topAreaName}, centerAreaName: ${data.centerAreaName}, bottomAreaName: ${data.bottomAreaName}`);
+          console.log(
+            `Theme ID: ${doc.id}, Name: ${data.Name}, topAreaName: ${data.topAreaName}, centerAreaName: ${data.centerAreaName}, bottomAreaName: ${data.bottomAreaName}`
+          );
           return {
             id: doc.id,
             name: data.Name,
@@ -48,17 +50,18 @@ function SceneSelector() {
     if (scene.clickable) {
       if (mode === "drawing") {
         navigate("/SceneAreaSelect", {
-          state: { selectedScene: scene.id, 
+          state: {
+            selectedScene: scene.id,
             imageUrl: scene.imageUrl,
-            themeName : scene.name,
+            themeName: scene.name,
             topAreaName: scene.topAreaName,
             centerAreaName: scene.centerAreaName,
-            bottomAreaName: scene.bottomAreaName, },
+            bottomAreaName: scene.bottomAreaName,
+          },
         });
       } else if (mode === "gallery") {
         navigate("/gallery", {
-          state: { selectedScene: scene.id, 
-            imageUrl: scene.imageUrl},
+          state: { selectedScene: scene.id, imageUrl: scene.imageUrl },
         });
       }
     }
@@ -120,7 +123,7 @@ function SceneSelector() {
     // textShadow: "2px 2px 4px rgba(0, 0, 0, 0.7)",
     zIndex: 2,
     pointerEvents: "none",
-    textAlign: "center"
+    textAlign: "center",
   };
 
   const overlayStyle = {
@@ -147,8 +150,16 @@ function SceneSelector() {
         padding: "20px",
       }}
     >
-  <div style={{ display: "flex", alignItems: "center", width: "100%", justifyContent: "space-between", marginBottom: "20px" }}>
-  <svg
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          width: "100%",
+          justifyContent: "space-between",
+          marginBottom: "20px",
+        }}
+      >
+        <svg
           onClick={handleBackClick}
           style={backButtonStyle}
           width="20"
@@ -162,10 +173,32 @@ function SceneSelector() {
             fill="black"
           />
         </svg>
-        {mode !== 'drawing' && <h1 style={{ fontWeight: 600, fontSize: "32px", margin: "0 auto", flexGrow: 1, textAlign: "center" }}>Gallery</h1>}
-        </div>
-      <h3 style={{ fontWeight: 500, fontSize: "24px", marginTop: "10px", marginLeft: "5px", textAlign: "center" }}>
-        {mode === 'drawing' ? 'Pick a theme to draw on!' : 'View your previous drawings'}
+        {mode !== "drawing" && (
+          <h1
+            style={{
+              fontWeight: 600,
+              fontSize: "32px",
+              margin: "0 auto",
+              flexGrow: 1,
+              textAlign: "center",
+            }}
+          >
+            Gallery
+          </h1>
+        )}
+      </div>
+      <h3
+        style={{
+          fontWeight: 500,
+          fontSize: "24px",
+          marginTop: "10px",
+          marginLeft: "5px",
+          textAlign: "center",
+        }}
+      >
+        {mode === "drawing"
+          ? "Pick a theme to draw on!"
+          : "View your previous drawings"}
       </h3>
       <div style={sceneGridStyle}>
         {scenes.map((scene) => (
