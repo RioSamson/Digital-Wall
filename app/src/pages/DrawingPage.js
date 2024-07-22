@@ -256,8 +256,8 @@ function DrawingPage() {
 
     const context = canvas.getContext("2d");
     if (mode === "eraser") {
-      context.globalCompositeOperation = "destination-out";
-      context.strokeStyle = "rgba(0,0,0,1)";
+      context.globalCompositeOperation = "source-over";
+      context.strokeStyle = "#F8F8F8";
     } else {
       context.globalCompositeOperation = "source-over";
       context.strokeStyle = selectedColor;
@@ -413,7 +413,7 @@ function DrawingPage() {
   };
 
   return (
-    <div className="DrawingPage">
+    <div className="DrawingPage" style={{ height: "100svh" }}>
       <TopToolbar
         onClear={() => {
           const canvas = canvasRef.current;
