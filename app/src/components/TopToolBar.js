@@ -24,7 +24,7 @@ const TopToolbar = ({
         <UploadButton handleUploadClick={handleUploadClick} />
       </div>
       <div className="centered-text">
-        <h2 style={{fontWeight:"normal"}}>{themeName}</h2>
+        <h2 style={{fontWeight:600, fontSize:"22px", textAlign: "center"}}>{themeName}</h2>
       </div>
     </div>
   );

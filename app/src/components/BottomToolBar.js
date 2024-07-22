@@ -6,18 +6,14 @@ import PopupMessage from "./PopupMessage";
 const BottomToolbar = ({
   setEraser,
   toggleColorPicker,
-  handleFill,
-  handleDescribeDrawing,
   mode,
   setMode,
-  showFillPopup,
   showColorPopup,
   showEraserPopup,
   colors,
   selectedColor,
   setColor,
   generateRandomColors,
-  floodFill,
   canvasRef,
   lineWidth,
   setWidth,
@@ -26,7 +22,7 @@ const BottomToolbar = ({
   centerAreaName,
   bottomAreaName,
 }) => {
-  const [svgBgColor, setSvgBgColor] = useState("white");
+  const [svgBgColor, setSvgBgColor] = useState("#F8F8F8");
   const [showPopup, setShowPopup] = useState(true);
 
   useEffect(() => {
@@ -37,7 +33,7 @@ const BottomToolbar = ({
   }, []);
 
   const handleQuestionMarkClick = () => {
-    setSvgBgColor((prevColor) => (prevColor === "white" ? "#FFD5A6" : "white"));
+    setSvgBgColor((prevColor) => (prevColor === "#F8F8F8" ? "#FFD5A6" : "#F8F8F8"));
     setShowPopup((prevShowPopup) => !prevShowPopup);
   };
 
@@ -47,20 +43,16 @@ const BottomToolbar = ({
         <Toolbox
           setEraser={setEraser}
           toggleColorPicker={toggleColorPicker}
-          handleFill={handleFill}
-          handleDescribeDrawing={handleDescribeDrawing}
           mode={mode}
           setMode={setMode}
         />
         <ColorPickerPopup
-          showFillPopup={showFillPopup}
           showColorPopup={showColorPopup}
           showEraserPopup={showEraserPopup}
           colors={colors}
           selectedColor={selectedColor}
           setColor={setColor}
           generateRandomColors={generateRandomColors}
-          floodFill={floodFill}
           canvasRef={canvasRef}
           lineWidth={lineWidth}
           setWidth={setWidth}

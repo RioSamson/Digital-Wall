@@ -55,7 +55,7 @@ function DrawingPage() {
 
   const handleClose = () => {
     setShowTextInput(false);
-  }
+  };
   const fetchAdminPrompt = async (themeId) => {
     const themeDocRef = doc(db, "Themes", themeId);
     const themeDoc = await getDoc(themeDocRef);
@@ -334,10 +334,7 @@ function DrawingPage() {
     };
 
     window.addEventListener("resize", handleResize);
-
-    // Initial resize
     handleResize();
-
     return () => {
       window.removeEventListener("resize", handleResize);
     };
@@ -366,7 +363,7 @@ function DrawingPage() {
       img.src = history[newIndex];
       img.onload = () => {
         context.clearRect(0, 0, canvas.width, canvas.height);
-        context.fillStyle = "white";
+        context.fillStyle = "#F8F8F8";
         context.fillRect(0, 0, canvas.width, canvas.height);
         context.globalCompositeOperation = "source-over";
         context.drawImage(img, 0, 0);
@@ -384,7 +381,7 @@ function DrawingPage() {
       img.src = history[newIndex];
       img.onload = () => {
         context.clearRect(0, 0, canvas.width, canvas.height);
-        context.fillStyle = "white";
+        context.fillStyle = "#F8F8F8";
         context.fillRect(0, 0, canvas.width, canvas.height);
         context.globalCompositeOperation = "source-over";
         context.drawImage(img, 0, 0);
@@ -404,77 +401,9 @@ function DrawingPage() {
     }
   }, [isPressed, saveHistory]);
 
-  //fill functionality
-  const floodFill = (x, y, fillColor) => {
-    const canvas = canvasRef.current;
-    const context = canvas.getContext("2d");
-    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-    const data = imageData.data;
-    console.log("this is inside flood fill");
-    const targetColor = getColorAtPixel(data, x, y);
-    if (colorsMatch(targetColor, fillColor)) {
-      console.log("inside colour match");
-      return;
-    }
-
-    const stack = [[x, y]];
-    while (stack.length > 0) {
-      console.log("stack length > 0");
-      const [cx, cy] = stack.pop();
-
-      if (cx < 0 || cy < 0 || cx >= canvas.width || cy >= canvas.height) {
-        continue;
-      }
-
-      setColorAtPixel(data, cx, cy, fillColor);
-      stack.push([cx + 1, cy]);
-      stack.push([cx - 1, cy]);
-      stack.push([cx, cy + 1]);
-      stack.push([cx, cy - 1]);
-    }
-
-    context.putImageData(imageData, 0, 0);
-    saveHistory(); // Save the state after filling
-  };
-
-  const getColorAtPixel = (data, x, y) => {
-    const index = (y * canvasRef.current.width + x) * 4;
-    return [data[index], data[index + 1], data[index + 2], data[index + 3]];
-  };
-
-  const setColorAtPixel = (data, x, y, color) => {
-    const index = (y * canvasRef.current.width + x) * 4;
-    data[index] = color[0];
-    data[index + 1] = color[1];
-    data[index + 2] = color[2];
-    data[index + 3] = color[3];
-  };
-
-  const colorsMatch = (color1, color2) => {
-    return (
-      color1[0] === color2[0] &&
-      color1[1] === color2[1] &&
-      color1[2] === color2[2] &&
-      color1[3] === color2[3]
-    );
-  };
-
-  const handleCanvasClick = (event) => {
-    if (mode === "fill") {
-      console.log("mode is fill");
-      // const canvas = canvasRef.current;
-      // const rect = canvas.getBoundingClientRect();
-      // const x = event.clientX - rect.left;
-      // const y = event.clientY - rect.top;
-      // const fillColor = hexToRGBA(selectedColor);
-
-      // floodFill(x, y, fillColor);
-    }
-  };
-
   const handleCancel = () => {
     setShowTextInput(false);
-    setEnhancedImage(null); // Hide the enhanced image
+    setEnhancedImage(null);
   };
 
   const handleNext = () => {
@@ -490,7 +419,7 @@ function DrawingPage() {
           const canvas = canvasRef.current;
           const context = canvas.getContext("2d");
           context.clearRect(0, 0, canvas.width, canvas.height);
-          context.fillStyle = "white"; // Set the background to white
+          context.fillStyle = "#F8F8F8";
           context.fillRect(0, 0, canvas.width, canvas.height);
           saveHistory();
         }}
@@ -501,7 +430,7 @@ function DrawingPage() {
         handleUploadClick={handleUploadClick}
         themeName={themeName}
       />
-      <div className="canvas-container" onClick={handleCanvasClick}>
+      <div className="canvas-container">
         <Canvas
           ref={canvasRef}
           colors={colors}
@@ -526,7 +455,6 @@ function DrawingPage() {
         selectedColor={selectedColor}
         setColor={setColor}
         generateRandomColors={generateRandomColors}
-        floodFill={floodFill}
         canvasRef={canvasRef}
         lineWidth={lineWidth}
         setWidth={setWidth}
