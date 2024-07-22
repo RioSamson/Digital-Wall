@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import videoSource from "./assets/Animation-Digitallab.mp4";
+import videoSource from "./assets/Animation-Digitallab_3.mp4";
 // import videoSource from "./assets/jellyfish.mp4";
 
 const App = () => {
@@ -18,7 +18,7 @@ const App = () => {
     <div
       style={{
         position: "relative",
-        width: "100vw",
+        width: "100svw",
         height: "100svh",
         overflow: "hidden",
         boxSizing: "border-box",
@@ -36,7 +36,6 @@ const App = () => {
           objectFit: "cover",
           top: 0,
           left: 0,
-          zIndex: -1,
         }}
       >
         <source src={videoSource} type="video/mp4" />
