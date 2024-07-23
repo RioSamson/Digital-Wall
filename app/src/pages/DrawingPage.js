@@ -56,6 +56,7 @@ function DrawingPage() {
   const handleClose = () => {
     setShowTextInput(false);
   };
+
   const fetchAdminPrompt = async (themeId) => {
     const themeDocRef = doc(db, "Themes", themeId);
     const themeDoc = await getDoc(themeDocRef);
@@ -75,27 +76,16 @@ function DrawingPage() {
     const adminPrompt = await fetchAdminPrompt(selectedScene); // Fetch the admin's prompt
     const combinedPrompt = `${inputText}, ${adminPrompt}`; // Concatenate user's prompt with admin's prompt
 
-    await uploadDrawing(combinedPrompt); // Pass the combined prompt to uploadDrawing
-    setIsUploading(false); // Set uploading state to false after upload completes
+    const enhancedImg = await enhanceDrawing(combinedPrompt); // Enhance the drawing with the combined prompt
+    if (enhancedImg) {
+      setEnhancedImage(enhancedImg); // Store the enhanced image
+    }
+    setIsUploading(false); // Set uploading state to false after enhancement completes
   };
 
-  const uploadDrawing = async (prompt) => {
+  const enhanceDrawing = async (prompt) => {
     const canvas = canvasRef.current;
     const base64Image = canvas.toDataURL("image/png");
-
-    const blob = await new Promise((resolve) =>
-      canvas.toBlob(resolve, "image/png")
-    );
-    if (!blob) return;
-
-    let originalUrl = "";
-    const uploadImage = async (path, imageBlob) => {
-      const storageReference = storageRef(storage, path);
-      const snapshot = await uploadBytes(storageReference, imageBlob);
-      return getDownloadURL(snapshot.ref);
-    };
-
-    originalUrl = await uploadImage(`drawing/original-${Date.now()}.png`, blob);
 
     const sendToBackend = async (base64Img, prompt) => {
       try {
@@ -124,10 +114,28 @@ function DrawingPage() {
       }
     };
 
-    const enhancedBase64 = await sendToBackend(base64Image, prompt);
-    if (!enhancedBase64) return;
+    return await sendToBackend(base64Image, prompt);
+  };
 
-    const enhancedBlob = await fetch(enhancedBase64)
+  const uploadDrawing = async () => {
+    const canvas = canvasRef.current;
+    const base64Image = canvas.toDataURL("image/png");
+
+    const blob = await new Promise((resolve) =>
+      canvas.toBlob(resolve, "image/png")
+    );
+    if (!blob) return;
+
+    let originalUrl = "";
+    const uploadImage = async (path, imageBlob) => {
+      const storageReference = storageRef(storage, path);
+      const snapshot = await uploadBytes(storageReference, imageBlob);
+      return getDownloadURL(snapshot.ref);
+    };
+
+    originalUrl = await uploadImage(`drawing/original-${Date.now()}.png`, blob);
+
+    const enhancedBlob = await fetch(enhancedImage)
       .then((res) => res.blob())
       .catch((error) => {
         console.error("Error converting base64 to Blob:", error);
@@ -165,11 +173,10 @@ function DrawingPage() {
 
     const docRef = await addDoc(drawingsCollection, drawingData);
     setDocId(docRef.id); // Store the document ID
-    setEnhancedImage(enhancedBase64); // Store the enhanced image
 
-    // navigate("/review", {
-    //   state: { docId: docRef.id },
-    // });
+    navigate("/review", {
+      state: { docId: docRef.id },
+    });
   };
 
   const generateRandomColors = () => {
@@ -406,10 +413,8 @@ function DrawingPage() {
     setEnhancedImage(null);
   };
 
-  const handleNext = () => {
-    navigate("/review", {
-      state: { docId: docId },
-    });
+  const handleNext = async () => {
+    await uploadDrawing();
   };
 
   return (
