@@ -84,7 +84,6 @@ function SceneSelector() {
     alignItems: "center",
     justifyContent: "center",
     cursor: "pointer",
-    // transition: "transform 0.3s ease",
     overflow: "hidden",
     borderRadius: "15px",
     width: "40vw",
@@ -119,7 +118,6 @@ function SceneSelector() {
     transform: "translate(-50%, -50%)",
     color: "white",
     fontSize: "6vw",
-    // fontWeight: 0,
     textShadow: "2px 2px 4px rgba(0, 0, 0, 0.7)",
     zIndex: 2,
     pointerEvents: "none",
@@ -142,6 +140,24 @@ function SceneSelector() {
     padding: "5px",
   };
 
+  const headerContainerStyle = {
+    position: "relative",
+    display: "flex",
+    alignItems: "center",
+    width: "100%",
+    justifyContent: "space-between",
+    marginBottom: "20px",
+  };
+
+  const galleryTextStyle = {
+    position: "absolute",
+    left: "50%",
+    transform: "translateX(-50%)",
+    fontWeight: 500,
+    fontSize: "40px",
+    textAlign: "center",
+  };
+
   return (
     <div
       style={{
@@ -150,19 +166,10 @@ function SceneSelector() {
         alignItems: "center",
         padding: "20px",
         height: "100svh",
-        // overflow: "scroll",
         boxSizing: "border-box",
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          width: "100%",
-          justifyContent: "space-between",
-          marginBottom: "20px",
-        }}
-      >
+      <div style={headerContainerStyle}>
         <svg
           onClick={handleBackClick}
           style={backButtonStyle}
@@ -177,19 +184,7 @@ function SceneSelector() {
             fill="black"
           />
         </svg>
-        {mode !== "drawing" && (
-          <h1
-            style={{
-              fontWeight: 500,
-              fontSize: "40px",
-              margin: "0 auto",
-              flexGrow: 1,
-              textAlign: "center",
-            }}
-          >
-            Gallery
-          </h1>
-        )}
+        {mode !== "drawing" && <h1 style={galleryTextStyle}>Gallery</h1>}
       </div>
       <h3
         style={{
