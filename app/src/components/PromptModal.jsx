@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 const PromptModal = ({
   showTextInput,
@@ -11,6 +11,13 @@ const PromptModal = ({
   handleNext,
   handleClose,
 }) => {
+  const [isNextDisabled, setIsNextDisabled] = useState(false);
+
+  const handleNextClick = () => {
+    setIsNextDisabled(true);
+    handleNext();
+  };
+
   return (
     showTextInput && (
       <div
@@ -61,17 +68,18 @@ const PromptModal = ({
                 Redo
               </button>
               <button
-                onClick={handleNext}
+                onClick={handleNextClick}
+                disabled={isNextDisabled}
                 style={{
                   width: "40%",
                   padding: "10px 20px",
                   margin: "10px",
                   borderRadius: "5px",
-                  backgroundColor: "black",
+                  backgroundColor: isNextDisabled ? "#ccc" : "black",
                   color: "white",
                   border: "none",
                   fontSize: "18px",
-                  cursor: "pointer",
+                  cursor: isNextDisabled ? "not-allowed" : "pointer",
                 }}
               >
                 Next
