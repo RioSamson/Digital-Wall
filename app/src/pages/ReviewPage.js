@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { db } from "../firebase/firebase";
-import { doc, getDoc } from "firebase/firestore";
-import Lottie from "lottie-react";
-import animationData from "../assets/paper-plane.json";
+import { db, auth } from "../firebase/firebase";
+import { doc, getDoc} from "firebase/firestore";
 
 function ReviewPage() {
   const location = useLocation();
@@ -13,8 +11,10 @@ function ReviewPage() {
   const [themeBackgroundImage, setThemeBackgroundImage] = useState(null);
   const [user, setUser] = useState(null);
 
+  const currentUser = auth.currentUser;
 
   useEffect(() => {
+    console.log("Current User:", currentUser);
     const fetchImages = async () => {
       if (docId) {
         try {
@@ -141,7 +141,7 @@ function ReviewPage() {
           alignItems: "center",
         }}
       >
-         {user && user.role !== "guest" && (
+         {currentUser && (
           <button
             onClick={handleNavigate}
             style={{
