@@ -24,6 +24,7 @@ function DisplayPage() {
   const [bottomDrawings, setBottomDrawings] = useState([]);
   const [coordinates, setCoordinates] = useState([]);
   const [readCount, setReadCount] = useState(0);
+  const [onlyReviewedDrawings, setOnlyReviewedDrawings] = useState(false);
   const containerRef = useRef(null);
   const drawingSize = 15;
 
@@ -42,6 +43,7 @@ function DisplayPage() {
           if (docSnap.exists()) {
             const data = docSnap.data();
             setCoordinates(data.coordinates || []);
+            setOnlyReviewedDrawings(data.onlyReviewedDrawings || false);
             incrementReadCount(1); // Counting the read for the scene document
             if (!backgroundImage) {
               setBackgroundImage(data.background_img);
@@ -72,29 +74,31 @@ function DisplayPage() {
           (coord) => coord.area === "bottom"
         );
 
-        console.log("Top coordinates: ", topCoords);
-        console.log("Center coordinates: ", centerCoords);
-        console.log("Bottom coordinates: ", bottomCoords);
+        const commonConditions = [
+          where("theme_id", "==", doc(db, "Themes", selectedScene)),
+          orderBy("created_at", "desc"),
+        ];
+
+        if (onlyReviewedDrawings) {
+          commonConditions.push(where("isReviewed", "==", true));
+        }
 
         const topDrawingsQuery = query(
           collection(db, "Drawings"),
           where("displayArea", "==", "top"),
-          where("theme_id", "==", doc(db, "Themes", selectedScene)),
-          orderBy("created_at", "desc"),
+          ...commonConditions,
           limit(topCoords.length)
         );
         const centerDrawingsQuery = query(
           collection(db, "Drawings"),
           where("displayArea", "==", "center"),
-          where("theme_id", "==", doc(db, "Themes", selectedScene)),
-          orderBy("created_at", "desc"),
+          ...commonConditions,
           limit(centerCoords.length)
         );
         const bottomDrawingsQuery = query(
           collection(db, "Drawings"),
           where("displayArea", "==", "bottom"),
-          where("theme_id", "==", doc(db, "Themes", selectedScene)),
-          orderBy("created_at", "desc"),
+          ...commonConditions,
           limit(bottomCoords.length)
         );
 
@@ -146,7 +150,7 @@ function DisplayPage() {
     };
 
     fetchDrawings();
-  }, [coordinates, selectedScene]);
+  }, [coordinates, selectedScene, onlyReviewedDrawings]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -178,10 +182,18 @@ function DisplayPage() {
   useEffect(() => {
     if (!selectedScene) return;
 
+    const commonConditions = [
+      where("theme_id", "==", doc(db, "Themes", selectedScene)),
+      orderBy("created_at", "desc"),
+    ];
+
+    if (onlyReviewedDrawings) {
+      commonConditions.push(where("isReviewed", "==", true));
+    }
+
     const newDrawingsQuery = query(
       collection(db, "Drawings"),
-      where("theme_id", "==", doc(db, "Themes", selectedScene)),
-      orderBy("created_at", "desc")
+      ...commonConditions
     );
 
     const unsubscribe = onSnapshot(newDrawingsQuery, (snapshot) => {
@@ -258,7 +270,7 @@ function DisplayPage() {
     });
 
     return () => unsubscribe();
-  }, [selectedScene, coordinates]);
+  }, [selectedScene, coordinates, onlyReviewedDrawings]);
 
   const renderDrawings = (drawings, areaCoords) => {
     return drawings.map((drawing, index) => {
