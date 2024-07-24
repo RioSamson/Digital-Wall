@@ -270,7 +270,7 @@ function DrawingPage() {
       context.strokeStyle = selectedColor;
     }
 
-    context.lineWidth = lineWidth;
+    context.lineWidth = lineWidth * 2.5;
     context.lineCap = "round";
     context.lineJoin = "round";
 
