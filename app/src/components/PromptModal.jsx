@@ -140,7 +140,6 @@ const PromptModal = ({
                   alignItems: "center",
                   display: "flex",
                   flexDirection: "column",
-                  alignItems: "center",
                   gap: "30px",
                 }}
               >
