@@ -361,13 +361,14 @@ function DrawingPage() {
   }, []);
 
   const undo = () => {
-    if (historyIndex > 0) {
-      const newIndex = historyIndex - 1;
+    if (historyIndexRef.current > 0) {
+      const newIndex = historyIndexRef.current - 1;
+      historyIndexRef.current = newIndex;
       setHistoryIndex(newIndex);
       const canvas = canvasRef.current;
       const context = canvas.getContext("2d");
       const img = new Image();
-      img.src = history[newIndex];
+      img.src = historyRef.current[newIndex];
       img.onload = () => {
         context.clearRect(0, 0, canvas.width, canvas.height);
         context.fillStyle = "#F8F8F8";
@@ -379,13 +380,14 @@ function DrawingPage() {
   };
 
   const redo = () => {
-    if (historyIndex < history.length - 1) {
-      const newIndex = historyIndex + 1;
+    if (historyIndexRef.current < historyRef.current.length - 1) {
+      const newIndex = historyIndexRef.current + 1;
+      historyIndexRef.current = newIndex;
       setHistoryIndex(newIndex);
       const canvas = canvasRef.current;
       const context = canvas.getContext("2d");
       const img = new Image();
-      img.src = history[newIndex];
+      img.src = historyRef.current[newIndex];
       img.onload = () => {
         context.clearRect(0, 0, canvas.width, canvas.height);
         context.fillStyle = "#F8F8F8";
