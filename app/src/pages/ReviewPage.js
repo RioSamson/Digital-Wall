@@ -9,7 +9,6 @@ function ReviewPage() {
   const { docId } = location.state || {};
   const [themeId, setThemeId] = useState(null);
   const [themeBackgroundImage, setThemeBackgroundImage] = useState(null);
-  const [user, setUser] = useState(null);
 
   const currentUser = auth.currentUser;
 
@@ -34,18 +33,7 @@ function ReviewPage() {
               setThemeBackgroundImage(themeData.background_img);
             } else {
               console.error("No such theme document!");
-            }
-
-            // Fetch user data
-            const userId = drawingData.user_id;
-            const userDocRef = doc(db, "Users", userId);
-            const userDoc = await getDoc(userDocRef);
-            if (userDoc.exists()) {
-              const userData = userDoc.data();
-              setUser(userData);
-            } else {
-              console.error("No such user document!");
-            }
+            } 
           } else {
             console.error("No such document!");
           }

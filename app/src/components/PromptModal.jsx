@@ -90,39 +90,42 @@ const PromptModal = ({
           <>
             <div
               style={{
-                position: "absolute",
-                top: "10px",
-                right: "10px",
-                cursor: "pointer",
-                fontSize: "24px",
-                color: "white",
-              }}
-              onClick={handleClose}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                width="24"
-                height="24"
-                fill="white"
-              >
-                <path d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11l4.89 4.89-4.89 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.41z" />
-              </svg>
-            </div>
-            <div
-              style={{
                 width: "90%",
                 maxWidth: "500px",
                 margin: "auto auto",
                 textAlign: "left",
+                position: "relative", // Add relative positioning
               }}
             >
+              <div
+                style={{
+                  position: "absolute",
+                  right: "15px",
+                  top: "-20px",
+                  cursor: "pointer",
+                  fontSize: "24px",
+                  color: "white",
+                  marginBottom: "25px"
+                }}
+                onClick={handleClose}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  height="24"
+                  fill="white"
+                >
+                  <path d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11l4.89 4.89-4.89 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.41z" />
+                </svg>
+              </div>
               <h2
                 style={{
                   marginBottom: "30px",
                   fontWeight: 500,
                   color: "white",
                   margin: "10px",
+                  padding: "0px"
                 }}
               >
                 Enter a prompt for AI to enhance your drawing:
@@ -147,7 +150,7 @@ const PromptModal = ({
                   placeholder="eg. an elephant with pink hat"
                   onChange={(e) => setInputText(e.target.value)}
                   style={{
-                    width: "90%",
+                    width: "85%",
                     borderRadius: "5px",
                     border: "none",
                     fontSize: "16px",
