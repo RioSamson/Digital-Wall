@@ -22,9 +22,6 @@ function SceneSelector() {
       } else {
         const themes = querySnapshot.docs.map((doc) => {
           const data = doc.data();
-          console.log(
-            `Theme ID: ${doc.id}, Name: ${data.Name}, topAreaName: ${data.topAreaName}, centerAreaName: ${data.centerAreaName}, bottomAreaName: ${data.bottomAreaName}`
-          );
           return {
             id: doc.id,
             name: data.Name,
@@ -67,42 +64,6 @@ function SceneSelector() {
     }
   };
 
-  const sceneGridStyle = {
-    display: "flex",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    gap: "3vw",
-    width: "100%",
-    maxWidth: "800px",
-    margin: "0 auto",
-    boxSizing: "border-box",
-  };
-
-  const sceneItemStyle = {
-    position: "relative",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    cursor: "pointer",
-    overflow: "hidden",
-    borderRadius: "15px",
-    width: "40vw",
-    height: "40vw",
-  };
-
-  const sceneImageStyle = {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-  };
-
-  const sceneItemHoverStyle = {
-    transform: "scale(1.05)",
-  };
-
   const handleMouseOver = (id) => {
     setHovered(id);
   };
@@ -111,68 +72,105 @@ function SceneSelector() {
     setHovered(null);
   };
 
-  const sceneNameStyle = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    color: "white",
-    fontSize: "6vw",
-    textShadow: "2px 2px 4px rgba(0, 0, 0, 0.7)",
-    zIndex: 2,
-    pointerEvents: "none",
-    textAlign: "center",
-  };
-
-  const overlayStyle = {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    zIndex: 1,
-  };
-
-  const backButtonStyle = {
-    cursor: "pointer",
-    margin: "5px",
-    padding: "5px",
-  };
-
-  const headerContainerStyle = {
-    position: "relative",
-    display: "flex",
-    alignItems: "center",
-    width: "100%",
-    justifyContent: "space-between",
-    marginBottom: "20px",
-  };
-
-  const galleryTextStyle = {
-    position: "absolute",
-    left: "50%",
-    transform: "translateX(-50%)",
-    fontWeight: 500,
-    fontSize: "40px",
-    textAlign: "center",
+  const styles = {
+    container: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      padding: "20px",
+      height: "100vh",
+      boxSizing: "border-box",
+    },
+    headerContainer: {
+      position: "relative",
+      display: "flex",
+      alignItems: "center",
+      width: "100%",
+      justifyContent: "space-between",
+      marginBottom: "10px",
+    },
+    backButton: {
+      cursor: "pointer",
+      margin: "5px",
+      padding: "5px",
+    },
+    galleryText: {
+      position: "absolute",
+      left: "50%",
+      transform: "translateX(-50%)",
+      fontWeight: 500,
+      fontSize: "40px",
+      textAlign: "center",
+    },
+    modeText: {
+      fontWeight: 500,
+      fontSize: "24px",
+      marginTop: "0",
+      marginBottom: "20px",
+      textAlign: "center",
+    },
+    sceneGrid: {
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
+      gap: "20px",
+      justifyContent: "center",
+      width: "100%",
+      maxWidth: "800px",
+      margin: "0 auto",
+      boxSizing: "border-box",
+      alignItems: "center",
+    },
+    sceneItem: {
+      position: "relative",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      cursor: "pointer",
+      overflow: "hidden",
+      borderRadius: "15px",
+      aspectRatio: "1 / 1",
+      transition: "transform 0.3s",
+    },
+    sceneItemHover: {
+      transform: "scale(1.05)",
+    },
+    sceneImage: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      objectFit: "cover",
+    },
+    sceneName: {
+      position: "absolute",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      color: "white",
+      fontSize: "1.5em",
+      textShadow: "2px 2px 4px rgba(0, 0, 0, 0.7)",
+      zIndex: 2,
+      pointerEvents: "none",
+      textAlign: "center",
+    },
+    overlay: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      backgroundColor: "rgba(0, 0, 0, 0.3)",
+      zIndex: 1,
+    },
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        padding: "20px",
-        height: "100svh",
-        boxSizing: "border-box",
-      }}
-    >
-      <div style={headerContainerStyle}>
+    <div style={styles.container}>
+      <div style={styles.headerContainer}>
         <svg
           onClick={handleBackClick}
-          style={backButtonStyle}
+          style={styles.backButton}
           width="27"
           height="50"
           viewBox="0 0 25 32"
@@ -184,40 +182,32 @@ function SceneSelector() {
             fill="black"
           />
         </svg>
-        {mode !== "drawing" && <h1 style={galleryTextStyle}>Gallery</h1>}
+        {mode !== "drawing" && <h1 style={styles.galleryText}>Gallery</h1>}
       </div>
-      <h3
-        style={{
-          fontWeight: 500,
-          fontSize: "24px",
-          marginTop: "10px",
-          marginLeft: "5px",
-          textAlign: "center",
-        }}
-      >
+      <h3 style={styles.modeText}>
         {mode === "drawing"
           ? "Pick a theme to draw on!"
           : "View your previous drawings"}
       </h3>
-      <div style={sceneGridStyle}>
+      <div style={styles.sceneGrid}>
         {scenes.map((scene) => (
           <div
             key={scene.id}
             style={{
-              ...sceneItemStyle,
-              ...(hovered === scene.id && sceneItemHoverStyle),
+              ...styles.sceneItem,
+              ...(hovered === scene.id && styles.sceneItemHover),
             }}
             onClick={() => handleSceneSelect(scene)}
             onMouseOver={() => handleMouseOver(scene.id)}
             onMouseOut={handleMouseOut}
           >
-            <div style={overlayStyle}></div>
+            <div style={styles.overlay}></div>
             <img
               src={scene.imageUrl}
               alt={scene.name}
-              style={sceneImageStyle}
+              style={styles.sceneImage}
             />
-            <div style={sceneNameStyle}>{scene.name}</div>
+            <div style={styles.sceneName}>{scene.name}</div>
           </div>
         ))}
       </div>
