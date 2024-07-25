@@ -1,7 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import videoSource from "./assets/Animation-Digitallab_3.mp4";
+// import videoSource from "./assets/Animation-Digitallab_3.mp4";
 // import videoSource from "./assets/jellyfish.mp4";
+import videoSource from "./assets/DigitalLabV3.mp4";
 
 const App = () => {
   const navigate = useNavigate();

@@ -68,14 +68,14 @@ function SceneSelector() {
   };
 
   const sceneGridStyle = {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
-    gap: "12px",
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    gap: "3vw",
     width: "100%",
     maxWidth: "800px",
-    margin: "0  auto",
-    justifyContent: "space-round",
-    padding: "0 20px",
+    margin: "0 auto",
+    boxSizing: "border-box",
   };
 
   const sceneItemStyle = {
@@ -84,11 +84,10 @@ function SceneSelector() {
     alignItems: "center",
     justifyContent: "center",
     cursor: "pointer",
-    transition: "transform 0.3s ease",
     overflow: "hidden",
-    borderRadius: "10px",
-    width: "150px",
-    height: "150px",
+    borderRadius: "15px",
+    width: "40vw",
+    height: "40vw",
   };
 
   const sceneImageStyle = {
@@ -118,9 +117,8 @@ function SceneSelector() {
     left: "50%",
     transform: "translate(-50%, -50%)",
     color: "white",
-    fontSize: "24px",
-    fontWeight: 600,
-    // textShadow: "2px 2px 4px rgba(0, 0, 0, 0.7)",
+    fontSize: "6vw",
+    textShadow: "2px 2px 4px rgba(0, 0, 0, 0.7)",
     zIndex: 2,
     pointerEvents: "none",
     textAlign: "center",
@@ -135,10 +133,29 @@ function SceneSelector() {
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     zIndex: 1,
   };
+
   const backButtonStyle = {
     cursor: "pointer",
     margin: "5px",
     padding: "5px",
+  };
+
+  const headerContainerStyle = {
+    position: "relative",
+    display: "flex",
+    alignItems: "center",
+    width: "100%",
+    justifyContent: "space-between",
+    marginBottom: "20px",
+  };
+
+  const galleryTextStyle = {
+    position: "absolute",
+    left: "50%",
+    transform: "translateX(-50%)",
+    fontWeight: 500,
+    fontSize: "40px",
+    textAlign: "center",
   };
 
   return (
@@ -148,22 +165,16 @@ function SceneSelector() {
         flexDirection: "column",
         alignItems: "center",
         padding: "20px",
+        height: "100svh",
+        boxSizing: "border-box",
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          width: "100%",
-          justifyContent: "space-between",
-          marginBottom: "20px",
-        }}
-      >
+      <div style={headerContainerStyle}>
         <svg
           onClick={handleBackClick}
           style={backButtonStyle}
-          width="20"
-          height="32"
+          width="27"
+          height="50"
           viewBox="0 0 25 32"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -173,19 +184,7 @@ function SceneSelector() {
             fill="black"
           />
         </svg>
-        {mode !== "drawing" && (
-          <h1
-            style={{
-              fontWeight: 600,
-              fontSize: "32px",
-              margin: "0 auto",
-              flexGrow: 1,
-              textAlign: "center",
-            }}
-          >
-            Gallery
-          </h1>
-        )}
+        {mode !== "drawing" && <h1 style={galleryTextStyle}>Gallery</h1>}
       </div>
       <h3
         style={{
