@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 // import videoSource from "./assets/Animation-Digitallab_3.mp4";
 // import videoSource from "./assets/jellyfish.mp4";
 import videoSource from "./assets/DigitalLabV3.mp4";
+import labLogo from "./assets/digitalLab.png";
 
 const App = () => {
   const navigate = useNavigate();
@@ -55,11 +56,23 @@ const App = () => {
           padding: "0 20px",
         }}
       >
+         <img
+          src={labLogo}
+          alt="Lab Logo"
+          style={{
+            position: "absolute",
+            top: "20px",
+            right: "20px",
+            width: "150px",
+            height: "auto",
+            zIndex: 2,
+          }}
+        />
         <div
           style={{
             position: "absolute",
-            top: "75%", // Position the buttons at 75% from the top
-            transform: "translateY(-50%)", // Center the buttons vertically
+            top: "75%", 
+            transform: "translateY(-50%)", 
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
