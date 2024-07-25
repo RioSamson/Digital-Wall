@@ -58,7 +58,7 @@ function DisplayPage() {
     };
 
     fetchScene();
-  }, []);
+  }, [selectedScene, backgroundImage]); // Added backgroundImage and selectedScene as dependencies
 
   useEffect(() => {
     const fetchDrawings = async () => {
