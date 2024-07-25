@@ -103,7 +103,7 @@ const PromptModal = ({
           </svg>
         </div>
   <div style={{ width: "90%", maxWidth: "500px", margin: "auto auto", textAlign: "left" }}>
-    <h2 style={{ marginBottom: "20px", fontWeight: "normal", color:"white"}}>
+    <h2 style={{ marginBottom: "30px", fontWeight: 500, color:"white", margin:"10px"}}>
       Enter a prompt for AI to enhance your drawing:
     </h2>
     <div

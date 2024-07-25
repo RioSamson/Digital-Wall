@@ -5,7 +5,7 @@ const ColorPicker = ({ colors, selectedColor, setColor, showColorPopup, generate
   if (!showColorPopup) return null;
 
   return (
-    <div className="colorPopup" style={{ display: "flex", flexDirection: "column", padding: "10px", background: "#fff", border: "none" }}>
+    <div className="colorPopup" style={{ display: "flex", flexDirection: "column", padding: "10px", background: "#fff", border: "none", width: "250px" }}>
       <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
         {colors.map((color) => (
           <button
