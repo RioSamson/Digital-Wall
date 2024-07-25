@@ -61,7 +61,7 @@ const LineWidthPicker = ({ setWidth, lineWidth, showLineWidthPopup }) => {
   if (!showLineWidthPopup) return null;
 
   return (
-    <div className="lineWidthPopup" style={{ display: "flex", flexDirection: "column", padding: "5px", background: "#fff", border: "none" }}>
+    <div className="lineWidthPopup" style={{ display: "flex", flexDirection: "column", padding: "10px", background: "#fff", border: "none", width: "250px"}}>
       <div style={{ marginTop: "5px", textAlign: "center" }}>
         <div style={{ display: "flex", justifyContent: "center" }}>
           <button onClick={() => setWidth(1)} style={{ background: lineWidth === 1 ? "#505050" : "white", border: "none", padding: "5px", borderRadius: "5px", width: "40px", height: "40px" }}>

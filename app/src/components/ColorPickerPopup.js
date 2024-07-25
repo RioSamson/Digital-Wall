@@ -17,7 +17,7 @@ const ColorPickerPopup = ({
 }) => {
   return (
     <>
-      {showFillPopup && (
+      {/* {showFillPopup && (
         <div className="popup">
           <ColorPicker
             colors={colors}
@@ -29,7 +29,7 @@ const ColorPickerPopup = ({
             canvasRef={canvasRef}
           />
         </div>
-      )}
+      )} */}
       {showColorPopup && (
         <div className="popup">
           <div className="color-picker-wrapper">
