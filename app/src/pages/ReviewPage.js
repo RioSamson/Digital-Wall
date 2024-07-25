@@ -9,7 +9,6 @@ function ReviewPage() {
   const { docId } = location.state || {};
   const [themeId, setThemeId] = useState(null);
   const [themeBackgroundImage, setThemeBackgroundImage] = useState(null);
-  const [user, setUser] = useState(null);
 
   const currentUser = auth.currentUser;
 
@@ -34,18 +33,7 @@ function ReviewPage() {
               setThemeBackgroundImage(themeData.background_img);
             } else {
               console.error("No such theme document!");
-            }
-
-            // Fetch user data
-            const userId = drawingData.user_id;
-            const userDocRef = doc(db, "Users", userId);
-            const userDoc = await getDoc(userDocRef);
-            if (userDoc.exists()) {
-              const userData = userDoc.data();
-              setUser(userData);
-            } else {
-              console.error("No such user document!");
-            }
+            } 
           } else {
             console.error("No such document!");
           }
@@ -61,6 +49,9 @@ function ReviewPage() {
   const handleNavigate = () => {
     navigate("/selection");
   };
+  const handleAcknowledge = ()=>{
+    navigate("/acknowledge")
+  }
 
   const handleViewDisplay = () => {
     if (themeId) {
@@ -80,7 +71,7 @@ function ReviewPage() {
         alignItems: "center",
         justifyContent: "center", 
         overflow: "hidden",
-        paddingTop: "15%"
+        paddingTop: "10%"
       }}
     >
       <h1
@@ -95,10 +86,10 @@ function ReviewPage() {
           justifyContent: "center",
           flex: 1,
           maxWidth: "100%",
-          paddingTop:"10%"
+          paddingTop:"5%"
         }}
       >
-        <svg width="390" height="300" viewBox="0 0 390 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width="390" height="280" viewBox="0 0 390 300" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <g clip-path="url(#clip0_568_11570)">
                   <path d="M361.432 124.226C363.422 124.02 365.087 122.445 365.3 120.381C365.554 118.13 363.997 116.035 361.761 115.627L97.7004 67.3854C96.7377 67.2108 95.7792 67.371 94.9091 67.7964L26.9864 103.362C25.2526 104.273 24.3308 106.258 24.7719 108.163C25.2161 110.099 26.8827 111.481 28.8403 111.552L360.826 124.258C361.037 124.237 361.251 124.245 361.432 124.226ZM97.6082 76.2039L300.298 113.245L45.438 103.523L97.5781 76.2071L97.6082 76.2039Z" fill="#F3801F"/>
                   <path d="M364.346 122.644C365.944 122.479 367.388 121.415 367.985 119.829C368.771 117.705 367.791 115.307 365.713 114.364L174.209 26.7549C172.898 26.1592 171.385 26.255 170.181 26.9893L133.662 48.9081C132.169 49.7942 131.37 51.4925 131.578 53.2083C131.786 54.9242 133.031 56.3498 134.694 56.8176L362.687 122.511C363.251 122.666 363.803 122.701 364.346 122.644Z" fill="#F3801F"/>
@@ -180,6 +171,7 @@ function ReviewPage() {
             alignItems: "center",
             justifyContent: "center", 
             gap: "8px", 
+            marginBottom: "30px"
           }}>
             View Live Display
             <svg width="27" height="20" viewBox="0 0 27 26" fill="none" xmlns="http://www.w3.org/2000/svg"  stroke="black" strokeWidth="1.5">
@@ -187,6 +179,25 @@ function ReviewPage() {
             <path d="M23.7143 1.85712L16.2857 1.85712C16.0395 1.85712 15.8033 1.95495 15.6291 2.12909C15.455 2.30323 15.3572 2.53942 15.3572 2.78569C15.3572 3.03196 15.455 3.26815 15.6291 3.44229C15.8033 3.61643 16.0395 3.71426 16.2857 3.71426L21.4727 3.71426L11.915 13.272C11.8263 13.3577 11.7555 13.4602 11.7069 13.5735C11.6582 13.6867 11.6326 13.8086 11.6315 13.9319C11.6304 14.0552 11.6539 14.1775 11.7006 14.2916C11.7473 14.4057 11.8163 14.5094 11.9034 14.5966C11.9906 14.6837 12.0943 14.7527 12.2084 14.7994C12.3225 14.8461 12.4448 14.8696 12.5681 14.8685C12.6914 14.8674 12.8133 14.8418 12.9265 14.7931C13.0398 14.7445 13.1423 14.6737 13.228 14.585L22.7857 5.02726L22.7857 10.2143C22.7857 10.4605 22.8836 10.6967 23.0577 10.8709C23.2319 11.045 23.468 11.1428 23.7143 11.1428C23.9606 11.1428 24.1968 11.045 24.3709 10.8709C24.5451 10.6967 24.6429 10.4605 24.6429 10.2143L24.6429 2.78569C24.6429 2.53942 24.5451 2.30323 24.3709 2.12909C24.1968 1.95495 23.9606 1.85712 23.7143 1.85712Z" fill="black"/>
             </svg>
         </button>
+        <span
+        onClick={handleAcknowledge}
+        style={{
+          margin: "10px",
+          width: "320px",
+          fontSize: "16px",
+          fontWeight: 600,
+          backgroundColor: "#F8F8F8",
+          color: "black",
+          border: "none",
+          cursor: "pointer",
+          padding: "12 116px",
+          display: "flex", 
+          alignItems: "center",
+          justifyContent: "center", 
+          gap: "8px", 
+          marginBottom: "30px",
+          textDecoration: "underline",
+        }}> Acknowledgement</span>
       </div>
     </div>
   );

@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { doSignInWithEmailAndPassword, doCreateUserWithEmailAndPassword } from '../firebase/auth';
-import { useAuth } from '../contexts/authContext';
+import { doSignInWithEmailAndPassword } from '../firebase/auth';
 import { doc, updateDoc, getFirestore, serverTimestamp } from "firebase/firestore";
 
 export default function LoginPage() {
-  const { userLoggedIn } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSigningIn, setIsSigningIn] = useState(false);
