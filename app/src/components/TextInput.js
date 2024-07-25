@@ -24,11 +24,11 @@ const TextInput = ({
         type="text"
         value={inputText}
         onChange={(e) => setInputText(e.target.value)}
-        style={{ width: "200px", height: "30px", color: "black" }} // Adjust text color for visibility
+        style={{ width: "200px", height: "30px", color: "black" }} 
       />
       <button
         onClick={handleTextSubmit}
-        style={{ width: "80px", height: "40px" }} // Adjust button size for better appearance
+        style={{ width: "80px", height: "40px" }} 
       >
         {buttonLabel}
       </button>

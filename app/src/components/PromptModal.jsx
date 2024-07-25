@@ -119,9 +119,10 @@ const PromptModal = ({
             >
               <h2
                 style={{
-                  marginBottom: "20px",
-                  fontWeight: "normal",
+                  marginBottom: "30px",
+                  fontWeight: 500,
                   color: "white",
+                  margin: "10px",
                 }}
               >
                 Enter a prompt for AI to enhance your drawing:

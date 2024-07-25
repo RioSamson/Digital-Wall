@@ -22,7 +22,7 @@ function EmailVerificationPage() {
         onClick={handleLogin}
         style={{ ...styles.button, ...styles.loginButton }}
       >
-        Click to login
+        Login
       </button>
       <button
         onClick={handleRegister}
@@ -47,34 +47,37 @@ const styles = {
     position: 'relative',
   },
   heading: {
-    fontSize: '1.8rem',
-    margin: '1rem 0',
-    fontWeight: 'normal', 
+    fontSize: '32px',
+    margin: '18px 0',
+    fontWeight: 600, 
   },
   messageContainer: {
-    margin: '1rem 0',
+    marginTop: '10px',
+    marginBottom: "100px"
   },
   message: {
-    fontSize: '1rem',
+    fontSize: '16px',
+    fontWeight: 500,
   },
   button: {
-    margin: '1rem',
-    padding: '0.75rem 2rem',
-    fontSize: '1rem',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    width: '80%',
-    maxWidth: '300px',
+      
+      width: '320px',
+      height: '56px',
+      color: 'white',
+      border: 'none',
+      borderRadius: '10px',
+      fontSize: '24px',
+      boxSizing: 'border-box',
+      margin: '10px'
   },
   loginButton: {
-    backgroundColor: 'black',
-    color: 'white',
-    border: 'none',
+      padding: '12px 116px',
+      backgroundColor: 'black',
+      color: 'white',
   },
   registerButton: {
-    backgroundColor: 'white',
-    color: 'black',
-    border: '2px solid black',
+      backgroundColor: "#F8F8F8",
+      color: "black",
   },
 };
 
