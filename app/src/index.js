@@ -16,6 +16,7 @@ import DrawOrGalleryPage from "./pages/DrawOrGalleryPage";
 import DisplayPage from "./pages/DisplayPage";
 import EmailVerification from "./pages/EmailVerificationPage";
 import MyDrawingPage from "./pages/MyDrawingPage";
+import AcknowledgePage from "./pages/AcknowledgePage";
 
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -36,6 +37,7 @@ root.render(
           <Route path="display" element={<DisplayPage />} />
           <Route path="verification" element={<EmailVerification />} />
           <Route path="myDrawing" element={<MyDrawingPage />} />
+          <Route path="acknowledge" element={<AcknowledgePage />} />
         </Routes>
       </Router>
     </AuthProvider>
