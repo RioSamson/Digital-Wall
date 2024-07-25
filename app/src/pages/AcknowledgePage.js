@@ -30,14 +30,131 @@ function AcknowledgePage() {
           <ellipse cx="208.234" cy="36.3179" rx="54.857" ry="50.7719" transform="rotate(12.5958 208.234 36.3179)" fill="#FFD5A6"/>
         </svg>
       </div>
-      <div
+      <h2 style={{
+          fontSize: "32px",
+          fontWeight: 600,
+        }}>Acknowledgement</h2>
+        <span style={{
+          fontSize: "11px",
+          fontWeight: 400,
+          marginTop: "0px",
+          marginBottom: "25px",
+          marginLeft: "20px",
+          marginRight: "20px",          zIndex: 20,
+          padding: "10px",
+          borderRadius: "5px",
+          textAlign:"left",
+        }}>
+        Artspark was developed through a collaborative partnership between students of the Masters in Digital Media at the Centre for Digital Media, and the Digital Lab at BC Children’s Hospital. We acknowledge the dedication and expertise of all those involved, whose contributions have been vital to success. Our heartfelt thanks go to the following teams and individuals for their instrumental roles in bringing this project to life.
+        </span>
+        <h2 style={{
+          fontSize: "11px",
+          fontWeight: 700,
+          marginTop: "0px",
+          marginBottom: "0px",
+          marginLeft: "20px",
+          marginRight: "20px",
+          zIndex: 20,
+          padding: "10px",
+          paddingTop: "5px",
+          borderRadius: "5px",
+          textAlign:"left",
+          alignSelf: "flex-start"
+        }}>Subject Matter Experts</h2>
+        <span style={{
+          fontSize: "11px",
+          fontWeight: 400,
+          marginTop: "0px",
+          marginBottom: "25px",
+          marginLeft: "20px",
+          marginRight: "20px",
+          zIndex: 20,
+          padding: "10px",
+          paddingTop: "0px",
+          borderRadius: "5px",
+          textAlign:"left",
+          alignSelf: "flex-start"
+
+        }}>
+        Dr. John Jacob, PhD, MSc, MBA<br />
+        Head, Digital Lab, BC Children’s Hospital<br /><br />
+        Dr. Sima Zakani, PhD<br />
+        Associate Director, Digital Lab<br /><br />
+        Jenny Huang, MHA<br />
+        Project Manager, Digital Lab
+        </span>
+        <h2 style={{
+          fontSize: "11px",
+          fontWeight: 700,
+          marginTop: "0px",
+          marginBottom: "5px",
+          marginLeft: "20px",
+          marginRight: "20px",
+          zIndex: 20,
+          padding: "10px",
+          paddingTop: "0px",
+          borderRadius: "5px",
+          textAlign:"left",
+          alignSelf: "flex-start"
+        }}>Digital Lab at BC Children’s Hospital</h2>
+        <span style={{
+          fontSize: "11px",
+          fontWeight: 400,
+          marginTop: "0px",
+          marginBottom: "25px",
+          marginLeft: "20px",
+          marginRight: "20px",
+          zIndex: 20,
+          padding: "10px",
+          paddingTop: "0px",
+          borderRadius: "5px",
+          textAlign:"left",
+          alignSelf: "flex-start"
+
+        }}>
+        The Digital Lab is an integrated unit of BC Children’s Hospital and the University of British Columbia’s. The aim of the Lab is to improve health outcomes and the delivery of health services through digital innovation and technology.
+        </span>
+        <h2 style={{
+          fontSize: "11px",
+          fontWeight: 700,
+          marginTop: "0px",
+          marginBottom: "0px",
+          marginLeft: "20px",
+          marginRight: "20px",
+          zIndex: 20,
+          padding: "10px",
+          paddingTop: "5px",
+          borderRadius: "5px",
+          textAlign:"left",
+          alignSelf: "flex-start"
+        }}>Technical Project Team</h2>
+        <span style={{
+          fontSize: "11px",
+          fontWeight: 400,
+          marginTop: "0px",
+          marginBottom: "100px",
+          marginLeft: "20px",
+          marginRight: "20px",
+          zIndex: 20,
+          padding: "10px",
+          paddingTop: "0px",
+          borderRadius: "5px",
+          textAlign:"left",
+          alignSelf: "flex-start"
+
+        }}>
+        Advisor: Bill Zhao<br />
+        Team: Carol Tseng, Nicole Gao, Qianhui Qin, Rio Samson, Sadaf Ahmadi, Zoe Lu<br /><br />
+        </span>
+
+        <div
         style={{
           position: "absolute",
-          bottom: "-3500%",
+          bottom: "0",
           left: 0,
           width: "auto",
           height: "auto",
-          zIndex: 10, // Ensure it's on top
+          zIndex: 10, 
         }}
       >
         <svg
@@ -54,7 +171,6 @@ function AcknowledgePage() {
           />
         </svg>
       </div>
-      <span>Hi</span>
     </div>
   );
 }
