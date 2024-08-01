@@ -69,18 +69,23 @@ function DrawingPage() {
   };
 
   const handleTextSubmit = async () => {
-    setIsUploading(true); // Set uploading state to true
+    // Set uploading state to true
+    setIsUploading(true);
 
     console.log("User's input:", inputText);
 
-    const adminPrompt = await fetchAdminPrompt(selectedScene); // Fetch the admin's prompt
-    const combinedPrompt = `${inputText}, ${adminPrompt}`; // Concatenate user's prompt with admin's prompt
+    // Fetch the admin's prompt
+    const adminPrompt = await fetchAdminPrompt(selectedScene);
+    // Concatenate user's prompt with admin's prompt
+    const combinedPrompt = `${inputText}, ${adminPrompt}`;
 
-    const enhancedImg = await enhanceDrawing(combinedPrompt); // Enhance the drawing with the combined prompt
+    // Enhance the drawing with the combined prompt
+    const enhancedImg = await enhanceDrawing(combinedPrompt);
     if (enhancedImg) {
       setEnhancedImage(enhancedImg); // Store the enhanced image
     }
-    setIsUploading(false); // Set uploading state to false after enhancement completes
+    // Set uploading state to false after enhancement completes
+    setIsUploading(false);
   };
 
   const enhanceDrawing = async (prompt) => {

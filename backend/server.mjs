@@ -7,7 +7,7 @@ import { config } from "dotenv";
 config();
 
 const app = express();
-const PORT = process.env.PORT || 8080; // Ensure it uses the port from .env
+const PORT = process.env.PORT || 8080;
 
 app.use(cors());
 app.use(express.json());
@@ -19,7 +19,7 @@ app.get("/api/test", (req, res) => {
 app.post("/api/enhance", async (req, res) => {
   const { base64Img, prompt } = req.body;
 
-  const url = "https://app.baseten.co/model_versions/q48rmd3/predict"; // Replace with your Baseten endpoint
+  const url = "https://app.baseten.co/model_versions/q48rmd3/predict";
   const headers = {
     Authorization: "Api-Key 13235osK.AVglR2jVhzMHR1txMuFJCD49TEmV6FXY",
     "Content-Type": "application/json",
@@ -27,7 +27,7 @@ app.post("/api/enhance", async (req, res) => {
 
   const imageData = base64Img.split(",")[1];
   const data = {
-    prompt: prompt || "a polarbear", // Use the prompt passed to this function
+    prompt: prompt || "a polarbear",
     images_data: imageData,
     guidance_scale: 8,
     lcm_steps: 50,
