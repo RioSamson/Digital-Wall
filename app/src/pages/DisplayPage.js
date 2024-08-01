@@ -58,7 +58,7 @@ function DisplayPage() {
     };
 
     fetchScene();
-  }, [selectedScene, backgroundImage]); // Added backgroundImage and selectedScene as dependencies
+  }, [selectedScene, backgroundImage]);
 
   useEffect(() => {
     const fetchDrawings = async () => {
@@ -167,7 +167,7 @@ function DisplayPage() {
       }
     };
 
-    handleResize(); // Initial call
+    handleResize();
     window.addEventListener("resize", handleResize);
 
     return () => {
