@@ -1,8 +1,31 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Toolbox from "./Toolbox";
 import ColorPickerPopup from "./ColorPickerPopup";
 import PopupMessage from "./PopupMessage";
 
+/**
+ * BottomToolbar component
+ * 
+ * This component renders the bottom toolbar containing tools and settings for the drawing canvas.
+ * 
+ * @param {function} setEraser - Function to set the eraser mode
+ * @param {function} toggleColorPicker - Function to toggle the color picker
+ * @param {string} mode - Current mode (e.g., "pencil", "eraser")
+ * @param {function} setMode - Function to set the current mode
+ * @param {boolean} showColorPopup - Flag to show/hide the color picker popup
+ * @param {boolean} showEraserPopup - Flag to show/hide the eraser popup
+ * @param {Array} colors - Array of available colors
+ * @param {string} selectedColor - Currently selected color
+ * @param {function} setColor - Function to set the selected color
+ * @param {function} generateRandomColors - Function to generate random colors
+ * @param {object} canvasRef - Reference to the canvas element
+ * @param {number} lineWidth - Current line width
+ * @param {function} setWidth - Function to set the line width
+ * @param {string} area - Current drawing area
+ * @param {string} topAreaName - Name of the top area
+ * @param {string} centerAreaName - Name of the center area
+ * @param {string} bottomAreaName - Name of the bottom area
+ */
 const BottomToolbar = ({
   setEraser,
   toggleColorPicker,

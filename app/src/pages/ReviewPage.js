@@ -2,6 +2,18 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { db, auth } from "../firebase/firebase";
 import { doc, getDoc} from "firebase/firestore";
+/**
+ * ReviewPage component
+ * 
+ * This component displays a review page with options to view the live display
+ * of a drawing, go to the home page, and acknowledge contributors.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <ReviewPage />
+ * )
+ */
 
 function ReviewPage() {
   const location = useLocation();
@@ -12,6 +24,9 @@ function ReviewPage() {
 
   const currentUser = auth.currentUser;
 
+  /**
+   * useEffect hook to fetch theme details based on the document ID.
+   */
   useEffect(() => {
     console.log("Current User:", currentUser);
     const fetchImages = async () => {
@@ -46,13 +61,21 @@ function ReviewPage() {
     fetchImages();
   }, [docId]);
 
+  /**
+   * Navigate to the home selection page.
+   */
   const handleNavigate = () => {
     navigate("/selection");
   };
+    /**
+   * Navigate to the acknowledgment page.
+   */
   const handleAcknowledge = ()=>{
     navigate("/acknowledge")
   }
-
+  /**
+   * Navigate to the display page for the selected theme.
+   */
   const handleViewDisplay = () => {
     if (themeId) {
       navigate(`/display?theme=${themeId}`, {

@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 
 const Canvas = React.forwardRef(({ colors, selectedColor, lineWidth, mode, setIsPressed, updateDraw }, ref) => {
+  
+    // Set up the canvas dimensions and initial drawing context
   useEffect(() => {
     const canvas = ref.current;
     canvas.width = window.innerWidth;
@@ -19,6 +21,7 @@ const Canvas = React.forwardRef(({ colors, selectedColor, lineWidth, mode, setIs
     clearCanvas();
   }, [colors, ref]);
 
+  // Prevent default touch actions to enable drawing on mobile devices
   useEffect(() => {
     const canvas = ref.current;
     const preventDefault = (e) => e.preventDefault();

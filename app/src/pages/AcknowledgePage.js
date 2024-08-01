@@ -1,5 +1,18 @@
 import React from "react";
 
+/**
+ * AcknowledgePage component
+ * 
+ * This component renders an acknowledgement page with a specific layout and styling. 
+ * It includes SVG graphics and multiple sections of text acknowledging various teams 
+ * and individuals involved in the project.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <AcknowledgePage />
+ * )
+ */
 function AcknowledgePage() {
   return (
     <div
@@ -16,6 +29,7 @@ function AcknowledgePage() {
         position: "relative",
       }}
     >
+      {/* Top right SVG graphic */}
       <div
         style={{
           position: "absolute",
@@ -57,6 +71,8 @@ function AcknowledgePage() {
           />
         </svg>
       </div>
+
+      {/* Acknowledgement heading */}
       <h2
         style={{
           fontSize: "32px",
@@ -65,6 +81,8 @@ function AcknowledgePage() {
       >
         Acknowledgement
       </h2>
+
+      {/* Acknowledgement text */}
       <span
         style={{
           fontSize: "11px",
@@ -87,6 +105,8 @@ function AcknowledgePage() {
         and individuals for their instrumental roles in bringing this project to
         life.
       </span>
+
+      {/* Subject Matter Experts heading */}
       <h2
         style={{
           fontSize: "11px",
@@ -105,6 +125,8 @@ function AcknowledgePage() {
       >
         Subject Matter Experts
       </h2>
+
+      {/* Subject Matter Experts list */}
       <span
         style={{
           fontSize: "11px",
@@ -135,6 +157,8 @@ function AcknowledgePage() {
         <br />
         Project Manager, Digital Lab
       </span>
+
+      {/* Digital Lab heading */}
       <h2
         style={{
           fontSize: "11px",
@@ -153,6 +177,8 @@ function AcknowledgePage() {
       >
         Digital Lab at BC Children’s Hospital
       </h2>
+
+      {/* Digital Lab description */}
       <span
         style={{
           fontSize: "11px",
@@ -174,6 +200,8 @@ function AcknowledgePage() {
         health outcomes and the delivery of health services through digital
         innovation and technology.
       </span>
+
+      {/* Technical Project Team heading */}
       <h2
         style={{
           fontSize: "11px",
@@ -192,6 +220,8 @@ function AcknowledgePage() {
       >
         Technical Project Team
       </h2>
+
+      {/* Technical Project Team members */}
       <span
         style={{
           fontSize: "11px",
@@ -216,6 +246,7 @@ function AcknowledgePage() {
         <br />
       </span>
 
+      {/* Bottom left SVG graphic */}
       <div
         style={{
           position: "absolute",

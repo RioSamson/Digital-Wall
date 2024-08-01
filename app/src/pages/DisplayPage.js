@@ -13,6 +13,19 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 
+/**
+ * DisplayPage component
+ * 
+ * This component is responsible for displaying a page with a background image and 
+ * dynamically fetched drawings from a Firestore database. The drawings are categorized 
+ * into top, center, and bottom areas and displayed accordingly.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <DisplayPage />
+ * )
+ */
 function DisplayPage() {
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -28,6 +41,11 @@ function DisplayPage() {
   const containerRef = useRef(null);
   const drawingSize = 15;
 
+  /**
+   * Increments the read count by a specified amount.
+   * 
+   * @param {number} count - The number to increment the read count by.
+   */
   const incrementReadCount = (count) => {
     setReadCount((prevCount) => prevCount + count);
   };
@@ -272,6 +290,13 @@ function DisplayPage() {
     return () => unsubscribe();
   }, [selectedScene, coordinates, onlyReviewedDrawings]);
 
+  /**
+   * Renders drawings at specified coordinates.
+   * 
+   * @param {Array} drawings - The list of drawings to be displayed.
+   * @param {Array} areaCoords - The coordinates for the area where the drawings should be displayed.
+   * @returns {Array} - The rendered drawings as an array of JSX elements.
+   */
   const renderDrawings = (drawings, areaCoords) => {
     return drawings.map((drawing, index) => {
       const coord = areaCoords[index];

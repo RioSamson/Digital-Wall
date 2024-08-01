@@ -3,6 +3,18 @@ import { useNavigate, Link } from 'react-router-dom';
 import { doSignInWithEmailAndPassword } from '../firebase/auth';
 import { doc, updateDoc, getFirestore, serverTimestamp } from "firebase/firestore";
 
+/**
+ * LoginPage component
+ * 
+ * This component provides a login form for users to sign in with their email and password.
+ * It also includes navigation to the registration page for new users.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <LoginPage />
+ * )
+ */
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -11,6 +23,9 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const db = getFirestore(); 
 
+  /**
+   * Handles user login
+   */
   const handleLogin = async () => {
     if (!isSigningIn) {
       setIsSigningIn(true);
@@ -29,6 +44,9 @@ export default function LoginPage() {
     }
   };
 
+  /**
+   * Styles for the LoginPage component
+   */
   const styles = {
     container: {
       display: 'flex',
@@ -95,23 +113,24 @@ export default function LoginPage() {
   return (
     <div style={styles.container}>
       <h2 style={styles.h2}>
-        <span style={styles.highlight}>Welcome!</span><span style={styles.newline}> Glad to see you</span>
+        <span style={styles.highlight}>Welcome!</span>
+        <span style={styles.newline}> Glad to see you</span>
       </h2>
       <div style={styles.inputContainer}>
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        style={styles.input}
-      />
-      <input
-        type="password"
-        placeholder="Enter your password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        style={styles.input}
-      />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          style={styles.input}
+        />
+        <input
+          type="password"
+          placeholder="Enter your password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          style={styles.input}
+        />
       </div>
       
       {errorMessage && (
@@ -127,7 +146,7 @@ export default function LoginPage() {
         Login
       </button>
       <div style={{ marginTop: '70px' }}>
-        <span style={{fontSize: '16px', fontWeight:400}}>Don't have an account?</span>
+        <span style={{fontSize: '16px', fontWeight: 400}}>Don't have an account?</span>
         <Link to="/register" style={styles.link}>Create Account</Link>
       </div>
     </div>

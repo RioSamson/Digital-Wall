@@ -14,6 +14,19 @@ import BottomToolbar from "../components/BottomToolBar";
 import LoadingScreen from "../components/Loading";
 import "./DrawingPage.css";
 
+/**
+ * DrawingPage component
+ * 
+ * This component renders a drawing canvas with various tools and functionalities,
+ * including color selection, erasing, filling, and the ability to describe and
+ * enhance the drawing. The enhanced drawing can be uploaded and stored in Firebase.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <DrawingPage />
+ * )
+ */
 function DrawingPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -49,14 +62,26 @@ function DrawingPage() {
   const [enhancedImage, setEnhancedImage] = useState(null);
   const [docId, setDocId] = useState(null);
 
+  /**
+   * Shows the text input for describing the drawing
+   */
   const handleUploadClick = () => {
     setShowTextInput(true);
   };
 
+  /**
+   * Closes the text input modal
+   */
   const handleClose = () => {
     setShowTextInput(false);
   };
 
+  /**
+   * Fetches the admin prompt for the selected theme
+   * 
+   * @param {string} themeId - The ID of the selected theme
+   * @returns {Promise<string>} - The admin's prompt for the theme
+   */
   const fetchAdminPrompt = async (themeId) => {
     const themeDocRef = doc(db, "Themes", themeId);
     const themeDoc = await getDoc(themeDocRef);
@@ -68,6 +93,9 @@ function DrawingPage() {
     }
   };
 
+  /**
+   * Handles the submission of the user's description text
+   */
   const handleTextSubmit = async () => {
     // Set uploading state to true
     setIsUploading(true);
@@ -88,6 +116,12 @@ function DrawingPage() {
     setIsUploading(false);
   };
 
+  /**
+   * Enhances the drawing based on the provided prompt
+   * 
+   * @param {string} prompt - The combined prompt of the user and admin
+   * @returns {Promise<string|null>} - The URL of the enhanced image
+   */
   const enhanceDrawing = async (prompt) => {
     const canvas = canvasRef.current;
     const base64Image = canvas.toDataURL("image/png");
@@ -122,6 +156,9 @@ function DrawingPage() {
     return await sendToBackend(base64Image, prompt);
   };
 
+  /**
+   * Uploads the original and enhanced drawings to Firebase Storage and Firestore
+   */
   const uploadDrawing = async () => {
     const canvas = canvasRef.current;
     const base64Image = canvas.toDataURL("image/png");
@@ -184,6 +221,9 @@ function DrawingPage() {
     });
   };
 
+  /**
+   * Generates an array of random colors
+   */
   const generateRandomColors = () => {
     const canvas = canvasRef.current;
     const currentDrawing = canvas.toDataURL();
@@ -228,6 +268,13 @@ function DrawingPage() {
     };
   };
 
+  /**
+   * Checks if two colors are similar
+   * 
+   * @param {string} color1 - The first color in hex format
+   * @param {string} color2 - The second color in hex format
+   * @returns {boolean} - True if colors are similar, false otherwise
+   */
   const isColorSimilar = (color1, color2) => {
     const rgb1 = hexToRgb(color1);
     const rgb2 = hexToRgb(color2);
@@ -240,7 +287,12 @@ function DrawingPage() {
     );
   };
 
-  // Function to convert hex color to RGB
+  /**
+   * Converts hex color to RGB
+   * 
+   * @param {string} hex - The color in hex format
+   * @returns {Object} - The RGB representation of the color
+   */
   const hexToRgb = (hex) => {
     const bigint = parseInt(hex.slice(1), 16);
     return {
@@ -250,6 +302,11 @@ function DrawingPage() {
     };
   };
 
+  /**
+   * Updates the drawing on the canvas based on the user's input
+   * 
+   * @param {Object} e - The event object
+   */
   const updateDraw = (e) => {
     if (!isPressed) return;
     setShowColorPopup(false);
@@ -285,6 +342,11 @@ function DrawingPage() {
     context.moveTo(offsetX, offsetY);
   };
 
+  /**
+   * Sets the selected color for drawing
+   * 
+   * @param {string} color - The color to be set
+   */
   const setColor = (color) => {
     const context = canvasRef.current.getContext("2d");
     context.strokeStyle = color;
@@ -292,18 +354,29 @@ function DrawingPage() {
     setMode("pencil");
   };
 
+  /**
+   * Toggles the color picker popup
+   */
   const toggleColorPicker = () => {
     setShowEraserPopup(false);
     setShowColorPopup(!showColorPopup);
     setShowFillPopup(false);
   };
 
+  /**
+   * Sets the line width for drawing
+   * 
+   * @param {number} width - The line width to be set
+   */
   const setWidth = (width) => {
     const context = canvasRef.current.getContext("2d");
     context.lineWidth = width;
     setLineWidth(width);
   };
 
+  /**
+   * Activates the eraser mode
+   */
   const setEraser = () => {
     setShowEraserPopup(!showEraserPopup);
     setShowColorPopup(false);
@@ -311,10 +384,16 @@ function DrawingPage() {
     setMode("eraser");
   };
 
+  /**
+   * Shows the text input modal for describing the drawing
+   */
   const handleDescribeDrawing = () => {
     setShowTextInput(true);
   };
 
+  /**
+   * Activates the fill mode
+   */
   const handleFill = () => {
     setShowColorPopup(false);
     setShowEraserPopup(false);
@@ -324,6 +403,9 @@ function DrawingPage() {
 
   const drawingRef = useRef(null); // Ref to store current drawing
 
+  /**
+   * Handles canvas resizing and restores the drawing
+   */
   useEffect(() => {
     const handleResize = () => {
       const canvas = canvasRef.current;
@@ -355,6 +437,9 @@ function DrawingPage() {
   const historyRef = useRef([]);
   const historyIndexRef = useRef(-1);
 
+  /**
+   * Saves the current drawing to history
+   */
   const saveHistory = useCallback(() => {
     const canvas = canvasRef.current;
     const newHistory = historyRef.current.slice(0, historyIndexRef.current + 1);
@@ -365,6 +450,9 @@ function DrawingPage() {
     setHistoryIndex(newHistory.length - 1);
   }, []);
 
+  /**
+   * Undoes the last drawing action
+   */
   const undo = () => {
     if (historyIndexRef.current > 0) {
       const newIndex = historyIndexRef.current - 1;
@@ -384,6 +472,9 @@ function DrawingPage() {
     }
   };
 
+  /**
+   * Redoes the last undone drawing action
+   */
   const redo = () => {
     if (historyIndexRef.current < historyRef.current.length - 1) {
       const newIndex = historyIndexRef.current + 1;
@@ -415,11 +506,17 @@ function DrawingPage() {
     }
   }, [isPressed, saveHistory]);
 
+  /**
+   * Cancels the text input and resets the enhanced image
+   */
   const handleCancel = () => {
     setShowTextInput(false);
     setEnhancedImage(null);
   };
 
+  /**
+   * Uploads the drawing to Firebase and navigates to the review page
+   */
   const handleNext = async () => {
     await uploadDrawing();
   };
