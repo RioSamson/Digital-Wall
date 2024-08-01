@@ -3,9 +3,32 @@ import redoImg from "../assets/redo.png";
 import undoImg from "../assets/undo.png";
 import clearImg from "../assets/garbage.png";
 
+/**
+ * ActionButtons component
+ * 
+ * This component renders a set of buttons for undo, redo, and clear actions.
+ * 
+ * @component
+ * @example
+ * const handleClear = () => { ... };
+ * const handleUndo = () => { ... };
+ * const handleRedo = () => { ... };
+ * const undoDisabled = false;
+ * const redoDisabled = false;
+ * return (
+ *   <ActionButtons 
+ *     onClear={handleClear}
+ *     onUndo={handleUndo}
+ *     onRedo={handleRedo}
+ *     undoDisabled={undoDisabled}
+ *     redoDisabled={redoDisabled}
+ *   />
+ * )
+ */
 const ActionButtons = ({ onClear, onUndo, onRedo, undoDisabled, redoDisabled }) => {
   return (
     <div style={{ display: "flex", gap: "10px" }}>
+      {/* Undo button */}
       <button
         onClick={onUndo}
         disabled={undoDisabled}
@@ -21,6 +44,7 @@ const ActionButtons = ({ onClear, onUndo, onRedo, undoDisabled, redoDisabled }) 
         }}
         aria-label="Undo"
       />
+      {/* Redo button */}
       <button
         onClick={onRedo}
         disabled={redoDisabled}
@@ -37,6 +61,7 @@ const ActionButtons = ({ onClear, onUndo, onRedo, undoDisabled, redoDisabled }) 
         }}
         aria-label="Redo"
       />
+      {/* Clear button */}
       <button
         onClick={onClear}
         style={{

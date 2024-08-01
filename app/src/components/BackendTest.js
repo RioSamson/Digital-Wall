@@ -1,9 +1,21 @@
 import React, { useEffect, useState } from "react";
+/**
+ * BackendTest component
+ * 
+ * This component fetches a message from the backend API and displays it.
+ * 
+ * @component
+ */
 
 function BackendTest() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
+        /**
+     * fetchMessage function
+     * 
+     * This function fetches a message from the backend API.
+     */
     const fetchMessage = async () => {
       try {
         const response = await fetch("/api/test");

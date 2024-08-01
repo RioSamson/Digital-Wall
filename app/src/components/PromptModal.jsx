@@ -1,5 +1,23 @@
 import React, { useState } from "react";
 
+/**
+ * PromptModal component
+ *
+ * This component displays a modal that allows users to enter text prompts for AI to enhance their drawings
+ * and to navigate through the enhancement process.
+ *
+ * @param {Object} props - The component props
+ * @param {boolean} props.showTextInput - Flag to show or hide the text input modal
+ * @param {string} props.enhancedImage - URL of the enhanced image
+ * @param {string} props.inputText - The current text input value
+ * @param {Function} props.setInputText - Function to update the text input value
+ * @param {boolean} props.isUploading - Flag to indicate if the uploading is in progress
+ * @param {Function} props.handleTextSubmit - Function to handle text submission
+ * @param {Function} props.handleCancel - Function to handle cancel action
+ * @param {Function} props.handleNext - Function to handle next action
+ * @param {Function} props.handleClose - Function to handle close action
+ * @returns {JSX.Element} The PromptModal component
+ */
 const PromptModal = ({
   showTextInput,
   enhancedImage,
@@ -13,9 +31,10 @@ const PromptModal = ({
 }) => {
   const [isNextDisabled, setIsNextDisabled] = useState(false);
 
+  // Handle the click event for the "Next" button
   const handleNextClick = () => {
-    setIsNextDisabled(true);
-    handleNext();
+    setIsNextDisabled(true); // Disable the button after click
+    handleNext(); // Call the next action handler
   };
 
   return (
