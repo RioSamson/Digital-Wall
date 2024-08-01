@@ -1,6 +1,11 @@
 # Digital-Wall
 Digital Art wall  - CDM BCCH
 
+## Developers:
+### Rio Samson
+- LinkedIn: https://ca.linkedin.com/in/riosamson
+### Sadaf Ahmadi
+
 Start main application:
 - git clone
 - cd into ```Digital-Wall``` file
@@ -8,6 +13,8 @@ Start main application:
 - ```npm install```
 - ```npm start``` in the app folder
    - This will run the main app
+   - Put this in the browser ```http://localhost:3000```
+   - Use your wifi IP address for opening it on the phone (dont forget to add the port number 3000)
 
 Start main application:
 - cd into ```Digital-Wall``` file
@@ -32,9 +39,3 @@ Start the baseten server:
 - Once you have made these, you need to update the links in the main app to point to this new database location
 - In firebase.js, you need to put in your credentials and replace the current one
 
-
-
-## Developers:
-### Rio Samson
-- LinkedIn: https://ca.linkedin.com/in/riosamson
-### Sadaf Ahmadi
