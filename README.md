@@ -2,11 +2,11 @@
 Digital Art wall  - CDM BCCH
 
 ## Developers:
-### Rio Samson
+### 1) Rio Samson
 - LinkedIn: https://ca.linkedin.com/in/riosamson
-### Sadaf Ahmadi
+### 2) Sadaf Ahmadi
 
-Start main application:
+## Start main application:
 - git clone
 - cd into ```Digital-Wall``` file
 - cd into ```app``` file
@@ -28,7 +28,6 @@ Start the baseten server:
 
 
 ## Before You start 
-## Before you start, you need to do some stuff
 ### 1) Upload your own AI model to baseten
   - This is so that the backend can actually call an AI when you submit your drawing
   - A detailed explanation on how to deploy your model is given in the tech documentation, section "Baseten"
