@@ -32,6 +32,9 @@ Start the baseten server:
 - Once you have made these, you need to update the links in the main app to point to this new database location
 - In firebase.js, you need to put in your credentials and replace the current one
 
-Downloads: 
-- React router: npm install react-router-dom
-- ... needs to be updated
+
+
+## Developers:
+### Rio Samson
+- LinkedIn: https://ca.linkedin.com/in/riosamson
+### Sadaf Ahmadi
