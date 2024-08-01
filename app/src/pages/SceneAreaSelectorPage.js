@@ -1,19 +1,40 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
+/**
+ * SceneAreaSelector component
+ * 
+ * This component allows the user to select an area of a scene where they want to place their drawing.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <SceneAreaSelector />
+ * )
+ */
 function SceneAreaSelector() {
   const navigate = useNavigate();
   const location = useLocation();
   const { selectedScene, imageUrl, themeName, topAreaName, centerAreaName, bottomAreaName } = location.state || {};
 
+  /**
+   * Handles the selection of an area by navigating to the drawing page
+   * with the selected area and other scene details.
+   * 
+   * @param {string} area - The area selected (top, center, or bottom)
+   */
   const handleAreaSelect = (area) => {
     navigate("/drawing", { state: { selectedScene, area, themeName, topAreaName, centerAreaName, bottomAreaName, } });
   };
 
+  /**
+   * Handles the back button click by navigating to the previous page.
+   */
   const handleBackClick = () => {
     navigate(-1); 
   };
 
+  // Inline styles for the component elements
   const sceneContainerStyle = {
     display: "flex",
     flexDirection: "column",
@@ -64,6 +85,7 @@ function SceneAreaSelector() {
     zIndex: 1,
     borderRadius: "20px",
   };
+
   const backButtonStyle = {
     position: "absolute",
     top: "10px",
@@ -85,10 +107,20 @@ function SceneAreaSelector() {
     backgroundColor: "rgba(0, 0, 0, 0.3)",
   };
 
+  /**
+   * Handles the mouse over event on a button to apply hover styles.
+   * 
+   * @param {Event} e - The mouse over event
+   */
   const handleMouseOver = (e) => {
     Object.assign(e.currentTarget.style, buttonHoverStyle);
   };
 
+  /**
+   * Handles the mouse out event on a button to remove hover styles.
+   * 
+   * @param {Event} e - The mouse out event
+   */
   const handleMouseOut = (e) => {
     Object.assign(e.currentTarget.style, {
       transform: "scale(1)",
@@ -98,8 +130,8 @@ function SceneAreaSelector() {
 
   return (
     <div style={sceneContainerStyle}>
-<div style={{ display: "flex", alignItems: "center", width: "100%", marginBottom: "10px" }}>
-  <svg
+      <div style={{ display: "flex", alignItems: "center", width: "100%", marginBottom: "10px" }}>
+        <svg
           onClick={handleBackClick}
           style={backButtonStyle}
           width="20"
@@ -114,8 +146,8 @@ function SceneAreaSelector() {
           />
         </svg>
         {/* <button style={{marginLeft: 'auto', fontSize:"22px", fontWeight:500, background: "black", color: "white", padding:"14px 22px", borderRadius: "10px"}}>start</button> */}
-        </div>
-      <h2 style={{fontWeight:500, fontSize: "24px", marginTop: "10px", marginLeft: "10px"}}>Choose a spot to place your drawing!</h2>
+      </div>
+      <h2 style={{ fontWeight: 500, fontSize: "24px", marginTop: "10px", marginLeft: "10px" }}>Choose a spot to place your drawing!</h2>
       <div style={buttonContainerStyle}>
         <button
           style={{

@@ -3,6 +3,18 @@ import { useNavigate, Link } from 'react-router-dom';
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 import { doc, setDoc, getFirestore, serverTimestamp } from "firebase/firestore";
 
+/**
+ * RegisterPage component
+ * 
+ * This component provides a registration form for new users to create an account.
+ * It includes email verification and stores user information in Firestore.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <RegisterPage />
+ * )
+ */
 export default function RegisterPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -14,6 +26,9 @@ export default function RegisterPage() {
     const db = getFirestore();
     const auth = getAuth();
   
+    /**
+     * Handles user signup
+     */
     const handleSignup = async () => {
       if (!isSigningIn) {
         if (password !== confirmPassword) {
@@ -26,7 +41,7 @@ export default function RegisterPage() {
           const user = userCredential.user;
           await sendEmailVerification(user);
           await setDoc(doc(db, "Users", email), {
-            name:name,
+            name: name,
             email: email,
             role: "Drawer",
             CreatedOn: serverTimestamp(),
@@ -42,6 +57,9 @@ export default function RegisterPage() {
       }
     };
 
+    /**
+     * Styles for the RegisterPage component
+     */
     const styles = {
       container: {
         display: 'flex',
@@ -67,7 +85,6 @@ export default function RegisterPage() {
         background: 'white',
         fontSize: '16px',
         boxSizing: 'border-box'
-      
       },
       button: {
         padding: '12px 116px',
@@ -108,41 +125,42 @@ export default function RegisterPage() {
     return (
       <div style={styles.container}>
         <h2 style={styles.h2}>
-        <span style={styles.highlight}>Hello!</span><span style={styles.newline}> Register to start</span>
-      </h2>
+          <span style={styles.highlight}>Hello!</span>
+          <span style={styles.newline}> Register to start</span>
+        </h2>
 
-      <div style={styles.inputContainer}>
-      <input
-          type="name"
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          style={styles.input}
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={styles.input}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={styles.input}
-        />
-        <input
-          type="password"
-          placeholder="Confirm Password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          style={styles.input}
-        />
-      </div>
+        <div style={styles.inputContainer}>
+          <input
+            type="text"
+            placeholder="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            style={styles.input}
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={styles.input}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={styles.input}
+          />
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            style={styles.input}
+          />
+        </div>
         {errorMessage && (
-          <div style={{ color: 'red', margin: '10px' }}>
+          <div style={styles.errorMessage}>
             {errorMessage}
           </div>
         )}
@@ -154,10 +172,9 @@ export default function RegisterPage() {
           Register
         </button>
         <div style={{ marginTop: '20px' }}>
-          <span style={{fontSize: '16px', fontWeight:400}}>Already have an account?</span>
+          <span style={{ fontSize: '16px', fontWeight: 400 }}>Already have an account?</span>
           <Link to="/login" style={styles.link}>Login now</Link>
         </div>
-        
       </div>
     );
 }

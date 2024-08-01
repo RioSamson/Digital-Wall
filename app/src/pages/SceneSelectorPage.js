@@ -3,6 +3,17 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { db } from "../firebase/firebase";
 import { collection, getDocs } from "firebase/firestore";
 
+/**
+ * SceneSelector component
+ * 
+ * This component allows the user to select a scene for either drawing or viewing a gallery of previous drawings.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <SceneSelector />
+ * )
+ */
 function SceneSelector() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -14,6 +25,9 @@ function SceneSelector() {
     getThemes();
   }, []);
 
+  /**
+   * Fetches the themes from the Firestore database and sets them in the state.
+   */
   const getThemes = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "Themes"));
@@ -39,10 +53,18 @@ function SceneSelector() {
     }
   };
 
+  /**
+   * Handles the back button click by navigating to the previous page.
+   */
   const handleBackClick = () => {
     navigate(-1);
   };
 
+  /**
+   * Handles the selection of a scene by navigating to the appropriate page based on the mode.
+   * 
+   * @param {Object} scene - The selected scene object
+   */
   const handleSceneSelect = (scene) => {
     if (scene.clickable) {
       if (mode === "drawing") {
@@ -64,14 +86,23 @@ function SceneSelector() {
     }
   };
 
+  /**
+   * Handles the mouse over event on a scene item to apply hover styles.
+   * 
+   * @param {string} id - The ID of the hovered scene item
+   */
   const handleMouseOver = (id) => {
     setHovered(id);
   };
 
+  /**
+   * Handles the mouse out event on a scene item to remove hover styles.
+   */
   const handleMouseOut = () => {
     setHovered(null);
   };
 
+  // Inline styles for the component elements
   const styles = {
     container: {
       display: "flex",

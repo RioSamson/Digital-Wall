@@ -5,6 +5,7 @@ Digital Art wall  - CDM BCCH
 ### 1) Rio Samson
 - LinkedIn: https://ca.linkedin.com/in/riosamson
 ### 2) Sadaf Ahmadi
+- LinkedIn: https://www.linkedin.com/in/sadaf-ahmadi-19980321
 
 ## Start main application:
 - git clone

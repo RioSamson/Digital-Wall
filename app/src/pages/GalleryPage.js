@@ -12,6 +12,18 @@ import {
   doc,
 } from "firebase/firestore";
 
+/**
+ * GalleryPage component
+ * 
+ * This component displays a gallery of the user's drawings. It allows users to view their
+ * drawings and navigate to different pages such as the live display or all drawings page.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <GalleryPage />
+ * )
+ */
 function GalleryPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -21,16 +33,27 @@ function GalleryPage() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [readCount, setReadCount] = useState(0);
 
+  /**
+   * Navigates to the display page for live display
+   */
   const handleDisplay = () => {
     navigate(`/display?theme=${selectedScene}`, { state: { imageUrl } });
   };
 
+  /**
+   * Navigates to the page displaying all the user's drawings
+   */
   const viewAllHandler = () => {
     navigate("/myDrawing", {
       state: { selectedScene, userId: currentUser.email },
     });
   };
 
+  /**
+   * Fetches the user's drawings for the selected scene from Firestore
+   * 
+   * @param {string} selectedScene - The ID of the selected scene
+   */
   const getDrawings = useCallback(
     async (selectedScene) => {
       try {
@@ -65,14 +88,25 @@ function GalleryPage() {
     getDrawings(selectedScene);
   }, [getDrawings, selectedScene]);
 
+  /**
+   * Handles image click to display the selected image in a modal
+   * 
+   * @param {string} url - The URL of the selected image
+   */
   const handleImageClick = (url) => {
     setSelectedImage(url);
   };
 
+  /**
+   * Closes the image modal
+   */
   const closeModal = () => {
     setSelectedImage(null);
   };
 
+  /**
+   * Navigates back to the previous page
+   */
   const handleBackClick = () => {
     navigate(-1);
   };
@@ -165,6 +199,7 @@ function GalleryPage() {
             fontSize: "24px",
             border: "none",
             fontWeight: 500,
+            cursor: "pointer",
           }}
         >
           View all
